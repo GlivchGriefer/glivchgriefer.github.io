@@ -1,0 +1,98 @@
+@charset "utf-8";
+
+html,
+html * {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	background-color: #111111;
+	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
+}
+
+/*.dark-mode {
+	background-color: #111111;
+}*/
+
+header {
+	padding: 32px;
+}
+
+footer {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+.style-logo {
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+	max-width: 300px;
+}
+
+.style-nav ul {
+	list-style-type: none;
+}
+
+.style-nav ul li a {
+	text-decoration: none;
+	color: #54FF00;
+	text-align: center;
+	display: block;
+	text-transform: uppercase;
+	padding: 8px;
+}
+
+.construction {
+	color: #F5A000;
+	font-size: 200%;
+	margin-top: 100px;
+	margin-bottom: 75px;
+}
+
+.wip{
+	margin-left: 100px;
+	margin-right: 100px;
+	margin-bottom: 250px;
+	text-align: center;
+}
+
+.gh_logo {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 50px;
+	max-width: 128px;
+	display: block;
+}
+
+@media screen and (min-width: 600px)  {
+      .mobile-break { display: none; }
+  }
+
+/*Tablet View*/
+@media (min-width: 768px){
+	.style-nav ul li {
+		display: inline-block;
+	}
+	.style-nav ul {
+		text-align: center;
+	}
+	.style-logo {
+		max-width: 500px;
+	}
+}
+
+/*Desktop View*/
+@media (min-width: 1024px){
+	.style-logo{
+		float: left;
+	}
+	.style-nav {
+		float: right;
+	}
+	.gh_logo {
+		margin-left: auto;
+		margin-right: auto;
+		max-width: 300px;
+		display: block;
+	}
+}
