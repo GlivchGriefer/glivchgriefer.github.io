@@ -44,8 +44,8 @@ footer {
 }
 
 .construction {
-	color: #F5A000;
-	font-size: 200%;
+	color: #FCE100;
+	font-size: 105%;
 	margin-top: 100px;
 	margin-bottom: 75px;
 }
@@ -79,6 +79,9 @@ footer {
 	}
 	.style-logo {
 		max-width: 500px;
+	}
+	.construction{
+		font-size: 200%;
 	}
 }
 
