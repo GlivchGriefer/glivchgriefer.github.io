@@ -57,12 +57,16 @@ footer {
 	text-align: center;
 }
 
+
 .gh_logo {
 	margin-left: auto;
 	margin-right: auto;
-	margin-bottom: 50px;
 	max-width: 128px;
 	display: block;
+}
+.gh {
+	text-align: center;
+	margin-bottom: 50px;
 }
 
 @media screen and (min-width: 600px)  {
