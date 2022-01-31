@@ -50,6 +50,12 @@ footer {
 	margin-bottom: 75px;
 }
 
+.gif {
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 150px
+}
+
 .wip{
 	margin-left: 100px;
 	margin-right: 100px;
@@ -89,6 +95,9 @@ footer {
 	.construction{
 		font-size: 200%;
 	}
+	.gif {
+		max-width: 300px;
+	}
 }
 
 /*Desktop View*/
@@ -98,6 +107,9 @@ footer {
 	}
 	.style-nav {
 		float: right;
+	}
+	.gif {
+		max-width: 500px;
 	}
 	.gh_logo {
 		margin-left: auto;
