@@ -57,12 +57,20 @@ footer {
 .d {
 	margin-top: 50px;
 	text-align: center;
-	margin-bottom: 500px;
 	margin-left: auto;
 	margin-right: auto;
 }
 .d a img {
 	max-width: 300px;
+}
+
+.dg {
+	max-width: 200px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 250px;
+	margin-bottom: 100px;
+	transform: translateX(-60%)
 }
 
 @media screen and (min-width: 600px)  {
