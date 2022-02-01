@@ -1,6 +1,6 @@
 @charset "utf-8";
 
-html,
+body,
 html * {
 	padding: 0;
 	margin: 0;
@@ -18,6 +18,7 @@ header {
 }
 
 footer {
+	margin-top: 150px;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
@@ -42,39 +43,26 @@ footer {
 	text-transform: uppercase;
 	padding: 8px;
 }
-
-.construction {
-	color: #FCE100;
-	font-size: 105%;
-	margin-top: 100px;
-	margin-bottom: 75px;
-}
-
-.gif {
-	margin-left: auto;
-	margin-right: auto;
-	max-width: 150px
-}
-
-.wip{
-	margin-left: 100px;
-	margin-right: 100px;
-	margin-bottom: 250px;
-	text-align: center;
-}
-
-
-.gh_logo {
-	margin-left: auto;
-	margin-right: auto;
-	max-width: 128px;
-	display: block;
-}
 .gh {
+	text-align: center;
+	margin-top: 100px;
+	margin-bottom: 20px;
 	margin-left: auto;
 	margin-right: auto;
+}
+.gh a img {
+	max-width: 300px;
+}
+
+.d {
+	margin-top: 50px;
 	text-align: center;
-	margin-bottom: 50px;
+	margin-bottom: 500px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.d a img {
+	max-width: 300px;
 }
 
 @media screen and (min-width: 600px)  {
@@ -92,12 +80,6 @@ footer {
 	.style-logo {
 		max-width: 500px;
 	}
-	.construction{
-		font-size: 200%;
-	}
-	.gif {
-		max-width: 300px;
-	}
 }
 
 /*Desktop View*/
@@ -105,17 +87,9 @@ footer {
 	.style-logo{
 		float: left;
 	}
-	.style-nav {
+	.style-nav{
 		float: right;
-	}
-	.gif {
-		max-width: 500px;
-		margin-bottom: 50px;
-	}
-	.gh_logo {
-		margin-left: auto;
-		margin-right: auto;
-		max-width: 300px;
-		display: block;
+		padding: -0.5rem;
+		margin: -17.5px;
 	}
 }
