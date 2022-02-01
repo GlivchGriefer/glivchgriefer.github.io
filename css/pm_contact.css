@@ -92,4 +92,7 @@ footer {
 		padding: -0.5rem;
 		margin: -17.5px;
 	}
+	.style-nav ul li a{
+		color: white;
+	}
 }

@@ -94,6 +94,9 @@ footer {
 	.style-nav {
 		float: right;
 	}
+	.style-nav ul li a{
+		color: white;
+	}
 	.gif {
 		max-width: 500px;
 		margin-bottom: 50px;
