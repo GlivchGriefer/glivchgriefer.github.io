@@ -18,7 +18,7 @@ header {
 }
 
 footer {
-	font-size: 1.1vw;
+	font-size: 15px;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
@@ -41,13 +41,14 @@ footer {
 	text-align: center;
 	display: block;
 	text-transform: uppercase;
-	padding: 8px;
-	font-size: 2vw;
+	padding-left: 10px;
+	padding-right: 10px;
+	font-size: 2.5vw;
 }
 
 .construction {
 	color: #FCE100;
-	font-size: 2vw;
+	font-size: 3vw;
 	margin-top: 100px;
 	margin-bottom: 75px;
 }
@@ -59,7 +60,7 @@ footer {
 }
 
 .wip{
-	font-size: 1.5vw;
+	font-size: 2.5vw;
 	margin-left: 100px;
 	margin-right: 100px;
 	margin-bottom: 250px;
@@ -83,6 +84,9 @@ footer {
 	}
 	.gif {
 		max-width: 300px;
+	}
+	footer {
+		font-size: 25px;
 	}
 }
 
