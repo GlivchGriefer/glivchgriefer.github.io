@@ -88,8 +88,8 @@ footer {
 		color: #a9aaaa;
 	}
 	
-	#tbod td {
-		width: 5%;
+	#tbl td {
+		width: 10%;
 	}
 	
 	#webb_logo {
@@ -99,6 +99,7 @@ footer {
 	}
 	
 	.sketchfab-embed-wrapper {
+		height: 1080px;
 		width: 100%;
 		text-align: center;
 	}
@@ -109,7 +110,7 @@ footer {
 	}
 	
 	#jwst {
-		width: 100%;
+		width: 66%;
 		height: 600px;
 		display: inline-block;
 	}
