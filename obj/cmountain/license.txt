@@ -1,0 +1,11 @@
+Model Information:
+* title:	Cloudy Mountain
+* source:	https://sketchfab.com/3d-models/cloudy-mountain-f61d84c6534d4007accdeac35f433119
+* author:	Per's Scan Collection (https://sketchfab.com/perz_scans)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Cloudy Mountain" (https://sketchfab.com/3d-models/cloudy-mountain-f61d84c6534d4007accdeac35f433119) by Per's Scan Collection (https://sketchfab.com/perz_scans) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

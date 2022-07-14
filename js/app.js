@@ -1,1 +1,0 @@
-onload=setTimeout(function(){document.getElementById("1").display;}, 5000);
