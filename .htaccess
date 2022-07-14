@@ -3,11 +3,11 @@ Options +FollowSymLinks
 RewriteEngine on 
 RewriteCond %{HTTP_HOST} . 
 RewriteCond %{HTTP_HOST} !^proceduralmedia\.com 
-RewriteRule (.*) http:/proceduralmedia.com/$1 [R=301,L]
+RewriteRule (.*) http://proceduralmedia.com/$1 [R=301,L]
 
 #force SSL on entire site
 RewriteCond %{HTTPS} !=on
-RewriteRule ^/?(.*) https:/proceduralmedia.com/$1 [R=301,L]
+RewriteRule ^/?(.*) https://proceduralmedia.com/$1 [R=301,L]
 
 #remove page name
 RewriteCond %{REQUEST_FILENAME} !-d
