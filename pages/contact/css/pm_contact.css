@@ -16,23 +16,93 @@ header {
 }
 
 footer {
-	font-size: 15px;
+	font-size: 1vw;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 10px;
 }
-
-.style-nav ul {
-	list-style-type: none;
+.menu-container {
+  	position: relative;
+  	display: flex;
+  	align-items: center;
+ 	margin-bottom: 20px;
+  	color: #cdcdcd;
+  	padding: 20px;
+  	z-index: 1;
+  	-webkit-user-select: none;
+  	user-select: none;
+    box-sizing: border-box;
+}
+.menu-container a {
+	background: rgba(0,0,0,0.00);
+    text-decoration: none;
+    color: #7E7E7E;
+    transition: color 0.3s ease;
 }
 
-.style-nav ul li a {
-	text-decoration: none;
-	color: white;
-	text-align: center;
-	display: block;
-	text-transform: uppercase;
+.menu-container a:hover {
+    color: #00ff18;
+}
+
+.menu-container input {
+    display: block;
+    width: 35px;
+    height: 25px;
+    margin: 0;
+    position: absolute;
+    cursor: pointer;
+    opacity: 0; /* hide this */
+    z-index: 2; /* and place it over the hamburger */
+    -webkit-touch-callout: none;
+}
+
+/* Burger menu */
+.menu-container span {
+    display: block;
+    width: 33px;
+    height: 4px;
+    margin-bottom: 5px;
+    position: relative;
+    background: #7E7E7E;
+    border-radius: 3px;
+    z-index: 1;
+    transform-origin: 4px 0px;
+    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
+              background 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
+              opacity 0.55s ease;
+}
+
+.menu-container span:first-child {
+    transform-origin: 0% 0%;
+}
+
+.menu-container span:nth-child(3) {
+    transform-origin: 0% 100%;
+}
+
+.menu-container input:checked ~ span {
+    opacity: 50;
+    transform: rotate(45deg) translate(3px,-1px);
+    background: #232323;
+}
+
+.menu-container input:checked ~ span:nth-child(4) {
+    opacity: 0;
+    transform: rotate(0deg) scale(0.2, 0.2);
+}
+
+.menu-container input:checked ~ span:nth-child(3) {
+    transform: rotate(-45deg) translate(-5px,11px);
+}
+
+.menu ul {
+    list-style: none;
+}
+
+.menu li {
+    padding: 10px 0;
+    font-size: 22px;
 }
 
 .gh {
@@ -69,9 +139,37 @@ footer {
 	height: auto;
 }
 
+/*Mobile Nav*/
+@media screen and (max-width: 1024px) {
+	.menu-container {
+		margin-top: -60px;
+		position: inherit;
+		flex-direction: column;
+		align-items: flex-end;
+  	}
+	.menu {
+		background: rgba(0,0,0,0.00);
+		position: absolute;
+		box-sizing: border-box;
+		width: 300px;
+		right: -300px;
+		top: 0;
+		margin: -20px;
+		padding: 75px 50px 50px;
+		-webkit-font-smoothing: antialiased;
+		/* to stop flickering of text in safari */
+		transform-origin: 0% 0%;
+		transform: translateX(0%);
+		transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
+  	}
+    .menu-container input:checked ~ .menu {
+    	transform: translateX(-100%);
+    }
+	footer > p { font-size: 1.5vw; }
+}
+
 /*Mobile View*/
-@media screen and (min-width: 600px)  {
-    .mobile-break { display: none; }
+@media screen and (max-width: 768px)  {
 	header { height: 110px; }
 	.style-logo1 {
 		display: none;
@@ -83,10 +181,13 @@ footer {
 	.style-nav ul li { font-size: 1vw; }
 	.gh > p, .d > p { font-size: 5vw; }
 	footer > p { font-size: 1.5vw; }
-  }
+  	}
+	#discordid {
+		font-size: 2vw;
+	}
 
 /*Tablet View*/
-@media (min-width: 768px){
+@media (min-width: 768px) and (max-width:1024px){
 	header { clear: both; }
 	.style-nav ul li {
 		display: inline-block;
@@ -104,6 +205,40 @@ footer {
 	footer {
 		font-size: 25px;
 	}
+}
+
+/*Desktop Nav*/
+@media only screen and (min-width: 1024px) {
+	.menu-container {
+    	width: 100%;
+    }
+
+    .menu-container input {
+    	display: none;
+    }
+
+    /* Burger menu */
+    .menu-container span {
+    	display: none;
+    }
+
+    .menu {
+		position: relative;
+		background: rgba(0,0,0,0.00);
+		margin-top: -150px;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+  	}
+
+    .menu ul {
+		display: flex;
+		padding: 0;
+  	}
+
+    .menu li {
+    	padding: 0 20px;
+  	}
 }
 
 /*Desktop View*/
@@ -138,5 +273,8 @@ footer {
 	
 	.gh p , .d p {
 		font-size: 2vw;
+	}
+	#discordid {
+		font-size: 1vw;
 	}
 }
