@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 368.84492 89.03747">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: QuantumRegular, Quantum;
+      }
+
+      .cls-2 {
+        font-size: 21.35px;
+        stroke: #00ff18;
+        stroke-width: .5px;
+      }
+
+      .cls-2, .cls-3 {
+        fill: none;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-3 {
+        stroke: #fff;
+        stroke-width: 5px;
+      }
+
+      .cls-4 {
+        fill: #fff;
+        font-size: 48.7px;
+      }
+
+      .cls-5 {
+        letter-spacing: -.04em;
+      }
+
+      .cls-6 {
+        letter-spacing: -.03em;
+      }
+
+      .cls-7 {
+        letter-spacing: -.06999em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <line class="cls-3" x1="139.42424" y1="59.28167" x2="13.62032" y2="59.28167"/>
+    <text class="cls-1" transform="translate(2.1406 41.07835)"><tspan class="cls-4"><tspan x="0" y="0">P</tspan><tspan class="cls-7" x="32.33594" y="0">R</tspan><tspan x="67.93555" y="0">OCEDU</tspan><tspan class="cls-5" x="254.6001" y="0">R</tspan><tspan class="cls-6" x="291.66064" y="0">A</tspan><tspan x="336.41553" y="0">L</tspan></tspan><tspan class="cls-2"><tspan x="145.31494" y="26">MEDIA</tspan></tspan></text>
+    <line class="cls-3" x1="355.50267" y1="59.21037" x2="229.69875" y2="59.21037"/>
+  </g>
+</svg>

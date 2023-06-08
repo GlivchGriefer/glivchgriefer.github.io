@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40.78431 45.93629">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        font-family: QuantumRegular, Quantum;
+        font-size: 48.7px;
+      }
+
+      .cls-2 {
+        fill: none;
+        stroke: #00ff18;
+        stroke-miterlimit: 10;
+        stroke-width: .5px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <path class="cls-2" d="m37.25612,11.53883l-.01531,30.03946h-7.48047v-13.59766l-7.61328,7.80859-7.61328-7.80859-7.48096-7.62891.01531-8.8129h1.18799l13.9502,14.22559,13.9502-14.22559h1.09961Z"/>
+    <text class="cls-1" transform="translate(4.22409 41.89899) scale(1 1.02)"><tspan x="0" y="0">P</tspan></text>
+  </g>
+</svg>
