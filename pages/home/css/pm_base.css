@@ -8,8 +8,7 @@ html * {
 	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
 }
 body {
-	overflow-x: hidden;
-	margin: 0;
+	position: relative;
 }
 header {
 	padding: 32px;
@@ -130,7 +129,7 @@ footer {
   	}
 	.menu {
 		background: rgba(0,0,0,0.00);
-		position: absolute;
+		position: fixed;
 		box-sizing: border-box;
 		width: 300px;
 		right: -300px;
@@ -190,6 +189,7 @@ footer {
 /*Desktop Nav*/
 @media only screen and (min-width: 1024px) {
 	.menu-container {
+		margin-top: -20px;
 		background: rgba(0,0,0,0.00);
 		position: absolute;
     	width: 100%;
