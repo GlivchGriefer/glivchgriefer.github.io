@@ -13,17 +13,25 @@ body {
 	position: relative;
 }
 header {
+	height: 80px;
+	background-color: rgba(0,0,0,0.90);
 	padding: 32px;
 }
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
 
+.sticky + .main {
+  padding-top: 102px;
+}
 footer {	
 	position: relative;
 	font-size: 1vw;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
-	margin-bottom: 10px;
-	bottom: 0;
 }
 
 .menu-container {
@@ -100,6 +108,8 @@ footer {
     transform: rotate(-45deg) translate(-5px,11px);
 }
 
+.nav li { background: rgba(0,0,0,0.00); }
+
 .menu ul {
     list-style: none;
 }
@@ -112,21 +122,26 @@ footer {
 	color: #FCE100;
 	margin-bottom: 50px;
 }
-
+.main {
+	background-color: rgba(0,0,0,0.00);
+}
 .wip{
+	background-color: rgba(0,0,0,0.00);
 	color: white;
 	font-size: 1vw;
 	margin-bottom: 250px;
 	text-align: center;
 }
 
-/*Mobile Nav*/
+/*Mobile & Tablet*/
 @media screen and (max-width: 1024px) {
 	.menu-container {
-		margin: -60px -30px 0 0;
-		position: inherit;
+		background: rgba(0,0,0,0.00);
+		margin: -50px 0 0 0;
+		position: absolute;
 		flex-direction: column;
 		align-items: flex-end;
+		right: 0;
   	}
 	.menu {
 		display: none;
@@ -148,6 +163,26 @@ footer {
 		display: contents;
     	transform: translateX(-100%);
     }
+	.nav {
+		margin: -20px -20px 0 0;
+		padding: 0 20px 0 20px;
+	}
+	body {
+		background-image: url("../../../img/AI_PM_M.png");
+		background-repeat: no-repeat;
+  		background-attachment: fixed;
+		background-position: center;
+		background-size: auto;
+	}
+	.wip p {
+		background: rgba(0,0,0,0.00);
+	}
+	.gif {
+		background: rgba(0,0,0,0.00);
+	}
+	.foot {
+		margin-bottom: -25px;
+	}
 	footer > p { font-size: 1.5vw; }
 }
 
@@ -208,9 +243,9 @@ footer {
 
     .menu {
 		margin-right: 30px;
-		margin-top: -25px;
+		margin-top: -20px;
 		position: relative;
-		background: rgba(0,0,0,0.00);
+		background-color: rgba(0,0,0,0.00);
 		width: 100%;
 		display: flex;
 		justify-content: space-between;
@@ -228,10 +263,20 @@ footer {
 
 /*Desktop View*/
 @media (min-width: 1024px){
+	.foot {
+		margin-bottom: -20px;
+	}
+	body {
+		background-image: url("../../../img/AI_PM.png");
+		background-repeat: no-repeat;
+  		background-attachment: fixed;
+		background-position: center;
+		background-size: cover;
+	}
 	.style-logo1 {
 		display: block;
 		float: left;
-		margin-top: -10px;
+		margin-top: -15px;
 		margin-left: -5px;
 		max-height: 80px;
 		max-width: 300px;
@@ -244,9 +289,11 @@ footer {
 		color: #00ff18;
 	}
 	.gif {
+		background-color: rgba(0,0,0,0.00);
 		padding-bottom: 50px;
 	}
 	.wip > p { 
+		background-color: rgba(0,0,0,0.00);
 		padding: 0 15vw 0 15vw;
 		font-size: 1.5vw; 
 	}

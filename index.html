@@ -10,8 +10,8 @@
     </head>
 
 	<body id="1">
-		<header>
-			<a href="/">
+		<header id="header">
+			<a href="/"><!-- only working on mobile as of 2.1.1 -->
 				<img class="style-logo1" src="img/PM Logo 2023.svg" alt="Procedural Media Banner">
 				<img class="style-logo2" src="img/PM Icon 2023.svg" alt="Procedural Media Banner">
 			</a>
@@ -33,7 +33,7 @@
 			  <div class="menu">
 				<ul>
 				</ul>
-				<ul>
+				<ul class="nav">
 				  <li>
 					<a href="/">
 					  Home
@@ -53,8 +53,7 @@
 			  </div>
 			</nav>
 		</header>
-		
-		<article><br>
+		<article class="main"><br>
 			<div class="wip">
 				<p class="construction">&nbsp;&#9888;&nbsp;<br class="mobile-break">UNDER CONSTRUCTION<br class="mobile-break">&nbsp;&#9888;&nbsp;</p>
 				<iframe src="https://giphy.com/embed/5C0E7ouokWeKDsK8bm" width="480" height="270" frameBorder="0" class="gif" allowFullScreen></iframe>
@@ -75,10 +74,29 @@
 				</p>
 			</div>
 		</article>
-		<footer class="foot">
+		
+		
+		
+		<script>
+			window.onscroll = function() {myFunction()};
+
+			var header = document.getElementById("header");
+			var sticky = header.offsetTop;
+
+			function myFunction() {
+			  if (window.pageYOffset > sticky) {
+				header.classList.add("sticky");
+			  } else {
+				header.classList.remove("sticky");
+			  }
+			}
+		</script>
+	</body>
+	<footer class="foot">
+		<div class="foot_content">
 			<p>
 				© 2023 Procedural Media
 			</p>
-		</footer>		
-	</body>
+		</div>
+	</footer>
 </html>
