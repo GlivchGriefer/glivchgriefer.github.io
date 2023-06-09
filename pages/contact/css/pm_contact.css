@@ -2,13 +2,13 @@
 
 body,
 html * {
-	overflow-x: hidden;
 	box-sizing: border-box;
 	background-color: #000000;
 	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
 	color: white;
 }
 body {	
+	overflow-x: hidden;
 	margin: 0;
 	position: relative;
 }
@@ -146,13 +146,13 @@ footer {
 @media screen and (max-width: 1024px) {
 	.menu-container {
 		width: 100%;
-		overflow-x: hidden;
 		margin: -60px;
 		position: inherit;
 		flex-direction: column;
 		align-items: flex-end;
   	}
 	.menu {
+		display: none;
 		background: rgba(0,0,0,0.00);
 		position: absolute;
 		box-sizing: border-box;
@@ -168,6 +168,7 @@ footer {
 		transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
   	}
     .menu-container input:checked ~ .menu {
+		display: contents;
     	transform: translateX(-100%);
     }
 	footer > p { font-size: 1.5vw; }
@@ -222,7 +223,6 @@ footer {
     }
 
     .menu {
-		overflow-x: hidden;
 		margin-right: 30px;
 		margin-top: -25px;
 		position: relative;
