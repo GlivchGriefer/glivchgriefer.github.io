@@ -2,13 +2,15 @@
 
 body,
 html * {
-	overflow-x: hidden;
 	box-sizing: border-box;
 	background-color: #000000;
 	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
 	color: white;
 }
 body {	
+	overflow-x: hidden;
+	width: 100%;
+	margin: 0;
 	position: relative;
 }
 header {
@@ -220,6 +222,7 @@ footer {
     }
 
     .menu {
+		overflow-x: hidden;
 		margin-right: 30px;
 		margin-top: -25px;
 		position: relative;

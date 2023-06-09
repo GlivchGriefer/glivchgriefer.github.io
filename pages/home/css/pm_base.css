@@ -9,6 +9,7 @@ html * {
 	color: white;
 }
 body {
+	margin: 0;
 	position: relative;
 }
 header {
