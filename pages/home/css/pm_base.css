@@ -179,7 +179,7 @@ footer {
   		background-attachment: fixed;
 		background-position: center;
 		background-size: cover;
-		background-clip: content-box;
+		background-clip: border-box;
 	}
 	.wip p {
 		background: rgba(0,0,0,0.00);
