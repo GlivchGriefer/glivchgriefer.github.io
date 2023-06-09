@@ -6,6 +6,7 @@ html * {
 	box-sizing: border-box;
 	background-color: #000000;
 	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
+	color: white;
 }
 body {
 	position: relative;
@@ -14,8 +15,7 @@ header {
 	padding: 32px;
 }
 
-footer {
-	color: white;
+footer {	
 	font-size: 1vw;
 	text-align: center;
 	margin-left: auto;
