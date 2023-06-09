@@ -17,11 +17,13 @@ header {
 }
 
 footer {	
+	position: relative;
 	font-size: 1vw;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 10px;
+	bottom: 0;
 }
 
 .menu-container {
