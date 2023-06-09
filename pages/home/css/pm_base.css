@@ -106,7 +106,7 @@ footer {
     transform: rotate(-45deg) translate(-2px,7px);
 }
 
-.nav li { background: rgba(0,0,0,0.00); }
+.nav li { background: rgba(0,0,0,0.90); }
 
 .menu ul {
     list-style: none;
@@ -170,7 +170,7 @@ footer {
     	transform: translateX(-100%);
     }
 	.nav {
-		margin: -27px -20px 0 0;
+		margin: -29px -20px 0 0;
 		padding: 0 20px 0 20px;
 	}
 	body {
