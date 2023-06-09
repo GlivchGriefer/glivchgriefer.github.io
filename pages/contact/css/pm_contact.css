@@ -152,6 +152,7 @@ footer {
 		align-items: flex-end;
   	}
 	.menu {
+		overflow-x: hidden;
 		background: rgba(0,0,0,0.00);
 		position: absolute;
 		box-sizing: border-box;
