@@ -1,7 +1,8 @@
 @charset "utf-8";
 
-html,
+body,
 html * {
+	overflow-x: hidden;
 	box-sizing: border-box;
 	background-color: #000000;
 	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
@@ -11,7 +12,6 @@ body {
 	margin: 0;
 }
 header {
-	color: white;
 	padding: 32px;
 }
 
@@ -121,6 +121,7 @@ footer {
 /*Mobile Nav*/
 @media screen and (max-width: 1024px) {
 	.menu-container {
+		width: 100%;
 		overflow-x: hide;
 		margin-top: -60px;
 		position: inherit;
@@ -152,7 +153,7 @@ footer {
 @media screen and (max-width: 768px)  {
 	.style-logo1 { display: none; }
 	.style-logo2 {
-		max-width: 50px;
+		max-width: 35px;
 		margin-top: -10px;
 	}
 	.gif {
@@ -172,7 +173,7 @@ footer {
 		display: none;
 	}
 	.style-logo2 {
-		max-width: 50px;
+		max-width: 35px;
 		margin-top: -10px;	
 	}
 	.gif {
@@ -189,7 +190,8 @@ footer {
 /*Desktop Nav*/
 @media only screen and (min-width: 1024px) {
 	.menu-container {
-		margin-top: 55px;
+		background: rgba(0,0,0,0.00);
+		position: absolute;
     	width: 100%;
     }
 
@@ -203,9 +205,10 @@ footer {
     }
 
     .menu {
+		margin-right: 30px;
+		margin-top: -25px;
 		position: relative;
 		background: rgba(0,0,0,0.00);
-		margin-top: -150px;
 		width: 100%;
 		display: flex;
 		justify-content: space-between;
@@ -223,7 +226,6 @@ footer {
 
 /*Desktop View*/
 @media (min-width: 1024px){
-	.mobile-break { display: none; }
 	.style-logo1 {
 		display: block;
 		float: left;
@@ -238,11 +240,6 @@ footer {
 	
 	a:hover {
 		color: #00ff18;
-	}
-	.main {
-		width: 1000px;
-		text-align: center;
-		margin: auto;
 	}
 	.gif {
 		padding-bottom: 50px;
