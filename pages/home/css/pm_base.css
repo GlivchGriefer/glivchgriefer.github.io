@@ -168,7 +168,6 @@ footer {
 
 /*Tablet View*/
 @media (min-width: 768px) and (max-width: 1024px){
-	.mobile-break { display: none; }
 	.style-logo1 {
 		display: none;
 	}
