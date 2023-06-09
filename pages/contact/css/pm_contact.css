@@ -3,8 +3,6 @@
 body,
 html * {
 	overflow-x: hidden;
-	padding: 0;
-	margin: 0;
 	box-sizing: border-box;
 	background-color: #000000;
 	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
@@ -174,7 +172,6 @@ footer {
 
 /*Mobile View*/
 @media screen and (max-width: 768px)  {
-	header { height: 150px; }
 	.style-logo1 {
 		display: none;
 	}

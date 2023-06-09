@@ -121,7 +121,7 @@ footer {
 @media screen and (max-width: 1024px) {
 	.menu-container {
 		width: 100%;
-		overflow-x: hide;
+		overflow-x: hidden;
 		margin-top: -60px;
 		position: inherit;
 		flex-direction: column;
@@ -129,7 +129,7 @@ footer {
   	}
 	.menu {
 		background: rgba(0,0,0,0.00);
-		position: fixed;
+		position: absolute;
 		box-sizing: border-box;
 		width: 300px;
 		right: -300px;
