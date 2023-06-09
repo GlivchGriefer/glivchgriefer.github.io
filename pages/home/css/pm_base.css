@@ -13,9 +13,7 @@ body {
 	position: relative;
 }
 header {
-	height: 80px;
 	background-color: rgba(0,0,0,0.90);
-	padding: 32px;
 }
 .sticky {
   position: fixed;
@@ -72,9 +70,9 @@ footer {
 /* Burger menu */
 .menu-container span {
     display: block;
-    width: 33px;
-    height: 4px;
-    margin-bottom: 5px;
+    width: 20px;
+    height: 3px;
+    margin-bottom: 3px;
     position: relative;
     background: #7E7E7E;
     border-radius: 3px;
@@ -135,9 +133,17 @@ footer {
 
 /*Mobile & Tablet*/
 @media screen and (max-width: 1024px) {
+	header {
+		height: 30px;
+		padding: 3px 10px 0 5px;
+	}
+	.style-logo1 { display: none; }
+	.style-logo2 {
+		width: 17px;
+	}
 	.menu-container {
 		background: rgba(0,0,0,0.00);
-		margin: -50px 0 0 0;
+		margin: -38px -7px 0 0;
 		position: absolute;
 		flex-direction: column;
 		align-items: flex-end;
@@ -172,7 +178,7 @@ footer {
 		background-repeat: no-repeat;
   		background-attachment: fixed;
 		background-position: center;
-		background-size: auto;
+		background-size: cover;
 	}
 	.wip p {
 		background: rgba(0,0,0,0.00);
@@ -188,11 +194,6 @@ footer {
 
 /*Mobile View*/
 @media screen and (max-width: 768px)  {
-	.style-logo1 { display: none; }
-	.style-logo2 {
-		max-width: 35px;
-		margin-top: -10px;
-	}
 	.gif {
 		max-width: 250px;
 	}
@@ -205,13 +206,6 @@ footer {
 
 /*Tablet View*/
 @media (min-width: 768px) and (max-width: 1024px){
-	.style-logo1 {
-		display: none;
-	}
-	.style-logo2 {
-		max-width: 35px;
-		margin-top: -10px;	
-	}
 	.gif {
 		max-width: 300px;
 	}
@@ -263,6 +257,10 @@ footer {
 
 /*Desktop View*/
 @media (min-width: 1024px){
+	header {
+		height: 80px;
+		padding: 32px;
+	}
 	.foot {
 		margin-bottom: -20px;
 	}
