@@ -11,8 +11,8 @@
 
 	<body id="1">
 		<header id="header">
-			<a href="/"><!-- only working on mobile as of 2.1.1 -->
-				<img class="style-logo1" src="img/PM Logo 2023.svg" alt="Procedural Media Banner">
+			<a href="index.html">
+				<img class="style-logo1" src="img/PM Logo 2023.png" alt="Procedural Media Banner">
 				<img class="style-logo2" src="img/PM Icon 2023.svg" alt="Procedural Media Banner">
 			</a>
 			<!--<nav class="style-nav">
@@ -35,65 +35,148 @@
 				</ul>
 				<ul class="nav">
 				  <li>
-					<a href="/">
-					  Home
+					<a class="right no-style"  href="pages/booking/booking.html">
+					  Booking
 					</a>
 				  </li>
 				  <li>
-					<a href="pages/about/about.html">
-					  About
+					<a class="right no-style" href="pages/services/services.html">
+					  Services
 					</a>
 				  </li>
-				  <li>
-					<a href="pages/contact/contact.html">
-					  Contact Us
+					<li>
+					<a class="right no-style" href="pages/gallery/gallery.html">
+					  Gallery
 					</a>
 				  </li>
 				</ul>
 			  </div>
 			</nav>
 		</header>
-		<article class="main"><br>
-			<div class="wip">
-				<p class="construction">&nbsp;&#9888;&nbsp;<br class="mobile-break">UNDER CONSTRUCTION<br class="mobile-break">&nbsp;&#9888;&nbsp;</p>
-				<iframe src="https://giphy.com/embed/5C0E7ouokWeKDsK8bm" width="480" height="270" frameBorder="0" class="gif" allowFullScreen></iframe>
-				<p>
-					I know you're excited. Don't worry, we'll get there!
-			 	</p><br><br>
-				<p>
-					Please stand by while we craft a virual experience you won't forget!
-			 	</p><br><br>
-				<p>
-				  In the meantime, head on over to the creator's GitHub to see what other coding projects are in the works.
-				</p><br><br>
-				<p>
-					Or, head over to our contact page access the creator's GitHub to see what other coding projects are in the works or to reach out. 
-			 	</p><br><br>
-				<p>
-					And no that's not a random dog. &#128021;
-				</p>
+		<div class="mobile-image">
+			<img src="img/specs.png" alt="Procedural Media Banner">
+		</div>
+		<div class="gallery-container">
+			<div class="gallery-slides">
+				<div class="gallery-slide">
+					<h1>Photo</h1>
+					<img id="photo" src="img/AIphoto.png" alt="Image 1">
+				</div>
+				<div class="gallery-slide">
+					<h1>Video</h1>
+					<img id="video" src="img/AIvideo.png" alt="Image 2">
+				</div>
+				<!-- More slides as needed -->
 			</div>
-		</article>
-		
-		
+
+			<a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+			<a class="next" onclick="changeSlide(1)">&#10095;</a>
+
+		</div>
+		<div class="body">
+			<h1>Capturing Your Moments, Crafting Your Legacy</h1>
+			<div class="content">
+				<div class="bragging">
+					<p id="desc">
+						At Procedural Media, your memories are not just captured; they are cherished and enshrined. With our state-of-the-art photo, video, and 3D services, we transform your cherished memories into enduring treasures. Our team is committed to weaving a unique and enduring narrative of your special events, revealing aspects of your property you never realized, or bringing a vision to life, ensuring that every emotion and nuance is safeguarded for future generations. Rely on us for an experience that will give lasting significance to your treasured moments.
+					</p>
+				</div>
+				<div class="testimonials">
+					<!-- Testimonial 1 -->
+					<div class="testimonial">
+						<img src="img/t1.png" alt="Testimonial 1">
+						<p>Alexa R.</p>
+						<p>"Procedural Media's team turned our wedding day into a cinematic masterpiece. Every time we watch the video, it's like reliving the moment!"</p>
+						<div class="stars">
+							&#9733; &#9733; &#9733; &#9733; &#9734;
+						</div>
+					</div>
+					<!-- Testimonial 2 -->
+					<div class="testimonial">
+						<img src="img/t2.png" alt="Testimonial 2">
+						<p>Jordan T.</p>
+						<p>"The 3D walkthrough they created for my property listing was stunning— it sold in days! Their service is truly unparalleled."</p>
+						<div class="stars">
+							&#9733; &#9733; &#9733; &#9733; &#9734;
+						</div>
+					</div>
+					<!-- Testimonial 3 -->
+					<div class="testimonial">
+						<img src="img/t3.png" alt="Testimonial 3">
+						<p>Mia S.</p>
+						<p>"Their photography is simply magical. They captured our family's spirit in every shot. Highly recommend for anyone wanting to preserve their memories!"</p>
+						<div class="stars">
+							&#9733; &#9733; &#9733; &#9733; &#9734;
+						</div>
+					</div>
+				</div>
+			</div>
+			<footer>
+				<p class="middle">Let us take the photo, so it lasts longer! </p>
+				<p class="right" ><a class="right no-style" href="pages/review.html">Leave a Review &rarr;</a></p>
+			</footer>
+		</div>
+		<div class="button-table">
+			<table>
+				<tr>
+					<td><button class="table-button"><a class="right no-style" href="pages/booking/booking.html">Book us &rarr;</a></button></td>
+					<td><button class="table-button"><a class="right no-style" href="pages/services/services.html">Explore services &rarr;</a></button></td>
+					<td><button class="table-button"><a class="right no-style" href="pages/gallery/gallery.html">View gallery &rarr;</a></button></td>
+				</tr>
+			</table>
+		</div>
+
 		
 		<script>
-			window.onscroll = function() {myFunction()};
-
+			var lastScrollTop = 0;
 			var header = document.getElementById("header");
-			var sticky = header.offsetTop;
 
-			function myFunction() {
-			  if (window.pageYOffset > sticky) {
-				header.classList.add("sticky");
-			  } else {
-				header.classList.remove("sticky");
-			  }
+			window.onscroll = function() {
+				var currentScrollPos = window.pageYOffset;
+				if (currentScrollPos > lastScrollTop){
+					// Scrolling Down
+					header.style.top = "-100px"; // Adjust this value based on your header's height
+				} else {
+					// Scrolling Up
+					header.style.top = "0";
+				}
+				lastScrollTop = currentScrollPos;
 			}
 		</script>
+
+		<script defer src="scripts/gallery.js"></script>
+		<script defer src="scripts/gallery-swipe.js"></script>
+
 	</body>
 	<footer class="foot">
 		<div class="foot_content">
+			<table class="foot-table">
+				<tr>
+					<th class="left-column">Procedural Media</th>
+					<th class="center-column">Resources</th>
+					<th class="right-column">More PM</th>
+				</tr>
+				<tr>
+					<td class="left-column">Denver, Colorado</td>
+					<td class="center-column">Legal</td>
+					<td class="right-column"><a class="right no-style" href="pages/about/about.html">About Us</a></td>
+				</tr>
+				<tr>
+					<td class="left-column"></td>
+					<td class="center-column">Reviews</td>
+					<td class="right-column"><a class="right no-style" href="pages/contact/contact.html">Contact</a></td>
+				</tr>
+				<tr>
+					<td class="left-column"><a class="right no-style" href="tel:+10000000000">000-000-0000</a></td>
+					<td class="center-column">Equipment</td>
+					<td class="right-column"><a class="right no-style" href="pages/faq/FAQ.html">FAQ</a></td>
+				</tr>
+				<tr>
+					<td class="left-column"></td>
+					<td class="center-column"></td>
+					<td class="right-column"></td>
+				</tr>
+			</table>
 			<p>
 				© 2023 Procedural Media
 			</p>

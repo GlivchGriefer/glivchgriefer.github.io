@@ -3,7 +3,7 @@
 body,
 html * {
 	box-sizing: border-box;
-	background-color: #000000;
+	background-color: #292929;
 	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
 	color: white;
 }
@@ -13,7 +13,21 @@ body {
 	position: relative;
 }
 header {
-	padding: 32px;
+	position: fixed; /* or absolute */
+    top: 0;
+    width: 100%;
+	z-index: 1000; /* High value to ensure it's on top */
+    transition: top 0.3s; /* Smooth transition for moving header */
+	background: rgba(41,41,41,1.00);
+}
+.sticky {
+  	position: fixed;
+  	top: 0;
+  	width: 100%;
+}
+
+.sticky + .main {
+  	padding-top: 102px;
 }
 
 footer {
@@ -26,26 +40,21 @@ footer {
 	bottom: 0;
 }
 .menu-container {
-  	position: relative;
+	position: relative;
   	display: flex;
   	align-items: center;
  	margin-bottom: 20px;
   	color: #cdcdcd;
   	padding: 20px;
-  	z-index: 1;
+  	z-index: 3;
   	-webkit-user-select: none;
   	user-select: none;
     box-sizing: border-box;
 }
 .menu-container a {
-	background: rgba(0,0,0,0.00);
     text-decoration: none;
-    color: #7E7E7E;
+    color: black;
     transition: color 0.3s ease;
-}
-
-.menu-container a:hover {
-    color: #00ff18;
 }
 
 .menu-container input {
@@ -63,11 +72,11 @@ footer {
 /* Burger menu */
 .menu-container span {
     display: block;
-    width: 33px;
-    height: 4px;
-    margin-bottom: 5px;
+    width: 20px;
+    height: 3px;
+    margin-bottom: 3px;
     position: relative;
-    background: #7E7E7E;
+    background: black;
     border-radius: 3px;
     z-index: 1;
     transform-origin: 4px 0px;
@@ -87,7 +96,7 @@ footer {
 .menu-container input:checked ~ span {
     opacity: 50;
     transform: rotate(45deg) translate(3px,-1px);
-    background: #232323;
+    background: #00FF18;
 }
 
 .menu-container input:checked ~ span:nth-child(4) {
@@ -96,7 +105,7 @@ footer {
 }
 
 .menu-container input:checked ~ span:nth-child(3) {
-    transform: rotate(-45deg) translate(-5px,11px);
+    transform: rotate(-45deg) translate(-2px,7px);
 }
 
 .menu ul {
@@ -104,10 +113,10 @@ footer {
 }
 
 .menu li {
-    padding: 10px 0;
-    font-size: 22px;
+	font-weight: bold;
+    padding: 3px 10px;
+    font-size: 28px;
 }
-
 .gh {
 	text-align: center;
 	margin-top: 100px;
@@ -189,6 +198,44 @@ footer {
 	#discordid {
 		font-size: 2vw;
 	}
+	/* Mobile Footer*/
+	.foot_content {
+		width: 100%;
+	}
+	footer {   
+		position: relative;
+		font-size: .66vw;
+		text-align: center;
+		margin-left: auto;
+		margin-right: auto;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: rgba(0,0,0,0.66);
+	}
+
+	.foot-table {
+		font-size: 12px;
+		padding: 10px 25px;
+		width: 100%; /* Ensure table takes full width */
+		position: relative;
+	}
+
+	.foot-table td {
+		text-align: left; /* Default alignment */
+		width: 33.33%; /* Divide the table into three equal parts */
+	}
+
+	.foot-table .center-column {
+		text-align: center; /* Center content in the middle column */
+	}
+
+	.foot-table .right-column {
+		text-align: right; /* Right-align content in the right column */
+	}
+	.foot-table .left-column {
+		text-align: left; /* Right-align content in the right column */
+	}
 
 /*Tablet View*/
 @media (min-width: 768px) and (max-width:1024px){
@@ -200,17 +247,18 @@ footer {
 		margin-top: -10px;	
 	}
 	footer {
-		font-size: 25px;
+		font-size: .66vw;
 	}
 }
 
 /*Desktop Nav*/
 @media only screen and (min-width: 1024px) {
 	.menu-container {
+		right: -40px;
 		margin-top: -20px;
 		background: rgba(0,0,0,0.00);
 		position: absolute;
-    	width: 100%;
+    	width: 50%;
     }
 
     .menu-container input {
@@ -244,6 +292,10 @@ footer {
 
 /*Desktop View*/
 @media (min-width: 1024px){
+	header {
+		height: 80px;
+		padding: 32px;
+	}
 	.style-logo1 {
 		display: block;
 		float: left;
@@ -276,5 +328,39 @@ footer {
 	}
 	#discordid {
 		font-size: 1vw;
+	}
+	footer {   
+    position: relative;
+    font-size: .66vw;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	color: rgba(0,0,0,0.66);
+	}
+
+	.foot-table {
+		font-size: 12px;
+		padding: 10px 25px;
+		width: 100%; /* Ensure table takes full width */
+		position: relative;
+	}
+
+	.foot-table td {
+		text-align: left; /* Default alignment */
+		width: 33.33%; /* Divide the table into three equal parts */
+	}
+
+	.foot-table .center-column {
+		text-align: center; /* Center content in the middle column */
+	}
+
+	.foot-table .right-column {
+		text-align: right; /* Right-align content in the right column */
+	}
+	.foot-table .left-column {
+		text-align: left; /* Right-align content in the right column */
 	}
 }
