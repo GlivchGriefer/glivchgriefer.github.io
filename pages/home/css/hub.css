@@ -611,16 +611,19 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  padding: 8px 10px;
+  padding: 8px 16px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
   background: var(--app-bg);
   border-top: 1px solid var(--chrome-dark);
   color: var(--ink-muted);
   flex-shrink: 0;
+  text-align: center;
 }
 
 .aim-statusbar-links { display: flex; gap: 12px; justify-content: center; order: 1; }
-.aim-statusbar > span { order: 2; font-size: 9px; text-align: center; }
+.aim-statusbar > span { order: 2; font-size: 9px; }
 .aim-statusbar a { color: var(--ink-muted); text-decoration: none; font-size: 11px; }
 .aim-statusbar a:hover { color: var(--aim-blue-mid); text-decoration: underline; }
 
@@ -633,22 +636,8 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
   .hub-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ── Mobile page title (shown when nav is hidden) ──────── */
-.aim-mobile-title {
-  display: none;
-  flex: 1;
-  font-size: 12px;
-  font-weight: bold;
-  color: #FFF;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-shadow: 0 0 8px rgba(255,255,255,0.75), 0 0 3px rgba(255,255,255,0.5);
-}
-
 /* Mobile ≤ 640px */
 @media (max-width: 640px) {
-  .aim-mobile-title { display: block; }
   body {
     padding: 0;
     padding-top: env(safe-area-inset-top, 0px);
@@ -670,12 +659,6 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
     gap: 6px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-  }
-
-  .aim-statusbar {
-    font-size: 10px;
-    padding: 10px 16px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   }
 
   .aim-desktop-nav  { display: none; }
@@ -773,5 +756,4 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
   .info-lbl        { min-width: 60px; font-size: 11px; }
   .aim-panel-footer { flex-direction: column; }
   .aim-footer-status { margin-left: 0; }
-  .aim-statusbar   { flex-direction: column; align-items: flex-start; gap: 3px; }
 }
