@@ -632,8 +632,17 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
 /* Tablet ≤ 900px */
 @media (max-width: 900px) {
   body      { padding: 0; }
-  .aim-app  { max-width: 100%; box-shadow: none; min-height: 100vh; }
+  .aim-app  { max-width: 100%; box-shadow: none; min-height: 100svh; }
   .hub-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Landscape tablet — contain to viewport, compact footer */
+@media (orientation: landscape) and (min-width: 641px) and (max-width: 1100px) {
+  body     { height: 100svh; overflow: hidden; }
+  .aim-app { min-height: unset; height: 100svh; overflow: hidden; }
+  .aim-statusbar { padding: 4px 16px; gap: 2px; }
+  .aim-statusbar a     { font-size: 10px; }
+  .aim-statusbar > span { font-size: 8px; }
 }
 
 /* Mobile ≤ 640px */
@@ -679,19 +688,59 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
 
   .btn-primary, .btn-secondary { padding: 8px 14px; font-size: 12px; }
 
+  .aim-statusbar       { padding: 5px 16px; padding-bottom: calc(5px + env(safe-area-inset-bottom, 0px)); gap: 2px; }
+  .aim-statusbar a     { font-size: 10px; }
+  .aim-statusbar > span { font-size: 8px; }
+
   .aim-profile-card { flex-wrap: wrap; }
   .aim-avatar       { width: 44px; height: 44px; font-size: 16px; }
 }
 
-/* ── iOS home screen web app + fullscreen: restore rounded bottom ── */
-@media (display-mode: standalone) and (max-width: 640px),
+/* ── Web app mode: CSS media query ─────────────────────── */
+@media (display-mode: standalone),
        (display-mode: fullscreen) {
-  .aim-app        { border-radius: 0 0 28px 28px; }
-  .aim-statusbar  {
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+    height: 100dvh;
+    overflow: hidden;
+    align-items: stretch;
+  }
+  .aim-app {
+    min-height: unset;
+    max-width: 100%;
+    box-shadow: none;
+    height: calc(100dvh - env(safe-area-inset-top, 0px));
+    overflow: hidden;
+    border-radius: 0 0 28px 28px;
+  }
+  .aim-statusbar {
     border-radius: 0 0 28px 28px;
     padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* ── Web app mode: JS class (backup for iPadOS) ─────────── */
+html.is-webapp body {
+  padding-top: env(safe-area-inset-top, 0px);
+  height: 100dvh;
+  overflow: hidden;
+  align-items: stretch;
+}
+html.is-webapp .aim-app {
+  min-height: unset;
+  max-width: 100%;
+  box-shadow: none;
+  height: calc(100dvh - env(safe-area-inset-top, 0px));
+  overflow: hidden;
+  border-radius: 0 0 28px 28px;
+}
+html.is-webapp .aim-statusbar {
+  border-radius: 0 0 28px 28px;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ── Maximize state (class set in <head> before first paint) */
+html.pm-mx .aim-app { max-width: none !important; box-shadow: none !important; }
 
 /* ── Taskbar (minimized windows) ──────────────────────── */
 .pm-taskbar {
