@@ -329,10 +329,12 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
   letter-spacing: 0.3px;
 }
 
-.hub-card-tag.gaming { background: var(--indev);        color: #FFF; }
-.hub-card-tag.media  { background: var(--aim-blue-mid); color: #FFF; }
-.hub-card-tag.info   { background: #667799;             color: #FFF; }
-.hub-card-tag.soon   { background: var(--away);         color: #FFF; }
+.hub-card-tag.gaming     { background: var(--indev);        color: #FFF; }
+.hub-card-tag.media      { background: var(--aim-blue-mid); color: #FFF; }
+.hub-card-tag.info       { background: #667799;             color: #FFF; }
+.hub-card-tag.soon       { background: var(--away);         color: #FFF; }
+.hub-card-tag.security   { background: #882222;             color: #FFC0C0; }
+.hub-card-tag.portfolio  { background: #445577;             color: #C0D0FF; }
 
 /* ── AIM Panel (subpages) ──────────────────────────────── */
 .aim-panel {
