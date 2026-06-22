@@ -607,17 +607,18 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
 /* ── Status bar (footer) ───────────────────────────────── */
 .aim-statusbar {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 4px 10px;
+  gap: 4px;
+  padding: 8px 10px;
   background: var(--app-bg);
   border-top: 1px solid var(--chrome-dark);
-  font-size: 11px;
   color: var(--ink-muted);
   flex-shrink: 0;
 }
 
-.aim-statusbar-links { display: flex; gap: 10px; }
+.aim-statusbar-links { display: flex; gap: 12px; justify-content: center; order: 1; }
+.aim-statusbar > span { order: 2; font-size: 9px; text-align: center; }
 .aim-statusbar a { color: var(--ink-muted); text-decoration: none; font-size: 11px; }
 .aim-statusbar a:hover { color: var(--aim-blue-mid); text-decoration: underline; }
 
@@ -671,11 +672,10 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
   }
 
   .aim-statusbar {
-    flex-wrap: wrap;
-    gap: 4px;
     font-size: 10px;
-    padding: 5px 10px;
-    padding-bottom: calc(5px + env(safe-area-inset-bottom, 0px));
+    padding: 10px 16px;
+    padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    border-radius: 0 0 28px 28px;
   }
 
   .aim-desktop-nav  { display: none; }
@@ -757,7 +757,6 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
 
 /* Small phone ≤ 400px */
 @media (max-width: 400px) {
-  .aim-logo-text   { display: none; }
   .aim-tagline     { display: none; }
   .aim-main        { padding: 4px; }
   .aim-panel-body  { padding: 8px; }
