@@ -7,16 +7,6 @@
     document.documentElement.classList.add('is-webapp');
   }
 
-  // Sync pm-mx class if user exits fullscreen via Escape / browser button
-  function onFsChange() {
-    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-      document.documentElement.classList.remove('pm-mx');
-      sessionStorage.setItem('pm_mx', '0');
-    }
-  }
-  document.addEventListener('fullscreenchange', onFsChange);
-  document.addEventListener('webkitfullscreenchange', onFsChange);
-
   // On iOS PWA, <a href> taps open a new Safari window with address bar.
   // Intercept and navigate in-place to stay inside the web app shell.
   if (window.navigator.standalone) {
