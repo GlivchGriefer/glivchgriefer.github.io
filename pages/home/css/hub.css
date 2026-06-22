@@ -740,41 +740,20 @@ html.is-webapp .aim-statusbar {
 }
 
 /* ── Maximize button icon ────────────────────────────────── */
-.aim-wc-max { position: relative; }
-
-/* normal: single centered square */
+/* Single ::before swaps SVG background — no pseudo-element stacking */
+.aim-wc-max { font-size: 0; }
 .aim-wc-max::before {
   content: '';
-  position: absolute;
-  width: 9px;
-  height: 8px;
-  border: 1.5px solid currentColor;
-  box-sizing: border-box;
-  top: 5px;
-  left: 6px;
-}
-.aim-wc-max::after { content: none; display: none; }
-
-/* maximized: back square (top-right) + front square (bottom-left) */
-html.pm-mx .aim-wc-max::before {
-  width: 8px;
-  height: 7px;
-  top: 8px;
-  left: 3px;
-  background: var(--app-bg);
-  z-index: 2;
-}
-html.pm-mx .aim-wc-max::after {
-  content: '';
   display: block;
-  position: absolute;
-  width: 8px;
-  height: 7px;
-  border: 1.5px solid currentColor;
-  box-sizing: border-box;
-  top: 3px;
-  left: 9px;
-  z-index: 1;
+  flex-shrink: 0;
+  width: 10px;
+  height: 9px;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 9'><rect x='.75' y='.75' width='8.5' height='7.5' fill='none' stroke='%23000033' stroke-width='1.5'/></svg>") center/contain no-repeat;
+}
+html.pm-mx .aim-wc-max::before {
+  width: 13px;
+  height: 12px;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13 12'><rect x='4.75' y='.75' width='7.5' height='6.5' fill='%23C0CBDF' stroke='%23000033' stroke-width='1.5'/><rect x='.75' y='4.75' width='7.5' height='6.5' fill='%23C0CBDF' stroke='%23000033' stroke-width='1.5'/></svg>") center/contain no-repeat;
 }
 
 /* ── Maximize: fills full viewport, no chrome ───────────── */
