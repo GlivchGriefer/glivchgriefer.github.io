@@ -740,8 +740,8 @@ html.is-webapp .aim-statusbar {
 }
 
 /* ── Maximize: fills full viewport, no chrome ───────────── */
-html.pm-mx .aim-wc-max          { font-size: 0; }
-html.pm-mx .aim-wc-max::before  { content: '⧉'; font-size: 12px; }
+.aim-wc-max::before             { content: '□'; }
+html.pm-mx .aim-wc-max::before  { content: '⧉'; }
 html.pm-mx body { overflow: hidden; height: 100dvh; }
 html.pm-mx .aim-app {
   position: fixed !important;
