@@ -6,6 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <link href="../../pages/home/css/hub.css" rel="stylesheet" />
+  <script>if(sessionStorage.getItem('pm_mx')==='1')document.documentElement.classList.add('pm-mx');</script>
 </head>
 <body>
   <canvas id="starfield"></canvas>
@@ -107,7 +108,7 @@
   </div>
   <script>
     (function(){var c=document.getElementById('starfield'),x=c.getContext('2d'),s=[];function i(){c.width=window.innerWidth;c.height=window.innerHeight;s=[];for(var n=0;n<180;n++)s.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+.2,o:Math.random()*.55+.3,p:Math.random()*Math.PI*2});}function d(t){x.clearRect(0,0,c.width,c.height);s.forEach(function(v){var op=v.o*(.65+.35*Math.sin(t/1200+v.p));x.beginPath();x.arc(v.x,v.y,v.r,0,Math.PI*2);x.fillStyle='rgba(255,255,255,'+op+')';x.fill();});requestAnimationFrame(d);}window.addEventListener('resize',i);i();requestAnimationFrame(d);}());
-    (function(){var m=document.querySelector('.aim-main'),p=document.querySelector('.aim-profile-bar'),a=document.querySelector('.aim-app'),mn=false,mx=false;document.querySelector('.aim-wc-min').addEventListener('click',function(){tbMinimize('SKANNER','🚀','../../index.html');});mx=sessionStorage.getItem('pm_mx')==='1';if(mx){a.style.maxWidth='none';a.style.boxShadow='none';}document.querySelector('.aim-wc-max').addEventListener('click',function(){mx=!mx;a.style.maxWidth=mx?'none':'';a.style.boxShadow=mx?'none':'';sessionStorage.setItem('pm_mx',mx?'1':'0');});document.querySelector('.aim-wc-close').addEventListener('click',function(){window.location.href='../../index.html';});}());
+    (function(){var m=document.querySelector('.aim-main'),p=document.querySelector('.aim-profile-bar'),a=document.querySelector('.aim-app'),mn=false,mx=false;document.querySelector('.aim-wc-min').addEventListener('click',function(){tbMinimize('SKANNER','🚀','../../index.html');});mx=document.documentElement.classList.contains('pm-mx');document.querySelector('.aim-wc-max').addEventListener('click',function(){mx=!mx;document.documentElement.classList.toggle('pm-mx',mx);sessionStorage.setItem('pm_mx',mx?'1':'0');});document.querySelector('.aim-wc-close').addEventListener('click',function(){window.location.href='../../index.html';});}());
       (function(){var l=window.location.href;document.querySelectorAll('.aim-desktop-nav a,.mobile-nav a').forEach(function(a){if(a.href===l)a.classList.add('nav-active');});})();
   </script>
   <script src="../../scripts/year.js"></script>

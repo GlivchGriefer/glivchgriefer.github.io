@@ -686,9 +686,17 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
 /* ── iOS home screen web app + fullscreen: restore rounded bottom ── */
 @media (display-mode: standalone),
        (display-mode: fullscreen) {
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+    height: 100dvh;
+    overflow: hidden;
+    align-items: stretch;
+  }
   .aim-app {
     max-width: 100%;
     box-shadow: none;
+    height: calc(100dvh - env(safe-area-inset-top, 0px));
+    overflow: hidden;
     border-radius: 0 0 28px 28px;
   }
   .aim-statusbar {
@@ -696,6 +704,9 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
     padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* Maximize state — class set before first paint by inline <head> script */
+html.pm-mx .aim-app { max-width: none !important; box-shadow: none !important; }
 
 /* ── Taskbar (minimized windows) ──────────────────────── */
 .pm-taskbar {
