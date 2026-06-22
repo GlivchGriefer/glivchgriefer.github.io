@@ -1,185 +1,369 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>Procedural Media</title>
-		<link rel="shortcut icon" href="data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg id='Layer_2' data-name='Layer 2' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40.78431 45.93629'%3E%3Cdefs%3E%3Cstyle%3E .cls-1 %7B fill: %23fff; font-family: QuantumRegular, Quantum; font-size: 48.7px; %7D .cls-2 %7B fill: none; stroke: %2300ff18; stroke-miterlimit: 10; stroke-width: .5px; %7D %3C/style%3E%3C/defs%3E%3Cg id='Layer_1-2' data-name='Layer 1'%3E%3Cpath class='cls-2' d='m37.25612,11.53883l-.01531,30.03946h-7.48047v-13.59766l-7.61328,7.80859-7.61328-7.80859-7.48096-7.62891.01531-8.8129h1.18799l13.9502,14.22559,13.9502-14.22559h1.09961Z'/%3E%3Ctext class='cls-1' transform='translate(4.22409 41.89899) scale(1 1.02)'%3E%3Ctspan x='0' y='0'%3EP%3C/tspan%3E%3C/text%3E%3C/g%3E%3C/svg%3E" />
-		<!--<link rel="apple-touch-icon" href="img/PM Icon 2023.png" />-->
-		<meta charset="utf-8" />
-		<meta name  ="viewport" content="initial-scale=1, maximum-scale=1" />
-    	<link href="pages/home/css/pm_base.css" rel="stylesheet" type="text/css">
-    </head>
+<head>
+  <title>Procedural Media // Hub</title>
+  <link rel="shortcut icon" href="data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg id='Layer_2' data-name='Layer 2' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40.78431 45.93629'%3E%3Cdefs%3E%3Cstyle%3E .cls-1 %7B fill: %23fff; font-family: QuantumRegular, Quantum; font-size: 48.7px; %7D .cls-2 %7B fill: none; stroke: %2300ff18; stroke-miterlimit: 10; stroke-width: .5px; %7D %3C/style%3E%3C/defs%3E%3Cg id='Layer_1-2' data-name='Layer 1'%3E%3Cpath class='cls-2' d='m37.25612,11.53883l-.01531,30.03946h-7.48047v-13.59766l-7.61328,7.80859-7.61328-7.80859-7.48096-7.62891.01531-8.8129h1.18799l13.9502,14.22559,13.9502-14.22559h1.09961Z'/%3E%3Ctext class='cls-1' transform='translate(4.22409 41.89899) scale(1 1.02)'%3E%3Ctspan x='0' y='0'%3EP%3C/tspan%3E%3C/text%3E%3C/g%3E%3C/svg%3E" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="pages/home/css/hub.css" rel="stylesheet" />
+</head>
+<body>
 
-	<body id="1">
-		<header id="header">
-			<a href="index.html">
-				<img class="style-logo1" src="img/PM Logo 2023.png" alt="Procedural Media Banner">
-				<img class="style-logo2" src="img/PM Icon 2023.svg" alt="Procedural Media Banner">
-			</a>
-			<!--<nav class="style-nav">
-				<ul>
-					<li><a href="index.html"><strong>Home</strong></a></li>
-					<li><a href="pages/contact/contact.html"><strong>Contact Us</strong></a></li>
-				</ul>
-			</nav>-->
-			
-			<nav class="menu-container">
-			  <!-- burger menu -->
-			  <input type="checkbox" aria-label="Toggle menu" />
-			  <span></span>
-			  <span></span>
-			  <span></span>
+  <canvas id="starfield"></canvas>
 
-			  <!-- menu items -->
-			  <div class="menu">
-				<ul>
-				</ul>
-				<ul class="nav">
-				  <li>
-					<a class="right no-style"  href="pages/booking/booking.html">
-					  Booking
-					</a>
-				  </li>
-				  <li>
-					<a class="right no-style" href="pages/services/services.html">
-					  Services
-					</a>
-				  </li>
-					<li>
-					<a class="right no-style" href="pages/gallery/gallery.html">
-					  Gallery
-					</a>
-				  </li>
-				</ul>
-			  </div>
-			</nav>
-		</header>
-		<div class="mobile-image">
-			<img src="img/specs.png" alt="Procedural Media Banner">
-		</div>
-		<div class="gallery-container">
-			<div class="gallery-slides">
-				<div class="gallery-slide">
-					<h1>Photo</h1>
-					<img id="photo" src="img/AIphoto.png" alt="Image 1">
-				</div>
-				<div class="gallery-slide">
-					<h1>Video</h1>
-					<img id="video" src="img/AIvideo.png" alt="Image 2">
-				</div>
-				<!-- More slides as needed -->
-			</div>
+  <div class="aim-app">
 
-			<a class="prev" onclick="changeSlide(-1)">&#10094;</a>
-			<a class="next" onclick="changeSlide(1)">&#10095;</a>
+    <!-- Checkbox for mobile nav — must be first inside .aim-app -->
+    <input type="checkbox" id="mnav-toggle" class="mnav-toggle" />
 
-		</div>
-		<div class="body">
-			<h1>Capturing Your Moments, Crafting Your Legacy</h1>
-			<div class="content">
-				<div class="bragging">
-					<p id="desc">
-						At Procedural Media, your memories are not just captured; they are cherished and enshrined. With our state-of-the-art photo, video, and 3D services, we transform your cherished memories into enduring treasures. Our team is committed to weaving a unique and enduring narrative of your special events, revealing aspects of your property you never realized, or bringing a vision to life, ensuring that every emotion and nuance is safeguarded for future generations. Rely on us for an experience that will give lasting significance to your treasured moments.
-					</p>
-				</div>
-				<div class="testimonials">
-					<!-- Testimonial 1 -->
-					<div class="testimonial">
-						<img src="img/t1.png" alt="Testimonial 1">
-						<p>Alexa R.</p>
-						<p>"Procedural Media's team turned our wedding day into a cinematic masterpiece. Every time we watch the video, it's like reliving the moment!"</p>
-						<div class="stars">
-							&#9733; &#9733; &#9733; &#9733; &#9734;
-						</div>
-					</div>
-					<!-- Testimonial 2 -->
-					<div class="testimonial">
-						<img src="img/t2.png" alt="Testimonial 2">
-						<p>Jordan T.</p>
-						<p>"The 3D walkthrough they created for my property listing was stunning— it sold in days! Their service is truly unparalleled."</p>
-						<div class="stars">
-							&#9733; &#9733; &#9733; &#9733; &#9734;
-						</div>
-					</div>
-					<!-- Testimonial 3 -->
-					<div class="testimonial">
-						<img src="img/t3.png" alt="Testimonial 3">
-						<p>Mia S.</p>
-						<p>"Their photography is simply magical. They captured our family's spirit in every shot. Highly recommend for anyone wanting to preserve their memories!"</p>
-						<div class="stars">
-							&#9733; &#9733; &#9733; &#9733; &#9734;
-						</div>
-					</div>
-				</div>
-			</div>
-			<footer>
-				<p class="middle">Let us take the photo, so it lasts longer! </p>
-				<p class="right" ><a class="right no-style" href="pages/review.html">Leave a Review &rarr;</a></p>
-			</footer>
-		</div>
-		<div class="button-table">
-			<table>
-				<tr>
-					<td><button class="table-button"><a class="right no-style" href="pages/booking/booking.html">Book us &rarr;</a></button></td>
-					<td><button class="table-button"><a class="right no-style" href="pages/services/services.html">Explore services &rarr;</a></button></td>
-					<td><button class="table-button"><a class="right no-style" href="pages/gallery/gallery.html">View gallery &rarr;</a></button></td>
-				</tr>
-			</table>
-		</div>
+    <!-- ── Title Bar ─────────────────────────────────── -->
+    <header class="aim-titlebar">
+      <div class="aim-titlebar-logo">
+        <span class="aim-logo-mark">PM</span>
+        <span class="aim-logo-text">Procedural Media</span>
+      </div>
 
-		
-		<script>
-			var lastScrollTop = 0;
-			var header = document.getElementById("header");
+      <!-- Desktop navigation -->
+      <nav class="aim-desktop-nav">
+        <a href="pages/about/about.html">About</a>
+        <a href="pages/services/services.html">Services</a>
+        <a href="pages/gallery/gallery.html">Gallery</a>
+        <a href="pages/booking/booking.html">Booking</a>
+        <a href="pages/contact/contact.html">Contact</a>
+      </nav>
 
-			window.onscroll = function() {
-				var currentScrollPos = window.pageYOffset;
-				if (currentScrollPos > lastScrollTop){
-					// Scrolling Down
-					header.style.top = "-100px"; // Adjust this value based on your header's height
-				} else {
-					// Scrolling Up
-					header.style.top = "0";
-				}
-				lastScrollTop = currentScrollPos;
-			}
-		</script>
+      <!-- Mobile hamburger label -->
+      <label for="mnav-toggle" class="mnav-btn" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </label>
 
-		<script defer src="scripts/gallery.js"></script>
-		<script defer src="scripts/gallery-swipe.js"></script>
+      <!-- Window chrome buttons -->
+      <div class="aim-win-controls">
+        <span class="aim-wc aim-wc-min" title="Minimize">─</span>
+        <span class="aim-wc aim-wc-max" title="Maximize">□</span>
+        <span class="aim-wc aim-wc-close" title="Back">✕</span>
+      </div>
+    </header>
 
-	</body>
-	<footer class="foot">
-		<div class="foot_content">
-			<table class="foot-table">
-				<tr>
-					<th class="left-column">Procedural Media</th>
-					<th class="center-column">Resources</th>
-					<th class="right-column">More PM</th>
-				</tr>
-				<tr>
-					<td class="left-column">Denver, Colorado</td>
-					<td class="center-column">Legal</td>
-					<td class="right-column"><a class="right no-style" href="pages/about/about.html">About Us</a></td>
-				</tr>
-				<tr>
-					<td class="left-column"></td>
-					<td class="center-column">Reviews</td>
-					<td class="right-column"><a class="right no-style" href="pages/contact/contact.html">Contact</a></td>
-				</tr>
-				<tr>
-					<td class="left-column"><a class="right no-style" href="tel:+10000000000">000-000-0000</a></td>
-					<td class="center-column">Equipment</td>
-					<td class="right-column"><a class="right no-style" href="pages/faq/FAQ.html">FAQ</a></td>
-				</tr>
-				<tr>
-					<td class="left-column"></td>
-					<td class="center-column"><a rel="me" href="https://defcon.social/@CalvinMack">Mastodon</a></td>
-					<td class="right-column"></td>
-				</tr>
-			</table>
-			<p>
-				© 2023 Procedural Media
-			</p>
-		</div>
-	</footer>
+    <!-- Mobile nav drawer -->
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <a href="pages/about/about.html">About</a>
+      <a href="pages/services/services.html">Services</a>
+      <a href="pages/gallery/gallery.html">Gallery</a>
+      <a href="pages/booking/booking.html">Booking</a>
+      <a href="pages/contact/contact.html">Contact</a>
+    </nav>
+
+    <!-- ── Profile / Status Bar ──────────────────────── -->
+    <div class="aim-profile-bar">
+      <span class="sdot online"></span>
+      <strong class="aim-screenname">ProceduralMedia</strong>
+      <span class="aim-tagline">Engineering · Multimedia · Gaming</span>
+    </div>
+
+    <!-- ── Body: Sidebar + Content ───────────────────── -->
+    <div class="aim-body">
+
+      <!-- Buddy List Sidebar -->
+      <aside class="aim-sidebar" aria-label="Projects">
+        <div class="aim-sidebar-header">My Projects</div>
+
+        <!-- Gaming group -->
+        <div class="aim-group">
+          <input type="checkbox" id="grp-gaming" class="aim-group-toggle" checked />
+          <label for="grp-gaming" class="aim-group-label">
+            <span class="aim-tri">▼</span>
+            Gaming
+            <span class="aim-group-count">1/1</span>
+          </label>
+          <div class="aim-group-items">
+            <a href="#skannerz" class="aim-buddy">
+              <span class="sdot online"></span>
+              <span class="aim-buddy-name">Skannerz Reborn</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Engineering group -->
+        <div class="aim-group">
+          <input type="checkbox" id="grp-eng" class="aim-group-toggle" checked />
+          <label for="grp-eng" class="aim-group-label">
+            <span class="aim-tri">▼</span>
+            Engineering
+            <span class="aim-group-count">0/1</span>
+          </label>
+          <div class="aim-group-items">
+            <span class="aim-buddy">
+              <span class="sdot away"></span>
+              <span class="aim-buddy-name">More Soon™</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Multimedia group -->
+        <div class="aim-group">
+          <input type="checkbox" id="grp-media" class="aim-group-toggle" checked />
+          <label for="grp-media" class="aim-group-label">
+            <span class="aim-tri">▼</span>
+            Multimedia
+            <span class="aim-group-count">2/2</span>
+          </label>
+          <div class="aim-group-items">
+            <a href="pages/gallery/gallery.html" class="aim-buddy">
+              <span class="sdot online"></span>
+              <span class="aim-buddy-name">Photo &amp; Video</span>
+            </a>
+            <a href="pages/services/services.html" class="aim-buddy">
+              <span class="sdot online"></span>
+              <span class="aim-buddy-name">Services</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="aim-sidebar-footer">
+          <a href="pages/booking/booking.html" class="aim-quick-btn">Book Us</a>
+          <a href="pages/contact/contact.html" class="aim-quick-btn">IM Us</a>
+        </div>
+      </aside>
+
+      <!-- ── Main Content ─────────────────────────────── -->
+      <main class="aim-content">
+
+        <!-- ═══════════════════════════════════════════
+             FEATURED: Skannerz Reborn
+             ═══════════════════════════════════════════ -->
+        <section class="aim-panel aim-panel-featured" id="skannerz">
+          <div class="aim-panel-titlebar">
+            <span>🚀</span>
+            <span class="aim-panel-title">Skannerz Reborn — Game Dev</span>
+            <span class="aim-status-badge in-dev">In Dev</span>
+          </div>
+
+          <div class="aim-panel-body">
+            <div class="aim-away-msg">
+              <em>Scan barcodes. Collect scrap. Build your ship. Explore the galaxy.</em>
+            </div>
+
+            <div class="aim-info-grid">
+              <table class="aim-info-table">
+                <tbody>
+                  <tr>
+                    <td class="info-lbl">Type:</td>
+                    <td>Mobile · Barcode Scanner · Space RPG</td>
+                  </tr>
+                  <tr>
+                    <td class="info-lbl">Platform:</td>
+                    <td>iOS · Android (React Native / Expo)</td>
+                  </tr>
+                  <tr>
+                    <td class="info-lbl">Concept:</td>
+                    <td>
+                      Scan real-world barcodes to collect procedurally-categorized scrap.
+                      Combine components to build and upgrade a starship. Use your ship to
+                      warp between sectors, earn XP, discover planets, and unlock the galaxy.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="info-lbl">Inspired by:</td>
+                    <td>Skannerz (Radica Games, 2001)</td>
+                  </tr>
+                  <tr>
+                    <td class="info-lbl">Progress:</td>
+                    <td>
+                      <div class="aim-xp-bar">
+                        <div class="aim-xp-fill" style="width:15%"></div>
+                        <span class="aim-xp-label">[ Early Dev — Sector 1 of ??? ]</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="aim-ship-art">
+                <pre class="ascii-ship">
+  *  .    .   *
+     ___
+    /|M|\
+   / |=| \
+  |  | |  |
+ /|  |*|  |\
+| |  | |  | |
+ \|__|_|__|/
+    || ||
+   _||_||_
+  /_______\
+ *  .    .   *
+                </pre>
+                <div class="ship-label">SS ProceduralMedia · Hull Lv.1</div>
+                <div class="aim-tags" style="justify-content:center;margin-top:6px;">
+                  <span class="aim-tag">#barcode</span>
+                  <span class="aim-tag">#space</span>
+                  <span class="aim-tag">#rpg</span>
+                  <span class="aim-tag">#procedural</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="aim-panel-footer">
+            <a href="pages/skannerz/index.html" class="btn-primary">View Project →</a>
+            <a href="https://github.com/ProceduralMedia" class="btn-secondary">GitHub</a>
+            <span class="aim-footer-status">
+              <span class="sdot indev"></span>
+              Active Development
+            </span>
+          </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════
+             Secondary row: Multimedia + Profile
+             ═══════════════════════════════════════════ -->
+        <div class="aim-panel-row">
+
+          <!-- Multimedia Services -->
+          <section class="aim-panel aim-panel-half">
+            <div class="aim-panel-titlebar">
+              <span>📷</span>
+              <span class="aim-panel-title">Multimedia Services</span>
+            </div>
+            <div class="aim-panel-body">
+              <p class="aim-panel-desc">
+                Photo, video, and 3D visualization services. Denver, CO.
+                Turning your moments into lasting media.
+              </p>
+              <div class="aim-services">
+                <div class="aim-service-item"><span>📸</span> Photography</div>
+                <div class="aim-service-item"><span>🎬</span> Videography</div>
+                <div class="aim-service-item"><span>🧊</span> 3D Scanning</div>
+                <div class="aim-service-item"><span>🤖</span> AI Media</div>
+              </div>
+            </div>
+            <div class="aim-panel-footer">
+              <a href="pages/gallery/gallery.html" class="btn-secondary">Gallery</a>
+              <a href="pages/booking/booking.html" class="btn-primary">Book Now →</a>
+            </div>
+          </section>
+
+          <!-- Profile / About -->
+          <section class="aim-panel aim-panel-half">
+            <div class="aim-panel-titlebar">
+              <span>👤</span>
+              <span class="aim-panel-title">ProceduralMedia — Profile</span>
+            </div>
+            <div class="aim-panel-body">
+              <div class="aim-profile-card">
+                <div class="aim-avatar" aria-hidden="true">PM</div>
+                <div class="aim-profile-rows">
+                  <div class="aim-profile-row">
+                    <span class="row-label">Screen Name:</span>
+                    <span>ProceduralMedia</span>
+                  </div>
+                  <div class="aim-profile-row">
+                    <span class="row-label">Member Since:</span>
+                    <span>2023</span>
+                  </div>
+                  <div class="aim-profile-row">
+                    <span class="row-label">Location:</span>
+                    <span>Denver, CO</span>
+                  </div>
+                  <div class="aim-profile-row">
+                    <span class="row-label">Interests:</span>
+                    <span>Engineering, Space, Media</span>
+                  </div>
+                  <div class="aim-profile-row">
+                    <span class="row-label">Status:</span>
+                    <span class="status-online">● Online</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="aim-panel-footer">
+              <a href="pages/about/about.html" class="btn-secondary">View Profile</a>
+              <a href="pages/contact/contact.html" class="btn-primary">Send IM →</a>
+            </div>
+          </section>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- ── Status Bar ──────────────────────────────── -->
+    <footer class="aim-statusbar">
+      <span>© <span class="copyright-year">2026</span> Procedural Media · Denver, CO</span>
+      <nav class="aim-statusbar-links" aria-label="Footer">
+        <a href="pages/faq/faq.html">FAQ</a>
+        <a href="pages/about/about.html">About</a>
+      </nav>
+    </footer>
+
+  </div><!-- /.aim-app -->
+
+  <script>
+    /* Starfield canvas */
+    (function () {
+      var canvas = document.getElementById('starfield');
+      var ctx = canvas.getContext('2d');
+      var stars = [];
+
+      function init() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+        stars = [];
+        for (var i = 0; i < 220; i++) {
+          stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 1.4 + 0.2,
+            o: Math.random() * 0.55 + 0.3,
+            phase: Math.random() * Math.PI * 2
+          });
+        }
+      }
+
+      function draw(t) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < stars.length; i++) {
+          var s = stars[i];
+          var opacity = s.o * (0.65 + 0.35 * Math.sin(t / 1200 + s.phase));
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,' + opacity + ')';
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', init);
+      init();
+      requestAnimationFrame(draw);
+    })();
+
+    /* Window controls */
+    (function () {
+      var body = document.querySelector('.aim-body');
+      var profileBar = document.querySelector('.aim-profile-bar');
+      var app = document.querySelector('.aim-app');
+      var minimized = false, maximized = false;
+
+      document.querySelector('.aim-wc-min').addEventListener('click', function () {
+        minimized = !minimized;
+        body.style.display = minimized ? 'none' : '';
+        if (profileBar) profileBar.style.display = minimized ? 'none' : '';
+      });
+
+      document.querySelector('.aim-wc-max').addEventListener('click', function () {
+        maximized = !maximized;
+        app.style.maxWidth = maximized ? 'none' : '';
+        app.style.boxShadow = maximized ? 'none' : '';
+      });
+
+      document.querySelector('.aim-wc-close').addEventListener('click', function () {
+        if (window.history.length > 1) { window.history.back(); }
+      });
+    })();
+
+  </script>
+  <script src="scripts/year.js"></script>
+
+</body>
 </html>
