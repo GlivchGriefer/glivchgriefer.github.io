@@ -739,8 +739,21 @@ html.is-webapp .aim-statusbar {
   padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
 }
 
-/* ── Maximize state (class set in <head> before first paint) */
-html.pm-mx .aim-app { max-width: none !important; box-shadow: none !important; }
+/* ── Maximize: fills full viewport, no chrome ───────────── */
+html.pm-mx .aim-wc-max          { font-size: 0; }
+html.pm-mx .aim-wc-max::before  { content: '⧉'; font-size: 12px; }
+html.pm-mx body { overflow: hidden; height: 100dvh; }
+html.pm-mx .aim-app {
+  position: fixed !important;
+  inset: 0 !important;
+  max-width: none !important;
+  min-height: unset !important;
+  width: 100% !important;
+  height: 100% !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  z-index: 500;
+}
 
 /* ── Taskbar (minimized windows) ──────────────────────── */
 .pm-taskbar {
