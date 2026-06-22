@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Gallery</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGVsbGlwc2UgY3g9IjE2IiBjeT0iOS41IiAgcng9IjcuNSIgcnk9IjIuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA3QTIyIiBzdHJva2Utd2lkdGg9Ii45Ii8+PGVsbGlwc2UgY3g9IjE2IiBjeT0iMjIuNSIgcng9IjcuNSIgcnk9IjIuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA3QTIyIiBzdHJva2Utd2lkdGg9Ii45Ii8+PGVsbGlwc2UgY3g9IjE2IiBjeT0iMTYiICAgcng9IjExIiAgcnk9IjQiICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBDQzQ0IiBzdHJva2Utd2lkdGg9IjEuMiIvPjxlbGxpcHNlIGN4PSIxNiIgY3k9IjE2IiAgIHJ4PSI3IiAgIHJ5PSIxMSIgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwN0EyMiIgc3Ryb2tlLXdpZHRoPSIuOSIvPjxlbGxpcHNlIGN4PSIxNiIgY3k9IjE2IiAgIHJ4PSIzLjUiIHJ5PSIxMSIgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwQ0M0NCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz48Y2lyY2xlICBjeD0iMTYiIGN5PSIxNiIgICByPSIxMSIgICAgICAgICAgICBmaWxsPSJub25lIiBzdHJva2U9IiMwMEVFNTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PC9zdmc+" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="../../pages/home/css/hub.css" rel="stylesheet" />
+</head>
+<body>
+  <canvas id="starfield"></canvas>
+  <div class="aim-app">
+    <input type="checkbox" id="mnav-toggle" class="mnav-toggle" />
+    <header class="aim-titlebar">
+      <div class="aim-titlebar-logo">
+        <span class="aim-logo-mark">PM</span>
+        <span class="aim-logo-text">Procedural Media</span>
+      </div>
+      <nav class="aim-desktop-nav">
+        <a href="../../index.html">Hub</a>
+        <a href="../skannerz/index.html">Skannerz</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="../about/about.html">About</a>
+        <a href="../contact/contact.html">Contact</a>
+        <a href="../faq/faq.html">FAQ</a>
+      </nav>
+      <label for="mnav-toggle" class="mnav-btn" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </label>
+      <div class="aim-win-controls">
+        <span class="aim-wc aim-wc-min" title="Minimize">─</span>
+        <span class="aim-wc aim-wc-max" title="Maximize">□</span>
+        <span class="aim-wc aim-wc-close" title="Back to Hub">✕</span>
+      </div>
+    </header>
+    <nav class="mobile-nav">
+      <a href="../../index.html">Hub</a>
+      <a href="../skannerz/index.html">Skannerz</a>
+      <a href="../about/about.html">About</a>
+      <a href="../contact/contact.html">Contact</a>
+      <a href="../faq/faq.html">FAQ</a>
+    </nav>
+    <div class="aim-profile-bar">
+      <span class="sdot away"></span>
+      <strong class="aim-screenname">Gallery</strong>
+      <span class="aim-tagline">Coming Soon</span>
+    </div>
+    <main class="aim-main">
+      <section class="aim-panel">
+        <div class="aim-panel-titlebar">
+          <span>📷</span>
+          <span class="aim-panel-title">Gallery</span>
+          <span class="aim-status-badge soon">Under Construction</span>
+        </div>
+        <div class="aim-panel-body">
+          <div class="aim-construction">
+            <span class="sdot away" style="width:14px;height:14px;"></span>
+            <p>This page is under construction.</p>
+            <a href="../../index.html" class="btn-secondary">← Back to Hub</a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="aim-statusbar">
+      <span>© <span class="copyright-year">2026</span> Procedural Media · Denver, CO</span>
+      <nav class="aim-statusbar-links">
+        <a href="../faq/faq.html">FAQ</a>
+        <a href="../about/about.html">About</a>
+        <a href="../contact/contact.html">Contact</a>
+      </nav>
+    </footer>
+  </div>
+  <script>
+    (function(){var c=document.getElementById('starfield'),x=c.getContext('2d'),s=[];function i(){c.width=window.innerWidth;c.height=window.innerHeight;s=[];for(var n=0;n<180;n++)s.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+.2,o:Math.random()*.55+.3,p:Math.random()*Math.PI*2});}function d(t){x.clearRect(0,0,c.width,c.height);s.forEach(function(v){var op=v.o*(.65+.35*Math.sin(t/1200+v.p));x.beginPath();x.arc(v.x,v.y,v.r,0,Math.PI*2);x.fillStyle='rgba(255,255,255,'+op+')';x.fill();});requestAnimationFrame(d);}window.addEventListener('resize',i);i();requestAnimationFrame(d);}());
+    (function(){var m=document.querySelector('.aim-main'),p=document.querySelector('.aim-profile-bar'),a=document.querySelector('.aim-app'),mn=false,mx=false;document.querySelector('.aim-wc-min').addEventListener('click',function(){mn=!mn;m.style.display=mn?'none':'';if(p)p.style.display=mn?'none':'';});document.querySelector('.aim-wc-max').addEventListener('click',function(){mx=!mx;a.style.maxWidth=mx?'none':'';a.style.boxShadow=mx?'none':'';});document.querySelector('.aim-wc-close').addEventListener('click',function(){window.location.href='../../index.html';});}());
+  </script>
+  <script src="../../scripts/year.js"></script>
+</body>
+</html>

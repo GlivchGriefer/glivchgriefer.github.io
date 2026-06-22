@@ -1,369 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Procedural Media // Hub</title>
-  <link rel="shortcut icon" href="data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg id='Layer_2' data-name='Layer 2' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40.78431 45.93629'%3E%3Cdefs%3E%3Cstyle%3E .cls-1 %7B fill: %23fff; font-family: QuantumRegular, Quantum; font-size: 48.7px; %7D .cls-2 %7B fill: none; stroke: %2300ff18; stroke-miterlimit: 10; stroke-width: .5px; %7D %3C/style%3E%3C/defs%3E%3Cg id='Layer_1-2' data-name='Layer 1'%3E%3Cpath class='cls-2' d='m37.25612,11.53883l-.01531,30.03946h-7.48047v-13.59766l-7.61328,7.80859-7.61328-7.80859-7.48096-7.62891.01531-8.8129h1.18799l13.9502,14.22559,13.9502-14.22559h1.09961Z'/%3E%3Ctext class='cls-1' transform='translate(4.22409 41.89899) scale(1 1.02)'%3E%3Ctspan x='0' y='0'%3EP%3C/tspan%3E%3C/text%3E%3C/g%3E%3C/svg%3E" />
+  <title>Procedural Media</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGVsbGlwc2UgY3g9IjE2IiBjeT0iOS41IiAgcng9IjcuNSIgcnk9IjIuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA3QTIyIiBzdHJva2Utd2lkdGg9Ii45Ii8+PGVsbGlwc2UgY3g9IjE2IiBjeT0iMjIuNSIgcng9IjcuNSIgcnk9IjIuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA3QTIyIiBzdHJva2Utd2lkdGg9Ii45Ii8+PGVsbGlwc2UgY3g9IjE2IiBjeT0iMTYiICAgcng9IjExIiAgcnk9IjQiICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBDQzQ0IiBzdHJva2Utd2lkdGg9IjEuMiIvPjxlbGxpcHNlIGN4PSIxNiIgY3k9IjE2IiAgIHJ4PSI3IiAgIHJ5PSIxMSIgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwN0EyMiIgc3Ryb2tlLXdpZHRoPSIuOSIvPjxlbGxpcHNlIGN4PSIxNiIgY3k9IjE2IiAgIHJ4PSIzLjUiIHJ5PSIxMSIgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwQ0M0NCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz48Y2lyY2xlICBjeD0iMTYiIGN5PSIxNiIgICByPSIxMSIgICAgICAgICAgICBmaWxsPSJub25lIiBzdHJva2U9IiMwMEVFNTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PC9zdmc+" />
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="pages/home/css/hub.css" rel="stylesheet" />
 </head>
 <body>
-
   <canvas id="starfield"></canvas>
-
   <div class="aim-app">
-
-    <!-- Checkbox for mobile nav — must be first inside .aim-app -->
     <input type="checkbox" id="mnav-toggle" class="mnav-toggle" />
-
-    <!-- ── Title Bar ─────────────────────────────────── -->
     <header class="aim-titlebar">
       <div class="aim-titlebar-logo">
         <span class="aim-logo-mark">PM</span>
         <span class="aim-logo-text">Procedural Media</span>
       </div>
-
-      <!-- Desktop navigation -->
       <nav class="aim-desktop-nav">
-        <a href="pages/about/about.html">About</a>
-        <a href="pages/services/services.html">Services</a>
+        <a href="pages/skannerz/index.html">Skannerz</a>
         <a href="pages/gallery/gallery.html">Gallery</a>
-        <a href="pages/booking/booking.html">Booking</a>
+        <a href="pages/about/about.html">About</a>
         <a href="pages/contact/contact.html">Contact</a>
+        <a href="pages/faq/faq.html">FAQ</a>
       </nav>
-
-      <!-- Mobile hamburger label -->
       <label for="mnav-toggle" class="mnav-btn" aria-label="Toggle navigation">
         <span></span><span></span><span></span>
       </label>
-
-      <!-- Window chrome buttons -->
       <div class="aim-win-controls">
         <span class="aim-wc aim-wc-min" title="Minimize">─</span>
         <span class="aim-wc aim-wc-max" title="Maximize">□</span>
-        <span class="aim-wc aim-wc-close" title="Back">✕</span>
+        <span class="aim-wc aim-wc-close" title="Close">✕</span>
       </div>
     </header>
-
-    <!-- Mobile nav drawer -->
-    <nav class="mobile-nav" aria-label="Mobile navigation">
-      <a href="pages/about/about.html">About</a>
-      <a href="pages/services/services.html">Services</a>
+    <nav class="mobile-nav">
+      <a href="pages/skannerz/index.html">Skannerz</a>
       <a href="pages/gallery/gallery.html">Gallery</a>
-      <a href="pages/booking/booking.html">Booking</a>
+      <a href="pages/about/about.html">About</a>
       <a href="pages/contact/contact.html">Contact</a>
+      <a href="pages/faq/faq.html">FAQ</a>
     </nav>
-
-    <!-- ── Profile / Status Bar ──────────────────────── -->
     <div class="aim-profile-bar">
       <span class="sdot online"></span>
       <strong class="aim-screenname">ProceduralMedia</strong>
       <span class="aim-tagline">Engineering · Multimedia · Gaming</span>
     </div>
+    <main class="aim-main">
+      <div class="hub-grid">
 
-    <!-- ── Body: Sidebar + Content ───────────────────── -->
-    <div class="aim-body">
-
-      <!-- Buddy List Sidebar -->
-      <aside class="aim-sidebar" aria-label="Projects">
-        <div class="aim-sidebar-header">My Projects</div>
-
-        <!-- Gaming group -->
-        <div class="aim-group">
-          <input type="checkbox" id="grp-gaming" class="aim-group-toggle" checked />
-          <label for="grp-gaming" class="aim-group-label">
-            <span class="aim-tri">▼</span>
-            Gaming
-            <span class="aim-group-count">1/1</span>
-          </label>
-          <div class="aim-group-items">
-            <a href="#skannerz" class="aim-buddy">
-              <span class="sdot online"></span>
-              <span class="aim-buddy-name">Skannerz Reborn</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- Engineering group -->
-        <div class="aim-group">
-          <input type="checkbox" id="grp-eng" class="aim-group-toggle" checked />
-          <label for="grp-eng" class="aim-group-label">
-            <span class="aim-tri">▼</span>
-            Engineering
-            <span class="aim-group-count">0/1</span>
-          </label>
-          <div class="aim-group-items">
-            <span class="aim-buddy">
-              <span class="sdot away"></span>
-              <span class="aim-buddy-name">More Soon™</span>
-            </span>
-          </div>
-        </div>
-
-        <!-- Multimedia group -->
-        <div class="aim-group">
-          <input type="checkbox" id="grp-media" class="aim-group-toggle" checked />
-          <label for="grp-media" class="aim-group-label">
-            <span class="aim-tri">▼</span>
-            Multimedia
-            <span class="aim-group-count">2/2</span>
-          </label>
-          <div class="aim-group-items">
-            <a href="pages/gallery/gallery.html" class="aim-buddy">
-              <span class="sdot online"></span>
-              <span class="aim-buddy-name">Photo &amp; Video</span>
-            </a>
-            <a href="pages/services/services.html" class="aim-buddy">
-              <span class="sdot online"></span>
-              <span class="aim-buddy-name">Services</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="aim-sidebar-footer">
-          <a href="pages/booking/booking.html" class="aim-quick-btn">Book Us</a>
-          <a href="pages/contact/contact.html" class="aim-quick-btn">IM Us</a>
-        </div>
-      </aside>
-
-      <!-- ── Main Content ─────────────────────────────── -->
-      <main class="aim-content">
-
-        <!-- ═══════════════════════════════════════════
-             FEATURED: Skannerz Reborn
-             ═══════════════════════════════════════════ -->
-        <section class="aim-panel aim-panel-featured" id="skannerz">
-          <div class="aim-panel-titlebar">
+        <a href="pages/skannerz/index.html" class="hub-card hub-card-dark">
+          <div class="hub-card-bar">
             <span>🚀</span>
-            <span class="aim-panel-title">Skannerz Reborn — Game Dev</span>
-            <span class="aim-status-badge in-dev">In Dev</span>
+            <span class="hub-card-title">Skannerz Reborn</span>
+            <span class="hub-card-tag gaming">Gaming</span>
           </div>
-
-          <div class="aim-panel-body">
-            <div class="aim-away-msg">
-              <em>Scan barcodes. Collect scrap. Build your ship. Explore the galaxy.</em>
-            </div>
-
-            <div class="aim-info-grid">
-              <table class="aim-info-table">
-                <tbody>
-                  <tr>
-                    <td class="info-lbl">Type:</td>
-                    <td>Mobile · Barcode Scanner · Space RPG</td>
-                  </tr>
-                  <tr>
-                    <td class="info-lbl">Platform:</td>
-                    <td>iOS · Android (React Native / Expo)</td>
-                  </tr>
-                  <tr>
-                    <td class="info-lbl">Concept:</td>
-                    <td>
-                      Scan real-world barcodes to collect procedurally-categorized scrap.
-                      Combine components to build and upgrade a starship. Use your ship to
-                      warp between sectors, earn XP, discover planets, and unlock the galaxy.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="info-lbl">Inspired by:</td>
-                    <td>Skannerz (Radica Games, 2001)</td>
-                  </tr>
-                  <tr>
-                    <td class="info-lbl">Progress:</td>
-                    <td>
-                      <div class="aim-xp-bar">
-                        <div class="aim-xp-fill" style="width:15%"></div>
-                        <span class="aim-xp-label">[ Early Dev — Sector 1 of ??? ]</span>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div class="aim-ship-art">
-                <pre class="ascii-ship">
-  *  .    .   *
-     ___
-    /|M|\
-   / |=| \
-  |  | |  |
- /|  |*|  |\
-| |  | |  | |
- \|__|_|__|/
-    || ||
-   _||_||_
-  /_______\
- *  .    .   *
-                </pre>
-                <div class="ship-label">SS ProceduralMedia · Hull Lv.1</div>
-                <div class="aim-tags" style="justify-content:center;margin-top:6px;">
-                  <span class="aim-tag">#barcode</span>
-                  <span class="aim-tag">#space</span>
-                  <span class="aim-tag">#rpg</span>
-                  <span class="aim-tag">#procedural</span>
-                </div>
-              </div>
-            </div>
+          <div class="hub-card-body">
+            Scan barcodes. Collect scrap. Build a ship. Explore a procedurally generated galaxy.
           </div>
+        </a>
 
-          <div class="aim-panel-footer">
-            <a href="pages/skannerz/index.html" class="btn-primary">View Project →</a>
-            <a href="https://github.com/ProceduralMedia" class="btn-secondary">GitHub</a>
-            <span class="aim-footer-status">
-              <span class="sdot indev"></span>
-              Active Development
-            </span>
+        <a href="pages/gallery/gallery.html" class="hub-card hub-card-away">
+          <div class="hub-card-bar">
+            <span>📷</span>
+            <span class="hub-card-title">Gallery</span>
+            <span class="hub-card-tag soon">Soon</span>
           </div>
-        </section>
+          <div class="hub-card-body">
+            Photo, video, and 3D media. Under construction.
+          </div>
+        </a>
 
-        <!-- ═══════════════════════════════════════════
-             Secondary row: Multimedia + Profile
-             ═══════════════════════════════════════════ -->
-        <div class="aim-panel-row">
+        <a href="pages/about/about.html" class="hub-card">
+          <div class="hub-card-bar">
+            <span>👤</span>
+            <span class="hub-card-title">About</span>
+            <span class="hub-card-tag info">Info</span>
+          </div>
+          <div class="hub-card-body">
+            Engineering hub based in Denver, CO. Software, games, and media.
+          </div>
+        </a>
 
-          <!-- Multimedia Services -->
-          <section class="aim-panel aim-panel-half">
-            <div class="aim-panel-titlebar">
-              <span>📷</span>
-              <span class="aim-panel-title">Multimedia Services</span>
-            </div>
-            <div class="aim-panel-body">
-              <p class="aim-panel-desc">
-                Photo, video, and 3D visualization services. Denver, CO.
-                Turning your moments into lasting media.
-              </p>
-              <div class="aim-services">
-                <div class="aim-service-item"><span>📸</span> Photography</div>
-                <div class="aim-service-item"><span>🎬</span> Videography</div>
-                <div class="aim-service-item"><span>🧊</span> 3D Scanning</div>
-                <div class="aim-service-item"><span>🤖</span> AI Media</div>
-              </div>
-            </div>
-            <div class="aim-panel-footer">
-              <a href="pages/gallery/gallery.html" class="btn-secondary">Gallery</a>
-              <a href="pages/booking/booking.html" class="btn-primary">Book Now →</a>
-            </div>
-          </section>
+        <a href="pages/contact/contact.html" class="hub-card">
+          <div class="hub-card-bar">
+            <span>💬</span>
+            <span class="hub-card-title">Contact</span>
+            <span class="hub-card-tag info">Info</span>
+          </div>
+          <div class="hub-card-body">
+            Find us on GitHub and Discord.
+          </div>
+        </a>
 
-          <!-- Profile / About -->
-          <section class="aim-panel aim-panel-half">
-            <div class="aim-panel-titlebar">
-              <span>👤</span>
-              <span class="aim-panel-title">ProceduralMedia — Profile</span>
-            </div>
-            <div class="aim-panel-body">
-              <div class="aim-profile-card">
-                <div class="aim-avatar" aria-hidden="true">PM</div>
-                <div class="aim-profile-rows">
-                  <div class="aim-profile-row">
-                    <span class="row-label">Screen Name:</span>
-                    <span>ProceduralMedia</span>
-                  </div>
-                  <div class="aim-profile-row">
-                    <span class="row-label">Member Since:</span>
-                    <span>2023</span>
-                  </div>
-                  <div class="aim-profile-row">
-                    <span class="row-label">Location:</span>
-                    <span>Denver, CO</span>
-                  </div>
-                  <div class="aim-profile-row">
-                    <span class="row-label">Interests:</span>
-                    <span>Engineering, Space, Media</span>
-                  </div>
-                  <div class="aim-profile-row">
-                    <span class="row-label">Status:</span>
-                    <span class="status-online">● Online</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="aim-panel-footer">
-              <a href="pages/about/about.html" class="btn-secondary">View Profile</a>
-              <a href="pages/contact/contact.html" class="btn-primary">Send IM →</a>
-            </div>
-          </section>
+        <a href="pages/faq/faq.html" class="hub-card">
+          <div class="hub-card-bar">
+            <span>❓</span>
+            <span class="hub-card-title">FAQ</span>
+            <span class="hub-card-tag info">Info</span>
+          </div>
+          <div class="hub-card-body">
+            Common questions about this site and its projects.
+          </div>
+        </a>
 
-        </div>
-      </main>
-    </div>
-
-    <!-- ── Status Bar ──────────────────────────────── -->
+      </div>
+    </main>
     <footer class="aim-statusbar">
       <span>© <span class="copyright-year">2026</span> Procedural Media · Denver, CO</span>
-      <nav class="aim-statusbar-links" aria-label="Footer">
+      <nav class="aim-statusbar-links">
         <a href="pages/faq/faq.html">FAQ</a>
         <a href="pages/about/about.html">About</a>
+        <a href="pages/contact/contact.html">Contact</a>
       </nav>
     </footer>
-
-  </div><!-- /.aim-app -->
-
+  </div>
   <script>
-    /* Starfield canvas */
-    (function () {
-      var canvas = document.getElementById('starfield');
-      var ctx = canvas.getContext('2d');
-      var stars = [];
-
-      function init() {
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
-        stars = [];
-        for (var i = 0; i < 220; i++) {
-          stars.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            r: Math.random() * 1.4 + 0.2,
-            o: Math.random() * 0.55 + 0.3,
-            phase: Math.random() * Math.PI * 2
-          });
-        }
-      }
-
-      function draw(t) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (var i = 0; i < stars.length; i++) {
-          var s = stars[i];
-          var opacity = s.o * (0.65 + 0.35 * Math.sin(t / 1200 + s.phase));
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(255,255,255,' + opacity + ')';
-          ctx.fill();
-        }
-        requestAnimationFrame(draw);
-      }
-
-      window.addEventListener('resize', init);
-      init();
-      requestAnimationFrame(draw);
-    })();
-
-    /* Window controls */
-    (function () {
-      var body = document.querySelector('.aim-body');
-      var profileBar = document.querySelector('.aim-profile-bar');
-      var app = document.querySelector('.aim-app');
-      var minimized = false, maximized = false;
-
-      document.querySelector('.aim-wc-min').addEventListener('click', function () {
-        minimized = !minimized;
-        body.style.display = minimized ? 'none' : '';
-        if (profileBar) profileBar.style.display = minimized ? 'none' : '';
-      });
-
-      document.querySelector('.aim-wc-max').addEventListener('click', function () {
-        maximized = !maximized;
-        app.style.maxWidth = maximized ? 'none' : '';
-        app.style.boxShadow = maximized ? 'none' : '';
-      });
-
-      document.querySelector('.aim-wc-close').addEventListener('click', function () {
-        if (window.history.length > 1) { window.history.back(); }
-      });
-    })();
-
+    (function(){var c=document.getElementById('starfield'),x=c.getContext('2d'),s=[];function i(){c.width=window.innerWidth;c.height=window.innerHeight;s=[];for(var n=0;n<180;n++)s.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+.2,o:Math.random()*.55+.3,p:Math.random()*Math.PI*2});}function d(t){x.clearRect(0,0,c.width,c.height);s.forEach(function(v){var op=v.o*(.65+.35*Math.sin(t/1200+v.p));x.beginPath();x.arc(v.x,v.y,v.r,0,Math.PI*2);x.fillStyle='rgba(255,255,255,'+op+')';x.fill();});requestAnimationFrame(d);}window.addEventListener('resize',i);i();requestAnimationFrame(d);}());
+    (function(){var m=document.querySelector('.aim-main'),p=document.querySelector('.aim-profile-bar'),a=document.querySelector('.aim-app'),mn=false,mx=false;document.querySelector('.aim-wc-min').addEventListener('click',function(){mn=!mn;m.style.display=mn?'none':'';if(p)p.style.display=mn?'none':'';});document.querySelector('.aim-wc-max').addEventListener('click',function(){mx=!mx;a.style.maxWidth=mx?'none':'';a.style.boxShadow=mx?'none':'';});document.querySelector('.aim-wc-close').addEventListener('click',function(){if(window.history.length>1){window.history.back();}});}());
   </script>
   <script src="scripts/year.js"></script>
-
 </body>
 </html>
