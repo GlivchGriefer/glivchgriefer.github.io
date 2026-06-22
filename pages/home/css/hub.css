@@ -739,9 +739,45 @@ html.is-webapp .aim-statusbar {
   padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
 }
 
+/* ── Maximize button icon ────────────────────────────────── */
+.aim-wc-max { position: relative; }
+
+/* normal: single centered square */
+.aim-wc-max::before {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 8px;
+  border: 1.5px solid currentColor;
+  box-sizing: border-box;
+  top: 5px;
+  left: 6px;
+}
+.aim-wc-max::after { content: none; display: none; }
+
+/* maximized: back square (top-right) + front square (bottom-left) */
+html.pm-mx .aim-wc-max::before {
+  width: 8px;
+  height: 7px;
+  top: 8px;
+  left: 3px;
+  background: var(--app-bg);
+  z-index: 2;
+}
+html.pm-mx .aim-wc-max::after {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 8px;
+  height: 7px;
+  border: 1.5px solid currentColor;
+  box-sizing: border-box;
+  top: 3px;
+  left: 9px;
+  z-index: 1;
+}
+
 /* ── Maximize: fills full viewport, no chrome ───────────── */
-.aim-wc-max::before             { content: '□'; }
-html.pm-mx .aim-wc-max::before  { content: '⧉'; }
 html.pm-mx body { overflow: hidden; height: 100dvh; }
 html.pm-mx .aim-app {
   position: fixed !important;
@@ -750,6 +786,7 @@ html.pm-mx .aim-app {
   min-height: unset !important;
   width: 100% !important;
   height: 100% !important;
+  border: none !important;
   box-shadow: none !important;
   border-radius: 0 !important;
   z-index: 500;
