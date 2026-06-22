@@ -663,7 +663,6 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
     min-height: unset;
     height: calc(100dvh - env(safe-area-inset-top, 0px));
     overflow: hidden;
-    border-radius: 0 0 28px 28px;
   }
 
   .aim-main {
@@ -676,8 +675,7 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
   .aim-statusbar {
     font-size: 10px;
     padding: 10px 16px;
-    padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
-    border-radius: 0 0 28px 28px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   }
 
   .aim-desktop-nav  { display: none; }
@@ -700,6 +698,16 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
 
   .aim-profile-card { flex-wrap: wrap; }
   .aim-avatar       { width: 44px; height: 44px; font-size: 16px; }
+}
+
+/* ── iOS home screen web app + fullscreen: restore rounded bottom ── */
+@media (display-mode: standalone) and (max-width: 640px),
+       (display-mode: fullscreen) {
+  .aim-app        { border-radius: 0 0 28px 28px; }
+  .aim-statusbar  {
+    border-radius: 0 0 28px 28px;
+    padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 /* ── Taskbar (minimized windows) ──────────────────────── */
