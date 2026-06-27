@@ -29,11 +29,15 @@
     95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm'
   };
 
+  // ── NASA FIRMS MAP_KEY ───────────────────────────────────────
+  // Get a free key at: https://firms.modaps.eosdis.nasa.gov/api/
+  var FIRMS_KEY = '4473cf827f81da857d7def8fa5a0b2dd';
+
   var DEFAULT_LAT = 39, DEFAULT_LON = -98, DEFAULT_ZOOM = 4;
   var homeLat = DEFAULT_LAT, homeLon = DEFAULT_LON, homeZoom = DEFAULT_ZOOM;
 
   // ── Map init ────────────────────────────────────────────────
-  var map = L.map('map', { zoomControl: false, attributionControl: false });
+  var map = L.map('map', { zoomControl: false, attributionControl: false, minZoom: 3 });
 
   L.control.attribution({ position: 'bottomright', prefix: false }).addTo(map);
   L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -49,11 +53,13 @@
   var alertGroup = L.layerGroup();
   var gdacsGroup = L.layerGroup();
   var buoyGroup  = L.layerGroup();
+  var fireGroup  = L.layerGroup();
   var radarTile  = null;
 
   var LAYER_DEFS = [
     { key: 'radar',  name: 'Radar',       icon: '🌧', group: null,        on: true  },
-    { key: 'quake',  name: 'Earthquakes', icon: '🌍', group: quakeGroup,  on: true  },
+    { key: 'fire',   name: 'Wildfires',   icon: '🔥', group: fireGroup,   on: true  },
+    { key: 'quake',  name: 'Earthquakes', icon: '🌍', group: quakeGroup,  on: false },
     { key: 'alerts', name: 'NWS Alerts',  icon: '⚠️', group: alertGroup,  on: true  },
     { key: 'gdacs',  name: 'Disasters',   icon: '🚨', group: gdacsGroup,  on: true  },
     { key: 'buoys',  name: 'Buoys',       icon: '📡', group: buoyGroup,   on: false }
@@ -61,6 +67,9 @@
 
   var state = {};
   LAYER_DEFS.forEach(function (d) { state[d.key] = d.on; });
+
+  // Mount all initially-on groups immediately so fetch failures don't orphan them
+  LAYER_DEFS.forEach(function (d) { if (d.on && d.group) d.group.addTo(map); });
 
   function setLayer(key, on) {
     state[key] = on;
@@ -136,7 +145,7 @@
       var path = past[past.length - 1].path;
       radarTile = L.tileLayer(
         'https://tilecache.rainviewer.com' + path + '/256/{z}/{x}/{y}/2/1_1.png',
-        { opacity: 0.5, maxZoom: 12 }
+        { opacity: 0.5, minZoom: 3, maxNativeZoom: 12, maxZoom: 19 }
       );
       if (state.radar) radarTile.addTo(map);
       badge('radar', 'live', true);
@@ -168,7 +177,6 @@
           );
         }
       }).addTo(quakeGroup);
-      if (state.quake) quakeGroup.addTo(map);
       badge('quake', data.features.length);
     })
     .catch(function () { badge('quake', '—'); });
@@ -195,10 +203,86 @@
           );
         }
       }).addTo(alertGroup);
-      if (state.alerts) alertGroup.addTo(map);
       badge('alerts', feats.length);
     })
     .catch(function () { badge('alerts', '—'); });
+
+  // ── Wildfires ────────────────────────────────────────────────
+  // Perimeters — NIFC via ArcGIS REST (no key)
+  var NIFC_PERIM = 'https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/' +
+    'Active_Fires/FeatureServer/0/query' +
+    '?where=1%3D1&outFields=*&returnGeometry=true&f=geojson&resultRecordCount=500';
+
+  $g(NIFC_PERIM)
+    .then(function (data) {
+      var feats = data.features || [];
+      L.geoJSON(data, {
+        style: function () {
+          return { color: '#FF4400', weight: 1.5, fillColor: '#FF6600', fillOpacity: 0.22, opacity: 0.85 };
+        },
+        onEachFeature: function (f, layer) {
+          var p = f.properties || {};
+          var name  = p.IncidentName  || p.poly_IncidentName  || p.incident_name  || 'Unknown Fire';
+          var acres = p.GISAcres      || p.poly_GISAcres      || p.gis_acres      || null;
+          var pct   = p.PercentContained || p.percent_contained || null;
+          var st    = p.POOState      || p.poly_POOState      || p.state          || '';
+          var cause = p.FireCause     || p.fire_cause         || '';
+          var html  = '<b>🔥 ' + name + '</b>';
+          if (st)    html += '<br><span style="color:#aaa;font-size:10px">' + st + '</span>';
+          if (acres) html += '<br>' + Math.round(acres).toLocaleString() + ' acres';
+          if (pct != null) html += ' · ' + Math.round(pct) + '% contained';
+          if (cause) html += '<br><span style="color:#aaa;font-size:10px">Cause: ' + cause + '</span>';
+          layer.bindPopup(html);
+        }
+      }).addTo(fireGroup);
+      badge('fire', feats.length + ' fires');
+    })
+    .catch(function () {
+      badge('fire', FIRMS_KEY ? '—' : 'key needed');
+    });
+
+  // Hotspots — NASA FIRMS VIIRS (requires free MAP_KEY)
+  if (FIRMS_KEY) {
+    var FIRMS_URL = 'https://firms.modaps.eosdis.nasa.gov/api/area/csv/' +
+      FIRMS_KEY + '/VIIRS_SNPP_NRT/world/1';
+    $t(FIRMS_URL)
+      .then(function (csv) {
+        var lines = csv.trim().split('\n');
+        if (lines.length < 2) return;
+        var hdr   = lines[0].split(',');
+        var iLat  = hdr.indexOf('latitude');
+        var iLon  = hdr.indexOf('longitude');
+        var iFrp  = hdr.indexOf('frp');
+        var iConf = hdr.indexOf('confidence');
+        var iDate = hdr.indexOf('acq_date');
+        var iTime = hdr.indexOf('acq_time');
+        var iDay  = hdr.indexOf('daynight');
+        for (var i = 1; i < lines.length; i++) {
+          var cols = lines[i].split(',');
+          var lat  = parseFloat(cols[iLat]);
+          var lon  = parseFloat(cols[iLon]);
+          if (isNaN(lat) || isNaN(lon)) continue;
+          var frp  = parseFloat(cols[iFrp])  || 0;
+          var conf = cols[iConf] || '';
+          var dt   = (cols[iDate] || '') + (cols[iTime] ? ' ' + cols[iTime].slice(0, 2) + ':' + cols[iTime].slice(2) : '');
+          var dn   = cols[iDay] || '';
+          var r    = Math.max(2.5, Math.min(10, frp / 25));
+          var c    = frp > 300 ? '#FF1100' : frp > 100 ? '#FF4400' : frp > 30 ? '#FF7700' : '#FFAA00';
+          L.circleMarker([lat, lon], {
+            radius: r, fillColor: c, color: 'rgba(60,0,0,0.5)',
+            weight: 0.5, fillOpacity: 0.88
+          }).bindPopup(
+            '<b>🔥 Fire Hotspot</b><br>' +
+            'FRP: ' + frp.toFixed(0) + ' MW' +
+            (conf ? ' · Conf: ' + conf : '') +
+            (dn  ? ' · ' + (dn === 'D' ? '☀ Day' : '● Night') : '') +
+            (dt  ? '<br><span style="color:#aaa;font-size:10px">' + dt + ' UTC</span>' : '')
+          ).addTo(fireGroup);
+        }
+        // fireGroup already on map if state.fire
+      })
+      .catch(function () {});
+  }
 
   // ── GDACS Disasters (RSS) ────────────────────────────────────
   function gdacsIcon(title) {
@@ -261,7 +345,6 @@
         ).addTo(gdacsGroup);
         count++;
       });
-      if (state.gdacs) gdacsGroup.addTo(map);
       badge('gdacs', count || '—');
     })
     .catch(function () { badge('gdacs', '—'); });
