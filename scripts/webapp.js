@@ -1,3 +1,30 @@
+// Dark mode — runs synchronously before first paint to prevent FOUC
+(function () {
+  try { if (localStorage.getItem('pm-dark') === '1') document.documentElement.classList.add('dark'); } catch(e) {}
+
+  document.addEventListener('DOMContentLoaded', function () {
+    function syncDmBtns() {
+      var isDark = document.documentElement.classList.contains('dark');
+      document.querySelectorAll('.dm-btn').forEach(function (btn) {
+        if (btn.classList.contains('mnav-dm')) {
+          btn.textContent = isDark ? '☀ Light Mode' : '◐ Dark Mode';
+        } else {
+          btn.textContent = isDark ? '☀' : '◐';
+        }
+        btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+      });
+    }
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('.dm-btn')) {
+        var isDark = document.documentElement.classList.toggle('dark');
+        try { localStorage.setItem('pm-dark', isDark ? '1' : '0'); } catch(e) {}
+        syncDmBtns();
+      }
+    });
+    syncDmBtns();
+  });
+}());
+
 (function () {
   var standalone = window.navigator.standalone
     || window.matchMedia('(display-mode: standalone)').matches

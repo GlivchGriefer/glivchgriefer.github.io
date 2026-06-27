@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Live Map — Procedural Media</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGVsbGlwc2UgY3g9IjE2IiBjeT0iOS41IiAgcng9IjcuNSIgcnk9IjIuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA3QTIyIiBzdHJva2Utd2lkdGg9Ii45Ii8+PGVsbGlwc2UgY3g9IjE2IiBjeT0iMjIuNSIgcng9IjcuNSIgcnk9IjIuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA3QTIyIiBzdHJva2Utd2lkdGg9Ii45Ii8+PGVsbGlwc2UgY3g9IjE2IiBjeT0iMTYiICAgcng9IjExIiAgcnk9IjQiICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBDQzQ0IiBzdHJva2Utd2lkdGg9IjEuMiIvPjxlbGxpcHNlIGN4PSIxNiIgY3k9IjE2IiAgIHJ4PSI3IiAgIHJ5PSIxMSIgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwN0EyMiIgc3Ryb2tlLXdpZHRoPSIuOSIvPjxlbGxpcHNlIGN4PSIxNiIgY3k9IjE2IiAgIHJ4PSIzLjUiIHJ5PSIxMSIgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwQ0M0NCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz48Y2lyY2xlICBjeD0iMTYiIGN5PSIxNiIgICByPSIxMSIgICAgICAgICAgICBmaWxsPSJub25lIiBzdHJva2U9IiMwMEVFNTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PC9zdmc+" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="map.css" />
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <!-- Sidebar -->
+  <div id="ms-sidebar">
+    <button id="ms-toggle" title="Toggle layers" aria-label="Toggle layers">≡</button>
+    <div id="ms-panel" class="ms-panel">
+      <div class="ms-head">
+        <a href="../../index.html" class="ms-hub-link" title="Back to Hub">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="20" height="20"><ellipse cx="16" cy="9.5" rx="7.5" ry="2.5" fill="none" stroke="#007A22" stroke-width=".9"/><ellipse cx="16" cy="22.5" rx="7.5" ry="2.5" fill="none" stroke="#007A22" stroke-width=".9"/><ellipse cx="16" cy="16" rx="11" ry="4" fill="none" stroke="#00CC44" stroke-width="1.2"/><ellipse cx="16" cy="16" rx="7" ry="11" fill="none" stroke="#007A22" stroke-width=".9"/><ellipse cx="16" cy="16" rx="3.5" ry="11" fill="none" stroke="#00CC44" stroke-width="1.2"/><circle cx="16" cy="16" r="11" fill="none" stroke="#00EE55" stroke-width="1.6"/></svg>
+        </a>
+        <span class="ms-title">Procedural Map</span>
+      </div>
+
+      <div class="ms-section-lbl">Layers</div>
+      <div id="ms-layers" class="ms-layers"></div>
+
+      <div class="ms-section-lbl">Quake Scale</div>
+      <div class="ms-legend">
+        <div class="ms-leg-row"><span class="ms-dot" style="background:#44DF80"></span>M2–3</div>
+        <div class="ms-leg-row"><span class="ms-dot" style="background:#FFEE44"></span>M3–4</div>
+        <div class="ms-leg-row"><span class="ms-dot" style="background:#FFC020"></span>M4–5</div>
+        <div class="ms-leg-row"><span class="ms-dot" style="background:#FF7422"></span>M5–6</div>
+        <div class="ms-leg-row"><span class="ms-dot" style="background:#FF3030"></span>M6+</div>
+      </div>
+
+      <div class="ms-section-lbl">Alert Severity</div>
+      <div class="ms-legend">
+        <div class="ms-leg-row"><span class="ms-swatch" style="background:#FF0000"></span>Extreme</div>
+        <div class="ms-leg-row"><span class="ms-swatch" style="background:#FF7700"></span>Severe</div>
+        <div class="ms-leg-row"><span class="ms-swatch" style="background:#FFCC00"></span>Moderate</div>
+        <div class="ms-leg-row"><span class="ms-swatch" style="background:#3399FF"></span>Minor</div>
+      </div>
+
+      <div class="ms-tip">Click anywhere on the map for local weather &amp; marine conditions.</div>
+
+      <div class="ms-attr">
+        &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
+        &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a><br>
+        <a href="https://www.rainviewer.com" target="_blank" rel="noopener">RainViewer</a> ·
+        <a href="https://earthquake.usgs.gov" target="_blank" rel="noopener">USGS</a> ·
+        <a href="https://www.weather.gov" target="_blank" rel="noopener">NWS</a> ·
+        <a href="https://www.gdacs.org" target="_blank" rel="noopener">GDACS</a> ·
+        <a href="https://www.ndbc.noaa.gov" target="_blank" rel="noopener">NDBC</a> ·
+        <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search bar (top-right) -->
+  <div id="mc-search">
+    <button id="search-open" class="mc-btn" title="Search location">🔍</button>
+    <div id="search-row" class="mc-search-row" style="display:none">
+      <input id="search-input" type="text" placeholder="Search location or ZIP…" autocomplete="off" />
+      <button id="search-close" class="mc-btn mc-btn-sm" title="Close">✕</button>
+    </div>
+    <div id="search-results" class="mc-search-results"></div>
+  </div>
+
+  <!-- Bottom-left controls -->
+  <div id="mc-controls">
+    <button id="mc-home" class="mc-btn" title="Reset view">⌂</button>
+    <a href="../../index.html" class="mc-btn mc-link" title="Hub">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="14" height="14"><ellipse cx="16" cy="9.5" rx="7.5" ry="2.5" fill="none" stroke="#007A22" stroke-width=".9"/><ellipse cx="16" cy="22.5" rx="7.5" ry="2.5" fill="none" stroke="#007A22" stroke-width=".9"/><ellipse cx="16" cy="16" rx="11" ry="4" fill="none" stroke="#00CC44" stroke-width="1.2"/><ellipse cx="16" cy="16" rx="7" ry="11" fill="none" stroke="#007A22" stroke-width=".9"/><ellipse cx="16" cy="16" rx="3.5" ry="11" fill="none" stroke="#00CC44" stroke-width="1.2"/><circle cx="16" cy="16" r="11" fill="none" stroke="#00EE55" stroke-width="1.6"/></svg>
+    </a>
+    <button id="mc-fs" class="mc-btn" title="Fullscreen">⛶</button>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="map.js"></script>
+</body>
+</html>

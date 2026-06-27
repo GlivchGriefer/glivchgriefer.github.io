@@ -153,25 +153,33 @@ function startScanner() {
   document.getElementById('scan-tip').style.display = '';
   document.getElementById('scan-label').textContent = 'AIM SCANNER AT BARCODE';
 
-  if ('BarcodeDetector' in window) {
-    barcodeDetector = new BarcodeDetector({ formats: [
-      'ean_13','ean_8','upc_a','upc_e','qr_code','code_128','code_39'
-    ]});
+  if (!('BarcodeDetector' in window)) {
+    document.getElementById('scan-label').textContent = 'REQUIRES SAFARI 17+';
+    return;
   }
 
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
-    .then(stream => {
-      scanStream = stream;
-      const vid = document.getElementById('scan-video');
-      vid.srcObject = stream;
-      vid.play();
-      scanActive = true;
-      if (barcodeDetector) scheduleScan();
-      else document.getElementById('scan-label').textContent = 'CAMERA ACTIVE — NO DETECTOR API';
-    })
-    .catch(() => {
-      document.getElementById('scan-label').textContent = 'CAMERA PERMISSION DENIED';
-    });
+  barcodeDetector = new BarcodeDetector({ formats: [
+    'ean_13','ean_8','upc_a','upc_e','qr_code','code_128','code_39','data_matrix'
+  ]});
+
+  const vid = document.getElementById('scan-video');
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+    audio: false
+  })
+  .then(stream => {
+    scanStream = stream;
+    vid.srcObject = stream;
+    return vid.play();
+  })
+  .then(() => {
+    scanActive = true;
+    scheduleScan();
+  })
+  .catch(err => {
+    document.getElementById('scan-label').textContent =
+      err && err.name === 'NotAllowedError' ? 'CAMERA PERMISSION DENIED' : 'CAMERA NOT AVAILABLE';
+  });
 
   showTip('scan-intro',
     'HOW TO SCAN',
@@ -182,20 +190,26 @@ function stopScanner() {
   scanActive = false;
   if (scanLoop) { clearTimeout(scanLoop); scanLoop = null; }
   if (scanStream) { scanStream.getTracks().forEach(t => t.stop()); scanStream = null; }
+  const vid = document.getElementById('scan-video');
+  if (vid) vid.srcObject = null;
 }
 
 function scheduleScan() {
   if (!scanActive) return;
   scanLoop = setTimeout(async () => {
     const vid = document.getElementById('scan-video');
-    if (vid.readyState >= 2) {
+    if (vid.readyState >= 2 && vid.videoWidth > 0) {
       try {
-        const results = await barcodeDetector.detect(vid);
-        if (results.length > 0) onBarcode(results[0].rawValue);
+        // Snapshot the frame via ImageBitmap so detection runs on a fixed pixel buffer,
+        // not a live element that may advance between the detect() call and its execution.
+        const bitmap = await createImageBitmap(vid);
+        const results = await barcodeDetector.detect(bitmap);
+        bitmap.close();
+        if (results.length > 0) { onBarcode(results[0].rawValue); return; }
       } catch {}
     }
     scheduleScan();
-  }, 400);
+  }, 300);
 }
 
 function onBarcode(code) {

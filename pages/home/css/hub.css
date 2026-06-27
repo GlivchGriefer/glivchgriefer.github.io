@@ -348,6 +348,7 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
 .hub-card-tag.soon       { background: var(--away);         color: #FFF; }
 .hub-card-tag.security   { background: #882222;             color: #FFC0C0; }
 .hub-card-tag.portfolio  { background: #445577;             color: #C0D0FF; }
+.hub-card-tag.daily      { background: #554488;             color: #D8C8FF; }
 
 /* ── AIM Panel (subpages) ──────────────────────────────── */
 .aim-panel {
@@ -750,6 +751,123 @@ html.is-webapp .aim-statusbar {
   padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
 }
 
+
+/* ── Dark mode toggle button ───────────────────────────── */
+.dm-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #E0EAFF;
+  font-size: 13px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
+  transition: background 0.1s;
+  font-family: inherit;
+}
+.dm-btn:hover { background: rgba(255,255,255,0.18); }
+
+/* Mobile nav row variant */
+.dm-btn.mnav-dm {
+  width: 100%;
+  height: auto;
+  padding: 11px 16px;
+  justify-content: flex-start;
+  border: none;
+  border-bottom: 1px solid var(--chrome-mid);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  gap: 6px;
+}
+.dm-btn.mnav-dm:hover { background: #C8D8F4; }
+
+/* Hide titlebar dm-btn on mobile — it lives in the hamburger drawer instead */
+@media (max-width: 640px) {
+  .aim-titlebar .dm-btn:not(.mnav-dm) { display: none; }
+}
+
+/* ══ DARK MODE ═══════════════════════════════════════════ */
+
+html.dark {
+  --chrome-mid:  #2E3655;
+  --chrome-dark: #1A2040;
+  --bv-hi:       #3A4870;
+  --bv-lo:       #080E1A;
+  --app-bg:      #1A1E2C;
+  --ink:         #C8D8F0;
+  --ink-muted:   #6878A8;
+}
+
+html.dark body         { background: #1A1E2C; }
+html.dark .aim-app     { background: #1A1E2C; border-color: #3A4870 #080E1A #080E1A #3A4870; }
+html.dark .aim-main    { background: #141824; }
+
+/* Mobile nav */
+html.dark .mobile-nav              { background: #141824; border-bottom-color: #1A2040; }
+html.dark .mobile-nav a            { color: #B0C4E8; border-bottom-color: #1E2840; }
+html.dark .mobile-nav a:hover      { background: #1E2848; }
+html.dark .mnav-section            { background: #0E1220; color: #4A5A88; border-bottom-color: #1E2840; }
+html.dark .dm-btn.mnav-dm          { background: transparent; color: #B0C4E8; border-bottom-color: #1E2840; }
+html.dark .dm-btn.mnav-dm:hover    { background: #1E2848; color: #C8D8F0; }
+
+/* Hub cards */
+html.dark .hub-card {
+  background: #242838;
+  border-color: #3A4870 #080E1A #080E1A #3A4870;
+  box-shadow: 2px 2px 0 #080E1A;
+  color: #C8D8F0;
+}
+html.dark .hub-card:hover  { box-shadow: 2px 5px 10px rgba(0,0,0,0.55); }
+html.dark .hub-card-body   { color: #7888B0; }
+
+/* Panels */
+html.dark .aim-panel {
+  background: #242838;
+  border-color: #3A4870 #080E1A #080E1A #3A4870;
+  box-shadow: 2px 2px 0 #080E1A;
+}
+html.dark .aim-panel-body  { color: #8898B8; }
+html.dark .aim-panel-footer { background: #1C2438; border-top-color: #2A3455; }
+
+/* Away message */
+html.dark .aim-away-msg {
+  background: #1C1C12;
+  border-color: #38360A;
+  border-left-color: var(--away);
+  color: #A09858;
+}
+
+/* Profile bar */
+html.dark .aim-profile-bar { background: linear-gradient(180deg, #1E2438, #161A2C); }
+html.dark .aim-avatar       { border-color: #3A4870 #080E1A #080E1A #3A4870; }
+
+/* Info table */
+html.dark .aim-info-table tr:not(:last-child) td { border-bottom-color: #1E2840; }
+
+/* Nav dropdown */
+html.dark .nav-dropdown              { background: #242838; border-color: #3A4870 #080E1A #080E1A #3A4870; }
+html.dark .nav-dropdown a            { color: #8898B8; border-bottom-color: #1E2840; }
+html.dark .nav-dropdown a:hover      { background: rgba(80,110,200,0.15); color: #C8D8F0; }
+html.dark .nav-dropdown a.nav-active { color: var(--aim-blue-hi); }
+
+/* Buttons */
+html.dark .btn-secondary {
+  background: linear-gradient(180deg, #2A3248, #1E2840);
+  color: #B0C0E0;
+  border-color: #3A4868 #0A1030 #0A1030 #3A4868;
+}
+html.dark .btn-secondary:hover { color: #C8D8F0; filter: brightness(1.1); }
+
+/* Status bar */
+html.dark .aim-statusbar { background: #1A1E2C; border-top-color: #1A2040; }
 
 /* Small phone ≤ 400px */
 @media (max-width: 400px) {

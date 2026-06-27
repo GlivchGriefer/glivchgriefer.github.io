@@ -7,6 +7,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <link href="pages/home/css/hub.css" rel="stylesheet" />
   <script src="scripts/webapp.js"></script>
+  <style>
+    .home-ticker-bar{position:fixed;bottom:0;left:0;right:0;height:26px;z-index:200;overflow:hidden;display:flex;align-items:center;background:linear-gradient(90deg,#0e2460,#1a3898 35%,#1a3898 65%,#0e2460);border-top:1px solid #2a46a0;user-select:none;pointer-events:none;opacity:0;transition:opacity .7s ease;}
+    .home-ticker-bar.ht-ready{opacity:1;}
+    .home-ticker-track{display:inline-flex;white-space:nowrap;animation:htick linear infinite;animation-play-state:paused;}
+    .home-ticker-track>span{font-size:11px;color:rgba(200,215,255,.88);letter-spacing:.2px;}
+    .ht-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(120,155,255,.6);margin-right:4px;vertical-align:middle;}
+    .ht-sep{color:rgba(80,120,255,.45);padding:0 10px;vertical-align:middle;}
+    .ht-gap{display:inline-block;width:220px;text-align:center;color:rgba(80,120,255,.2);vertical-align:middle;}
+    @keyframes htick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+    .aim-app{padding-bottom:26px;}
+    html.dark .home-ticker-bar{background:linear-gradient(90deg,#050e22,#091840 35%,#091840 65%,#050e22);border-top-color:#152050;}
+    html.dark .home-ticker-track>span{color:rgba(160,185,255,.78);}
+
+    /* ── Hub Map preview card ─────────────────────────────── */
+    .hub-card-full{grid-column:1/-1;}
+    .hub-map-preview{cursor:pointer;text-decoration:none;}
+    .hub-map-visual{position:relative;height:160px;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,#061428 0%,#020810 100%);}
+    .hub-map-visual::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 18px,rgba(0,50,120,.07) 18px,rgba(0,50,120,.07) 19px),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(0,50,120,.07) 18px,rgba(0,50,120,.07) 19px);pointer-events:none;}
+    .hub-map-sweep{position:absolute;width:200%;height:200%;top:-50%;left:-50%;background:conic-gradient(from 0deg,transparent 340deg,rgba(0,200,80,.06) 355deg,rgba(0,200,80,.14) 360deg);animation:hmSweep 6s linear infinite;transform-origin:50% 50%;}
+    @keyframes hmSweep{to{transform:rotate(360deg);}}
+    .hub-map-blip{position:absolute;border-radius:50%;transform:translate(-50%,-50%);animation:hmBlip 2s ease-in-out infinite;}
+    @keyframes hmBlip{0%,100%{opacity:.4;box-shadow:0 0 0 rgba(255,100,0,0);}50%{opacity:1;box-shadow:0 0 5px rgba(255,100,0,.5);}}
+    .hub-map-bar{position:absolute;bottom:0;left:0;right:0;display:flex;gap:14px;align-items:center;padding:5px 12px;background:linear-gradient(transparent,rgba(2,8,20,.88));font-size:9.5px;color:rgba(70,110,170,.8);}
+    .hub-map-stat-v{color:#90c8f0;font-weight:700;margin-right:2px;}
+    .hub-map-stat-live{color:#22bb44;font-weight:700;margin-right:2px;}
+    .hub-map-footer{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-top:1px solid rgba(20,50,120,.35);}
+    .hub-map-layers{display:flex;gap:5px;flex-wrap:wrap;}
+    .hub-map-layer-pill{font-size:8px;color:rgba(70,110,170,.65);padding:1px 5px;border:1px solid rgba(25,55,120,.35);border-radius:10px;}
+    .hub-map-open{font-size:10px;font-weight:700;color:#4a8aee;text-decoration:none;white-space:nowrap;}
+    .hub-map-open:hover{color:#88c0ff;}
+    @media(max-width:600px){.hub-map-visual{height:120px;}.hub-map-layers{display:none;}}
+  </style>
 </head>
 <body>
   <div class="aim-app">
@@ -22,7 +54,10 @@
         <a href="pages/about/about.html">About</a>
         <a href="pages/contact/contact.html">Contact</a>
         <a href="pages/faq/faq.html">FAQ</a>
+        <a href="pages/daily/daily.html">Daily</a>
+        <a href="pages/map/map.html">Map</a>
       </nav>
+      <button class="dm-btn" aria-label="Toggle dark mode">◐</button>
       <label for="mnav-toggle" class="mnav-btn" aria-label="Toggle navigation">
         <span></span><span></span><span></span>
       </label>
@@ -36,6 +71,9 @@
       <a href="pages/about/about.html">About</a>
       <a href="pages/contact/contact.html">Contact</a>
       <a href="pages/faq/faq.html">FAQ</a>
+      <a href="pages/daily/daily.html">Daily</a>
+      <a href="pages/map/map.html">Map</a>
+      <button class="dm-btn mnav-dm" aria-label="Toggle dark mode">◐ Dark Mode</button>
     </nav>
     <main class="aim-main">
       <div class="hub-grid">
@@ -70,6 +108,32 @@
           </div>
           <div class="hub-card-body">
             Creative portfolio site | software engineering, multimedia, and web design in a terminal interface.
+          </div>
+        </a>
+
+        <a href="pages/map/map.html" class="hub-card hub-card-dark hub-map-preview hub-card-full">
+          <div class="hub-card-bar">
+            <span>🗺</span>
+            <span class="hub-card-title">Live Map</span>
+            <span class="hub-card-tag" style="background:#001a0a;color:#22bb44;animation:hmBlip 2s ease-in-out infinite">● LIVE</span>
+          </div>
+          <div class="hub-map-visual" id="hm-visual">
+            <div class="hub-map-sweep"></div>
+            <div class="hub-map-bar" id="hm-stats">
+              <span><span class="hub-map-stat-v" id="hm-qn">—</span> quakes 24h</span>
+              <span><span class="hub-map-stat-v" id="hm-an">—</span> active alerts</span>
+              <span><span class="hub-map-stat-live">🌧</span> Radar: Live</span>
+            </div>
+          </div>
+          <div class="hub-map-footer">
+            <div class="hub-map-layers">
+              <span class="hub-map-layer-pill">🌧 Radar</span>
+              <span class="hub-map-layer-pill">🌍 Earthquakes</span>
+              <span class="hub-map-layer-pill">⚠️ NWS Alerts</span>
+              <span class="hub-map-layer-pill">🚨 Disasters</span>
+              <span class="hub-map-layer-pill">📡 Buoys</span>
+            </div>
+            <span class="hub-map-open">Open Full Map →</span>
           </div>
         </a>
 
@@ -132,5 +196,143 @@
       (function(){var l=window.location.href;document.querySelectorAll('.aim-desktop-nav a,.mobile-nav a').forEach(function(a){if(a.href===l)a.classList.add('nav-active');});})();
   </script>
   <script src="scripts/year.js"></script>
+
+  <div class="home-ticker-bar" aria-hidden="true">
+    <div class="home-ticker-track" id="htt">
+      <span id="hta"></span><span id="htb"></span>
+    </div>
+  </div>
+
+  <!-- Hub map preview card live data -->
+  <script>
+  (function(){
+    var visual=document.getElementById('hm-visual');
+    if(!visual)return;
+    var qnEl=document.getElementById('hm-qn'),anEl=document.getElementById('hm-an');
+    function placeBlip(lat,lon,mag){
+      var x=(lon+180)/360*100,y=(90-lat)/180*100;
+      var sz=Math.max(3,Math.min(10,mag*1.5));
+      var c=mag>=6?'#FF3030':mag>=5?'#FF7422':mag>=4?'#FFC020':'#FFEE44';
+      var b=document.createElement('div');
+      b.className='hub-map-blip';
+      b.style.cssText='left:'+x.toFixed(2)+'%;top:'+y.toFixed(2)+'%;width:'+sz+'px;height:'+sz+'px;background:'+c+';animation-delay:'+(Math.random()*2).toFixed(2)+'s';
+      visual.insertBefore(b,visual.querySelector('.hub-map-bar'));
+    }
+    fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson')
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(qnEl)qnEl.textContent=d.features.length;
+        d.features.slice(0,50).forEach(function(f){
+          var c=f.geometry&&f.geometry.coordinates;
+          var m=parseFloat(f.properties.mag)||0;
+          if(c&&c.length>=2&&m>=2)placeBlip(c[1],c[0],m);
+        });
+      }).catch(function(){});
+    fetch('https://api.weather.gov/alerts/active.geojson',{headers:{'User-Agent':'(proceduralmedia.com)'}})
+      .then(function(r){return r.json();})
+      .then(function(d){if(anEl)anEl.textContent=(d.features||[]).filter(function(f){return f.geometry;}).length;})
+      .catch(function(){});
+  }());
+  </script>
+
+  <script>
+  (function(){
+    function pad(n){return n<10?'0'+n:''+n;}
+    function todayStr(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+    function yestStr(){var d=new Date(Date.now()-864e5);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+    function $g(u){return fetch(u).then(function(r){if(!r.ok)throw r;return r.json();});}
+    function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function lbl(t){return '<span class="ht-lbl">'+t+'</span>';}
+    function fmtT(iso){if(!iso)return'';var d=new Date(iso),h=d.getHours(),m=d.getMinutes();return(h%12||12)+':'+(m<10?'0'+m:m)+(h>=12?'p':'a');}
+    function magHtml(m){
+      var c=m>=6?'#ff4040':m>=5?'#ff7422':m>=4?'#ffc020':'#6adf50';
+      return'<span style="color:'+c+';font-weight:700">M'+m.toFixed(1)+'</span>';
+    }
+    var WMO={0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',51:'Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',71:'Light Snow',73:'Snow',80:'Showers',95:'Thunderstorm'};
+    var SEP='<span class="ht-sep">◆</span>';
+    var GAP='<span class="ht-gap">✦</span>';
+
+    /* slots[0]=date, slots[1]=weather; extra[] gets everything else */
+    var slots=[null,null],extra=[],live=false,issOk=false,wxOk=false;
+    var a=document.getElementById('hta'),b=document.getElementById('htb'),
+        track=document.getElementById('htt'),bar=document.querySelector('.home-ticker-bar');
+
+    function go(){
+      if(live)return;live=true;
+      var parts=slots.filter(Boolean).concat(extra);
+      if(!parts.length)return;
+      var html=parts.join(SEP)+GAP;
+      a.innerHTML=html; b.innerHTML=html;
+      requestAnimationFrame(function(){
+        var w=a.getBoundingClientRect().width;
+        track.style.animationDuration=Math.max(w/65,10)+'s';
+        track.style.animationPlayState='running';
+        bar.classList.add('ht-ready');
+      });
+    }
+    function tryGo(){if(issOk&&wxOk)go();}
+
+    /* Date */
+    slots[0]=lbl('TODAY')+' '+esc(new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}));
+
+    /* Cache */
+    var cache=null;
+    try{var raw=JSON.parse(localStorage.getItem('pm_daily_v4')||'null');if(raw&&raw.date===todayStr())cache=raw.data;}catch(e){}
+
+    if(cache){
+      if(cache.quake){var qp=cache.quake.properties;extra.push(lbl('QUAKE')+' '+magHtml(parseFloat(qp.mag))+' '+esc(qp.place||''));}
+      if(cache.hn)extra.push(lbl('HN')+' '+esc(cache.hn.title));
+      if(cache.github)extra.push(lbl('GITHUB')+' '+esc(cache.github.full_name)+' ⭐'+Number(cache.github.stargazers_count||0).toLocaleString());
+      if(cache.word&&cache.word.word){
+        var ww=cache.word,dw=ww.entry&&ww.entry.meanings&&ww.entry.meanings[0]&&ww.entry.meanings[0].definitions&&ww.entry.meanings[0].definitions[0];
+        extra.push(lbl('WORD')+' '+esc(ww.word)+(dw?' — '+esc(dw.definition.slice(0,72)):''));
+      }
+      if(cache.wiki&&cache.wiki[0]){var we=cache.wiki[0];extra.push(lbl('ON THIS DAY')+' '+esc(we.year+': '+we.text.slice(0,88)+(we.text.length>88?'…':'')));}
+      if(cache.tech&&cache.tech[0]){var te=cache.tech[0];extra.push(lbl('TECH')+' '+esc((te.year||'')+': '+(te.text||'').slice(0,88)));}
+      if(cache.inat){var it=cache.inat.taxon||{};extra.push(lbl('NATURE')+' '+esc((it.preferred_common_name||it.name||'sighting')+(cache.inat.place_guess?' · '+cache.inat.place_guess:'')));}
+    } else {
+      $g('https://hacker-news.firebaseio.com/v0/topstories.json')
+        .then(function(ids){return $g('https://hacker-news.firebaseio.com/v0/item/'+ids[0]+'.json');})
+        .then(function(s){extra.push(lbl('HN')+' '+esc(s.title));}).catch(function(){});
+      $g('https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime='+yestStr()+'T00:00:00&endtime='+todayStr()+'T00:00:00&orderby=magnitude&limit=1&minmagnitude=2.5')
+        .then(function(d){var f=d.features&&d.features[0];if(f)extra.push(lbl('QUAKE')+' '+magHtml(parseFloat(f.properties.mag))+' '+esc(f.properties.place||''));}).catch(function(){});
+    }
+
+    /* Weather — always live from saved ZIP */
+    var zip='';try{zip=localStorage.getItem('pm_daily_zip')||'';}catch(e){}
+    if(zip){
+      $g('https://api.zippopotam.us/us/'+zip)
+        .then(function(z){
+          var p=z.places[0];
+          var city=p['place name']+', '+p['state abbreviation'];
+          return $g('https://api.open-meteo.com/v1/forecast?latitude='+p.latitude+'&longitude='+p.longitude+'&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&hourly=temperature_2m&temperature_unit=fahrenheit&timezone=auto&forecast_days=1')
+            .then(function(w){
+              var d=w.daily,hr=new Date().getHours();
+              var cur=Math.round((w.hourly.temperature_2m||[])[hr]||0);
+              var desc=WMO[d.weather_code[0]]||'';
+              var hi=Math.round(d.temperature_2m_max[0]),lo=Math.round(d.temperature_2m_min[0]);
+              var rise=fmtT(d.sunrise[0]),set=fmtT(d.sunset[0]);
+              slots[1]=lbl('WEATHER')+' '+esc(city)+': '+cur+'°F · '+esc(desc)+' · H:'+hi+'° L:'+lo+'° · 🌅 '+rise+' 🌇 '+set;
+            });
+        })
+        .catch(function(){})
+        .then(function(){wxOk=true;tryGo();});
+    } else {
+      wxOk=true;
+    }
+
+    /* ISS — always live */
+    $g('https://api.wheretheiss.at/v1/satellites/25544')
+      .then(function(d){
+        var la=parseFloat(d.latitude),lo=parseFloat(d.longitude);
+        extra.push(lbl('ISS')+' '+Math.abs(la).toFixed(1)+'°'+(la>=0?'N':'S')+' '+Math.abs(lo).toFixed(1)+'°'+(lo>=0?'E':'W')+' · '+Math.round(d.altitude)+'km · '+(d.visibility==='daylight'?'☀ Daylit':'● Eclipsed'));
+      })
+      .catch(function(){})
+      .then(function(){issOk=true;tryGo();});
+
+    /* Hard fallback — go with whatever arrived */
+    setTimeout(function(){issOk=true;wxOk=true;go();},4000);
+  }());
+  </script>
 </body>
 </html>

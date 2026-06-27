@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Daily Updates</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGVsbGlwc2UgY3g9IjE2IiBjeT0iOS41IiAgcng9IjcuNSIgcnk9IjIuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA3QTIyIiBzdHJva2Utd2lkdGg9Ii45Ii8+PGVsbGlwc2UgY3g9IjE2IiBjeT0iMjIuNSIgcng9IjcuNSIgcnk9IjIuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA3QTIyIiBzdHJva2Utd2lkdGg9Ii45Ii8+PGVsbGlwc2UgY3g9IjE2IiBjeT0iMTYiICAgcng9IjExIiAgcnk9IjQiICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBDQzQ0IiBzdHJva2Utd2lkdGg9IjEuMiIvPjxlbGxpcHNlIGN4PSIxNiIgY3k9IjE2IiAgIHJ4PSI3IiAgIHJ5PSIxMSIgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwN0EyMiIgc3Ryb2tlLXdpZHRoPSIuOSIvPjxlbGxpcHNlIGN4PSIxNiIgY3k9IjE2IiAgIHJ4PSIzLjUiIHJ5PSIxMSIgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwQ0M0NCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz48Y2lyY2xlICBjeD0iMTYiIGN5PSIxNiIgICByPSIxMSIgICAgICAgICAgICBmaWxsPSJub25lIiBzdHJva2U9IiMwMEVFNTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PC9zdmc+" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <link href="../../pages/home/css/hub.css" rel="stylesheet" />
+  <link href="daily.css" rel="stylesheet" />
+  <script src="../../scripts/webapp.js"></script>
+</head>
+<body class="daily-page">
+  <div class="aim-app">
+    <input type="checkbox" id="mnav-toggle" class="mnav-toggle" />
+    <header class="aim-titlebar">
+      <div class="aim-titlebar-logo">
+        <a href="../../index.html" class="aim-logo-mark" title="Hub"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><ellipse cx="16" cy="9.5" rx="7.5" ry="2.5" fill="none" stroke="#007A22" stroke-width=".9"/><ellipse cx="16" cy="22.5" rx="7.5" ry="2.5" fill="none" stroke="#007A22" stroke-width=".9"/><ellipse cx="16" cy="16" rx="11" ry="4" fill="none" stroke="#00CC44" stroke-width="1.2"/><ellipse cx="16" cy="16" rx="7" ry="11" fill="none" stroke="#007A22" stroke-width=".9"/><ellipse cx="16" cy="16" rx="3.5" ry="11" fill="none" stroke="#00CC44" stroke-width="1.2"/><circle cx="16" cy="16" r="11" fill="none" stroke="#00EE55" stroke-width="1.6"/></svg></a>
+        <span class="aim-logo-text">Procedural Media</span>
+      </div>
+      <nav class="aim-desktop-nav">
+        <span class="nav-group" tabindex="0">Projects ▾<span class="nav-dropdown"><a href="../skanner/index.html">SKANNER</a><a href="../netbreaker/netbreaker.html">NETBREAKER</a><a href="https://interportal.neocities.org" target="_blank" rel="noopener">Interportal ↗</a></span></span>
+        <a href="../gallery/gallery.html">Gallery</a>
+        <a href="../about/about.html">About</a>
+        <a href="../contact/contact.html">Contact</a>
+        <a href="../faq/faq.html">FAQ</a>
+        <a href="daily.html">Daily</a>
+        <a href="../map/map.html">Map</a>
+      </nav>
+      <button class="dm-btn" aria-label="Toggle dark mode">◐</button>
+      <label for="mnav-toggle" class="mnav-btn" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </label>
+    </header>
+    <nav class="mobile-nav">
+      <span class="mnav-section">Projects</span>
+      <a href="../skanner/index.html">SKANNER</a>
+      <a href="../netbreaker/netbreaker.html">NETBREAKER</a>
+      <a href="https://interportal.neocities.org" target="_blank" rel="noopener">Interportal ↗</a>
+      <a href="../gallery/gallery.html">Gallery</a>
+      <a href="../about/about.html">About</a>
+      <a href="../contact/contact.html">Contact</a>
+      <a href="../faq/faq.html">FAQ</a>
+      <a href="daily.html">Daily</a>
+      <a href="../map/map.html">Map</a>
+      <button class="dm-btn mnav-dm" aria-label="Toggle dark mode">◐ Dark Mode</button>
+    </nav>
+
+    <main class="aim-main">
+
+      <!-- Weather -->
+      <div class="dw-glass dw-weather-card">
+        <div class="dw-label">🌤 Weather</div>
+        <div id="zip-form">
+          <p class="dw-zip-prompt">Enter your ZIP code for local weather</p>
+          <div class="dw-zip-row">
+            <input type="text" id="zip-input" placeholder="ZIP code" maxlength="5" class="dw-input" inputmode="numeric" />
+            <button id="zip-submit" class="dw-btn">Go</button>
+          </div>
+        </div>
+        <div id="weather-content" class="hidden">
+          <div class="dw-w-main">
+            <span class="dw-weather-icon" id="w-icon">🌤</span>
+            <span class="dw-weather-temp" id="w-temp">—</span>
+            <div class="dw-weather-cond">
+              <span id="w-desc">—</span>
+              <span class="dw-sep">·</span>
+              <span id="w-loc">—</span>
+            </div>
+          </div>
+          <div class="dw-w-stats">
+            <span class="dw-ws"><span class="dw-wl">H</span><span id="w-hi">—</span></span>
+            <span class="dw-ws"><span class="dw-wl">L</span><span id="w-lo">—</span></span>
+            <span class="dw-ws"><span class="dw-wl">Humidity</span><span id="w-hum">—</span></span>
+            <span class="dw-ws"><span class="dw-wl">Precip</span><span id="w-precip">—</span></span>
+            <span class="dw-ws"><span class="dw-wl">🌅</span><span id="w-sunrise">—</span></span>
+            <span class="dw-ws"><span class="dw-wl">🌇</span><span id="w-sunset">—</span></span>
+          </div>
+          <div id="w-hourly" class="dw-hr-strip"></div>
+          <div class="dw-weather-footer">
+            <button class="dw-ghost-btn" id="radar-toggle">Radar</button>
+            <button class="dw-ghost-btn" id="zip-change">Change ZIP</button>
+            <span class="dw-src-badge">Open-Meteo · NWS</span>
+          </div>
+          <div id="radar-wrap" class="hidden">
+            <img src="https://radar.weather.gov/ridge/standard/CONUS_loop.gif" class="dw-radar" alt="CONUS Radar Loop" loading="lazy" />
+            <div class="dw-chart-label" style="margin-top:4px;text-align:right;">
+              <a href="https://radar.weather.gov" target="_blank" rel="noopener" class="dw-link">NWS Radar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Discovery Carousel -->
+      <div class="dw-carousel-section">
+        <div class="dw-section-head">
+          <span class="dw-section-title">Today's Discoveries</span>
+          <span class="dw-section-date" id="w-date"></span>
+        </div>
+        <div class="dw-carousel-wrap">
+          <div class="dw-carousel" id="discovery-carousel">
+
+            <!-- Slide 0: APOD -->
+            <div class="dw-slide">
+              <img class="dw-slide-img" id="apod-img" alt="" />
+              <div class="dw-slide-no-img hidden" id="apod-noimgwrap">
+                <span class="dw-slide-no-img-icon">🎬</span>
+                <a id="apod-video-link" href="#" target="_blank" rel="noopener" class="dw-slide-ext-link">Watch video</a>
+              </div>
+              <div class="dw-slide-overlay">
+                <span class="dw-slide-source">🔭 NASA APOD</span>
+                <div class="dw-slide-title" id="apod-title">Loading…</div>
+                <div class="dw-slide-desc" id="apod-desc"></div>
+                <div class="dw-slide-footer">
+                  <a class="dw-slide-ext-link" id="apod-link" href="#" target="_blank" rel="noopener">View full size</a>
+                  <span class="dw-slide-credit" id="apod-credit"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 1: GBIF -->
+            <div class="dw-slide">
+              <img class="dw-slide-img" id="gbif-img" alt="" loading="lazy" />
+              <div class="dw-slide-no-img hidden" id="gbif-noimgwrap">
+                <span class="dw-slide-no-img-icon">🌐</span>
+              </div>
+              <div class="dw-slide-overlay">
+                <span class="dw-slide-source">🌐 GBIF Observation</span>
+                <div class="dw-slide-title" id="gbif-title">Loading…</div>
+                <div class="dw-slide-desc" id="gbif-desc"></div>
+                <div class="dw-slide-footer">
+                  <a class="dw-slide-ext-link" id="gbif-link" href="#" target="_blank" rel="noopener">GBIF</a>
+                  <span class="dw-slide-credit" id="gbif-meta"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 2: iNaturalist -->
+            <div class="dw-slide">
+              <img class="dw-slide-img" id="inat-img" alt="" loading="lazy" />
+              <div class="dw-slide-no-img hidden" id="inat-noimgwrap">
+                <span class="dw-slide-no-img-icon">🌿</span>
+              </div>
+              <div class="dw-slide-overlay">
+                <span class="dw-slide-source">🌿 iNaturalist</span>
+                <div class="dw-slide-title" id="inat-title">Loading…</div>
+                <div class="dw-slide-desc" id="inat-desc"></div>
+                <div class="dw-slide-footer">
+                  <a class="dw-slide-ext-link" id="inat-link" href="#" target="_blank" rel="noopener">iNaturalist</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <button class="dw-carousel-btn dw-prev" aria-label="Previous">‹</button>
+          <button class="dw-carousel-btn dw-next" aria-label="Next">›</button>
+          <div class="dw-dots">
+            <span class="dw-dot active" data-slide="0"></span>
+            <span class="dw-dot" data-slide="1"></span>
+            <span class="dw-dot" data-slide="2"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info grid -->
+      <div class="dw-info-grid">
+
+        <div class="dw-glass" id="w-word">
+          <div class="dw-label">📝 Word of the Day</div>
+          <div id="word-body"><div class="dw-loading">Loading…</div></div>
+        </div>
+
+        <div class="dw-glass" id="w-wiki">
+          <div class="dw-label">📖 On This Day</div>
+          <div id="wiki-body"><div class="dw-loading">Loading…</div></div>
+        </div>
+
+        <div class="dw-glass dw-compact" id="w-quake">
+          <div class="dw-label">🌍 Biggest Earthquake Yesterday</div>
+          <div id="quake-body"><div class="dw-loading">Loading…</div></div>
+        </div>
+
+        <div class="dw-glass dw-compact" id="w-github">
+          <div class="dw-label">⭐ GitHub Trending</div>
+          <div id="github-body"><div class="dw-loading">Loading…</div></div>
+        </div>
+
+        <div class="dw-glass dw-grid-full" id="w-hn">
+          <div class="dw-label">🔥 HackerNews Top Story</div>
+          <div id="hn-body"><div class="dw-loading">Loading…</div></div>
+        </div>
+
+        <div class="dw-glass dw-grid-full" id="w-iss">
+          <div class="dw-iss-text">
+            <div class="dw-label">🛸 ISS Live Position</div>
+            <div id="iss-body"><div class="dw-loading">Loading…</div></div>
+            <div class="dw-meta" id="iss-crew" style="margin-top:6px;font-size:10px;"></div>
+          </div>
+          <div id="iss-globe" class="dw-iss-globe"></div>
+        </div>
+
+        <div class="dw-glass dw-grid-full" id="w-tech">
+          <div class="dw-label">💾 This Day in Tech History</div>
+          <div id="tech-body"><div class="dw-loading">Loading…</div></div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <footer class="aim-statusbar">
+      <span>© <span class="copyright-year">2026</span> Procedural Media · Denver, CO</span>
+      <nav class="aim-statusbar-links">
+        <a href="../faq/faq.html">FAQ</a>
+        <a href="../about/about.html">About</a>
+        <a href="../contact/contact.html">Contact</a>
+      </nav>
+    </footer>
+  </div>
+  <script>
+    (function(){var l=window.location.href;document.querySelectorAll('.aim-desktop-nav a,.mobile-nav a').forEach(function(a){if(a.href===l)a.classList.add('nav-active');});})();
+  </script>
+  <script src="../../scripts/year.js"></script>
+  <script src="daily.js"></script>
+</body>
+</html>
