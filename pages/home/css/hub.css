@@ -700,9 +700,19 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
 
   .btn-primary, .btn-secondary { padding: 8px 14px; font-size: 12px; }
 
-  .aim-statusbar       { padding: 5px 16px; padding-bottom: calc(5px + env(safe-area-inset-bottom, 0px)); gap: 2px; }
-  .aim-statusbar a     { font-size: 10px; }
-  .aim-statusbar > span { font-size: 8px; }
+  .aim-statusbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    gap: 6px;
+    height: 26px;
+    min-height: 26px;
+  }
+  .aim-statusbar > span { font-size: 8px; order: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .aim-statusbar-links  { gap: 8px; order: 2; flex-shrink: 0; justify-content: flex-end; }
+  .aim-statusbar a      { font-size: 8px; }
 
   .aim-profile-card { flex-wrap: wrap; }
   .aim-avatar       { width: 44px; height: 44px; font-size: 16px; }
