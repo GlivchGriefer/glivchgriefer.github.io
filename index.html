@@ -8,7 +8,7 @@
   <link href="pages/home/css/hub.css" rel="stylesheet" />
   <script src="scripts/webapp.js"></script>
   <style>
-    .home-ticker-bar{position:fixed;bottom:0;left:0;right:0;height:26px;z-index:200;overflow:hidden;display:flex;align-items:center;background:linear-gradient(90deg,#0e2460,#1a3898 35%,#1a3898 65%,#0e2460);border-top:1px solid #2a46a0;user-select:none;pointer-events:none;opacity:0;transition:opacity .7s ease;}
+    .home-ticker-bar{position:fixed;bottom:0;left:0;right:0;height:max(26px,3.5vh);z-index:200;overflow:hidden;display:flex;align-items:center;background:linear-gradient(90deg,#0e2460,#1a3898 35%,#1a3898 65%,#0e2460);border-top:1px solid #2a46a0;user-select:none;pointer-events:none;opacity:0;transition:opacity .7s ease;}
     .home-ticker-bar.ht-ready{opacity:1;}
     .home-ticker-track{display:inline-flex;white-space:nowrap;animation:htick linear infinite;animation-play-state:paused;}
     .home-ticker-track>span{font-size:11px;color:rgba(200,215,255,.88);letter-spacing:.2px;}
@@ -16,7 +16,7 @@
     .ht-sep{color:rgba(80,120,255,.45);padding:0 10px;vertical-align:middle;}
     .ht-gap{display:inline-block;width:220px;text-align:center;color:rgba(80,120,255,.2);vertical-align:middle;}
     @keyframes htick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-    .aim-app{padding-bottom:26px;}
+    .aim-app{padding-bottom:max(26px,3.5vh);}
     html.dark .home-ticker-bar{background:linear-gradient(90deg,#050e22,#091840 35%,#091840 65%,#050e22);border-top-color:#152050;}
     html.dark .home-ticker-track>span{color:rgba(160,185,255,.78);}
 
