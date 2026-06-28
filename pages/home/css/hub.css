@@ -623,22 +623,34 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
 /* ── Status bar (footer) ───────────────────────────────── */
 .aim-statusbar {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 8px 16px;
-  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  flex-wrap: nowrap;
+  gap: 0;
+  padding: 0 16px;
+  height: 28px;
+  min-height: 28px;
+  max-height: 28px;
+  overflow: hidden;
   background: var(--app-bg);
   border-top: 1px solid var(--chrome-dark);
   color: var(--ink-muted);
   flex-shrink: 0;
-  text-align: center;
 }
 
-.aim-statusbar-links { display: flex; gap: 12px; justify-content: center; order: 1; }
-.aim-statusbar > span { order: 2; font-size: 9px; }
-.aim-statusbar a { color: var(--ink-muted); text-decoration: none; font-size: 11px; }
+.aim-statusbar > span {
+  font-size: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+  min-width: 0;
+}
+.aim-statusbar > span::after { content: ' ·'; padding-right: 4px; }
+.aim-statusbar-links { display: flex; gap: 0; justify-content: center; flex-shrink: 0; }
+.aim-statusbar-links a { padding: 0 6px; }
+.aim-statusbar a { color: var(--ink-muted); text-decoration: none; font-size: 9px; white-space: nowrap; }
 .aim-statusbar a:hover { color: var(--aim-blue-mid); text-decoration: underline; }
 
 /* ══ RESPONSIVE ══════════════════════════════════════════ */
@@ -648,13 +660,10 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
   .hub-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* Landscape tablet — contain to viewport, compact footer */
+/* Landscape tablet — contain to viewport */
 @media (orientation: landscape) and (min-width: 641px) and (max-width: 1100px) {
   body     { height: 100svh; overflow: hidden; }
   .aim-app { min-height: unset; height: 100svh; overflow: hidden; }
-  .aim-statusbar { padding: 4px 16px; gap: 2px; }
-  .aim-statusbar a     { font-size: 10px; }
-  .aim-statusbar > span { font-size: 8px; }
 }
 
 /* Mobile ≤ 640px */
@@ -702,36 +711,10 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
 
   .aim-app { border-bottom: none; }
 
-  .aim-statusbar {
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: 0;
-    padding: 0 6px;
-    height: 26px;
-    min-height: 26px;
-    max-height: 26px;
-    overflow: hidden;
-  }
-  .aim-statusbar > span {
-    font-size: 8.5px;
-    order: unset;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-shrink: 1;
-    min-width: 0;
-  }
-  .aim-statusbar > span::after { content: ' ·'; padding-right: 4px; }
-  .aim-statusbar-links {
-    order: unset;
-    gap: 0;
-    flex-shrink: 0;
-    justify-content: center;
-  }
-  .aim-statusbar-links a { padding: 0 5px; }
-  .aim-statusbar a       { font-size: 8.5px; white-space: nowrap; }
+  .aim-statusbar { padding: 0 6px; height: 26px; min-height: 26px; max-height: 26px; }
+  .aim-statusbar > span { font-size: 8px; }
+  .aim-statusbar-links a { padding: 0 4px; }
+  .aim-statusbar a { font-size: 8px; }
 
   .aim-profile-card { flex-wrap: wrap; }
   .aim-avatar       { width: 44px; height: 44px; font-size: 16px; }

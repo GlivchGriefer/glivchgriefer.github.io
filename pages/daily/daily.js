@@ -192,16 +192,35 @@
   }
 
   // ── APOD ─────────────────────────────────────────────────
+  // Primary source: apod-today.json committed by GitHub Actions at 00:01 UTC.
+  // Browsers never call NASA directly unless the static file is missing or stale.
 
   function fetchApod() {
     if (_cache && _cache.apod) { renderApod(_cache.apod); return; }
+    var today = todayStr(), yesterday = yesterdayStr();
+    // Cache-bust by date so the browser fetches the new file each calendar day
+    // but reuses the browser's HTTP cache within the same day.
+    fetch('apod-today.json?v=' + today)
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (data) {
+        if (data && (data.date === today || data.date === yesterday)) {
+          setCache('apod', data);
+          renderApod(data);
+        } else {
+          fetchApodDirect();   // static file is stale (pre-first-action-run)
+        }
+      })
+      .catch(fetchApodDirect); // file missing or network error
+  }
+
+  function fetchApodDirect() {
     var h = new Date().getHours();
     var date = h < 6 ? yesterdayStr() : todayStr();
     fetch$('https://api.nasa.gov/planetary/apod?api_key=LwKocN7opRPq0C5Bl06PoswP7ZPgSMIs7RtsKNZ9&date=' + date)
       .then(function (data) { setCache('apod', data); renderApod(data); })
-      .catch(function (e) {
+      .catch(function () {
         document.getElementById('apod-title').textContent = 'APOD unavailable';
-        document.getElementById('apod-desc').textContent = 'NASA rate limit or network error. ' + (e.message || '');
+        document.getElementById('apod-desc').textContent = 'Image will appear once the daily update is available.';
         document.getElementById('apod-img').style.opacity = '0';
       });
   }
