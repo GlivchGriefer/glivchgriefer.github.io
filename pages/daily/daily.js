@@ -1,7 +1,8 @@
 (function () {
   'use strict';
 
-  var CACHE_KEY = 'pm_daily_v4';
+  var CACHE_KEY = 'pm_daily_v5';
+  var NASA_KEY  = 'LwKocN7opRPq0C5Bl06PoswP7ZPgSMIs7RtsKNZ9';
 
   var WORDS = [
     'ephemeral','luminous','serendipity','catalyst','entropy',
@@ -77,11 +78,11 @@
 
   function wmo(code) {
     var m = {
-      0:['☀️','Clear sky'],1:['🌤','Mainly clear'],2:['⛅','Partly cloudy'],
+      0:['☀️','Clear'],1:['🌤','Mainly clear'],2:['⛅','Partly cloudy'],
       3:['☁️','Overcast'],45:['🌫','Foggy'],48:['🌫','Icy fog'],
       51:['🌦','Light drizzle'],53:['🌦','Drizzle'],55:['🌧','Dense drizzle'],
-      61:['🌧','Light rain'],63:['🌧','Moderate rain'],65:['🌧','Heavy rain'],
-      71:['🌨','Light snow'],73:['❄️','Moderate snow'],75:['❄️','Heavy snow'],
+      61:['🌧','Light rain'],63:['🌧','Rain'],65:['🌧','Heavy rain'],
+      71:['🌨','Light snow'],73:['❄️','Snow'],75:['❄️','Heavy snow'],
       77:['🌨','Snow grains'],80:['🌦','Light showers'],81:['🌧','Showers'],
       82:['⛈','Violent showers'],85:['🌨','Snow showers'],86:['❄️','Heavy snow showers'],
       95:['⛈','Thunderstorm'],96:['⛈','Thunderstorm + hail'],99:['⛈','Thunderstorm + heavy hail']
@@ -96,25 +97,10 @@
     return (h % 12 || 12) + ':' + String(m).padStart(2, '0') + (h >= 12 ? 'p' : 'a');
   }
 
-  function buildHourlyStrip(hourlyTemps, startHr) {
-    var endHr = Math.min(startHr + 16, hourlyTemps.length);
-    var html = '';
-    for (var i = startHr; i < endHr; i++) {
-      var t = Math.round(hourlyTemps[i]);
-      var h = i % 24;
-      var label = h === 0 ? '12a' : h === 12 ? '12p' : h < 12 ? h + 'a' : (h - 12) + 'p';
-      html += '<div class="dw-hr-cell' + (i === startHr ? ' dw-hr-now' : '') + '">' +
-        '<span class="dw-hr-time">' + label + '</span>' +
-        '<span class="dw-hr-temp">' + t + '°</span>' +
-        '</div>';
-    }
-    return html;
-  }
-
   // ── Carousel ─────────────────────────────────────────────
 
   var _slide = 0;
-  var _slideCount = 3;
+  var _slideCount = 6;
   var _autoTimer = null;
 
   function gotoSlide(idx) {
@@ -126,7 +112,7 @@
   }
 
   function startAuto() {
-    _autoTimer = setInterval(function () { gotoSlide(_slide + 1); }, 6000);
+    _autoTimer = setInterval(function () { gotoSlide(_slide + 1); }, 7000);
   }
 
   function resetAuto() {
@@ -134,20 +120,20 @@
     startAuto();
   }
 
-  // ── Weather ───────────────────────────────────────────────
+  // ── Weather ticker ────────────────────────────────────────
 
   function showZipPrompt() {
-    document.getElementById('zip-form').classList.remove('hidden');
-    document.getElementById('weather-content').classList.add('hidden');
+    document.getElementById('ticker-prompt').classList.remove('hidden');
+    document.getElementById('ticker-data').classList.add('hidden');
   }
 
   function loadWeather(zip) {
-    document.getElementById('zip-form').classList.add('hidden');
-    document.getElementById('weather-content').classList.remove('hidden');
+    document.getElementById('ticker-prompt').classList.add('hidden');
+    document.getElementById('ticker-data').classList.remove('hidden');
     document.getElementById('w-icon').textContent = '⏳';
     document.getElementById('w-desc').textContent = 'Loading…';
-    document.getElementById('w-loc').textContent = zip;
-    document.getElementById('w-temp').textContent = '—';
+    document.getElementById('w-loc').textContent = '';
+    document.getElementById('w-temp').textContent = '';
 
     fetch$('https://api.zippopotam.us/us/' + zip)
       .then(function (z) {
@@ -155,9 +141,9 @@
         var city = p['place name'] + ', ' + p['state abbreviation'];
         return fetch$(
           'https://api.open-meteo.com/v1/forecast?latitude=' + p.latitude + '&longitude=' + p.longitude +
-          '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,sunrise,sunset' +
-          '&hourly=temperature_2m,relative_humidity_2m' +
-          '&temperature_unit=fahrenheit&precipitation_unit=inch&timezone=auto&forecast_days=2'
+          '&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset' +
+          '&hourly=temperature_2m' +
+          '&temperature_unit=fahrenheit&timezone=auto&forecast_days=1'
         ).then(function (w) { return { w: w, city: city }; });
       })
       .then(function (obj) {
@@ -165,41 +151,38 @@
         var info = wmo(d.weather_code[0]);
         var hi = Math.round(d.temperature_2m_max[0]);
         var lo = Math.round(d.temperature_2m_min[0]);
-        var precip = d.precipitation_sum[0].toFixed(2);
         var hr = new Date().getHours();
-        var hum = w.hourly.relative_humidity_2m[hr] || w.hourly.relative_humidity_2m[12];
         var curTemp = Math.round(w.hourly.temperature_2m[hr] || w.hourly.temperature_2m[12]);
 
         document.getElementById('w-icon').textContent = info[0];
+        document.getElementById('w-temp').textContent = curTemp + '°';
         document.getElementById('w-desc').textContent = info[1];
         document.getElementById('w-loc').textContent = city;
-        document.getElementById('w-temp').textContent = curTemp + '°F';
-        document.getElementById('w-hi').textContent = hi + '°F';
-        document.getElementById('w-lo').textContent = lo + '°F';
-        document.getElementById('w-hum').textContent = hum + '%';
-        document.getElementById('w-precip').textContent = precip + '"';
-        document.getElementById('w-hourly').innerHTML = buildHourlyStrip(w.hourly.temperature_2m, hr);
-        document.getElementById('w-sunrise').textContent = fmtTime(d.sunrise[0]);
-        document.getElementById('w-sunset').textContent = fmtTime(d.sunset[0]);
+        document.getElementById('w-hi').textContent = hi + '°';
+        document.getElementById('w-lo').textContent = lo + '°';
+        document.getElementById('w-sunrise').textContent = '☀ ' + fmtTime(d.sunrise[0]);
+        document.getElementById('w-sunset').textContent = '⬇ ' + fmtTime(d.sunset[0]);
+
+        var btn = document.getElementById('ticker-map-btn');
+        if (btn) btn.href = '../map/map.html';
+
         document.getElementById('w-date').textContent =
           new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
       })
       .catch(function () {
-        document.getElementById('w-icon').textContent = '⚠️';
-        document.getElementById('w-desc').textContent = 'Could not load weather';
-        document.getElementById('w-loc').textContent = 'Check ZIP and try again';
+        document.getElementById('w-icon').textContent = '⚠';
+        document.getElementById('w-desc').textContent = 'Weather unavailable — check ZIP';
+        document.getElementById('w-loc').textContent = '';
+        document.getElementById('w-temp').textContent = '';
       });
   }
 
   // ── APOD ─────────────────────────────────────────────────
   // Primary source: apod-today.json committed by GitHub Actions at 00:01 UTC.
-  // Browsers never call NASA directly unless the static file is missing or stale.
 
   function fetchApod() {
     if (_cache && _cache.apod) { renderApod(_cache.apod); return; }
     var today = todayStr(), yesterday = yesterdayStr();
-    // Cache-bust by date so the browser fetches the new file each calendar day
-    // but reuses the browser's HTTP cache within the same day.
     fetch('apod-today.json?v=' + today)
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
       .then(function (data) {
@@ -207,20 +190,19 @@
           setCache('apod', data);
           renderApod(data);
         } else {
-          fetchApodDirect();   // static file is stale (pre-first-action-run)
+          fetchApodDirect();
         }
       })
-      .catch(fetchApodDirect); // file missing or network error
+      .catch(fetchApodDirect);
   }
 
   function fetchApodDirect() {
     var h = new Date().getHours();
     var date = h < 6 ? yesterdayStr() : todayStr();
-    fetch$('https://api.nasa.gov/planetary/apod?api_key=LwKocN7opRPq0C5Bl06PoswP7ZPgSMIs7RtsKNZ9&date=' + date)
+    fetch$('https://api.nasa.gov/planetary/apod?api_key=' + NASA_KEY + '&date=' + date)
       .then(function (data) { setCache('apod', data); renderApod(data); })
       .catch(function () {
         document.getElementById('apod-title').textContent = 'APOD unavailable';
-        document.getElementById('apod-desc').textContent = 'Image will appear once the daily update is available.';
         document.getElementById('apod-img').style.opacity = '0';
       });
   }
@@ -244,6 +226,126 @@
     document.getElementById('apod-desc').textContent = expl.length > 220 ? expl.slice(0, 220) + '…' : expl;
     document.getElementById('apod-link').href = data.hdurl || data.url || '#';
     if (data.copyright) document.getElementById('apod-credit').textContent = '© ' + data.copyright.trim();
+  }
+
+  // ── Wikimedia Picture of the Day ──────────────────────────
+
+  function fetchWikiPotd() {
+    if (_cache && _cache.potd) { renderWikiPotd(_cache.potd); return; }
+    var now = new Date();
+    var y  = now.getFullYear();
+    var mo = String(now.getMonth() + 1).padStart(2, '0');
+    var d  = String(now.getDate()).padStart(2, '0');
+    fetch$('https://en.wikipedia.org/api/rest_v1/feed/featured/' + y + '/' + mo + '/' + d)
+      .then(function (data) {
+        if (!data.image) throw new Error('no image');
+        setCache('potd', data.image);
+        renderWikiPotd(data.image);
+      })
+      .catch(function () {
+        document.getElementById('potd-title').textContent = 'Picture of the Day unavailable';
+        document.getElementById('potd-noimgwrap').classList.remove('hidden');
+        document.getElementById('potd-img').style.opacity = '0';
+      });
+  }
+
+  function renderWikiPotd(img) {
+    var el = document.getElementById('potd-img');
+    var noEl = document.getElementById('potd-noimgwrap');
+    var src = (img.image && img.image.source) || (img.thumbnail && img.thumbnail.source);
+    if (src) {
+      el.src = src;
+      el.alt = (img.title && img.title.text) || 'Wikimedia Picture of the Day';
+      el.style.opacity = '1';
+      noEl.classList.add('hidden');
+    } else {
+      el.style.opacity = '0';
+      noEl.classList.remove('hidden');
+    }
+    var titleText = (img.title && (img.title.display || img.title.text)) || 'Picture of the Day';
+    document.getElementById('potd-title').textContent = titleText;
+    var desc = (img.description && img.description.text) || '';
+    document.getElementById('potd-desc').textContent = desc.length > 220 ? desc.slice(0, 220) + '…' : desc;
+    if (src) document.getElementById('potd-link').href = src;
+  }
+
+  // ── NASA EPIC (Earth) ─────────────────────────────────────
+
+  function fetchEpic() {
+    if (_cache && _cache.epic) { renderEpic(_cache.epic); return; }
+    fetch$('https://api.nasa.gov/EPIC/api/natural/latest?api_key=' + NASA_KEY)
+      .then(function (data) {
+        var item = data && data[0];
+        if (!item) throw new Error('none');
+        setCache('epic', item);
+        renderEpic(item);
+      })
+      .catch(function () {
+        document.getElementById('epic-title').textContent = 'Earth image unavailable';
+        document.getElementById('epic-noimgwrap').classList.remove('hidden');
+        document.getElementById('epic-img').style.opacity = '0';
+      });
+  }
+
+  function renderEpic(item) {
+    var el = document.getElementById('epic-img');
+    var noEl = document.getElementById('epic-noimgwrap');
+    var parts = item.date ? item.date.slice(0, 10).split('-') : null;
+    var url = parts
+      ? 'https://api.nasa.gov/EPIC/archive/natural/' + parts[0] + '/' + parts[1] + '/' + parts[2] +
+        '/jpg/' + item.image + '.jpg?api_key=' + NASA_KEY
+      : null;
+    if (url) {
+      el.src = url;
+      el.alt = 'Earth from DSCOVR/EPIC';
+      el.style.opacity = '1';
+      noEl.classList.add('hidden');
+    } else {
+      el.style.opacity = '0';
+      noEl.classList.remove('hidden');
+    }
+    document.getElementById('epic-title').textContent = 'Earth — ' + (item.date ? item.date.slice(0, 10) : '');
+    document.getElementById('epic-desc').textContent =
+      'Natural color image captured by the DSCOVR satellite at L1, ~1.5 million km from Earth.' +
+      (item.caption ? ' ' + item.caption : '');
+  }
+
+  // ── NASA Mars Rover (Curiosity) ───────────────────────────
+
+  function fetchMars() {
+    if (_cache && _cache.mars) { renderMars(_cache.mars); return; }
+    fetch$('https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/latest_photos?api_key=' + NASA_KEY)
+      .then(function (data) {
+        var photos = data && data.latest_photos;
+        var photo = photos && photos[0];
+        if (!photo) throw new Error('none');
+        setCache('mars', photo);
+        renderMars(photo);
+      })
+      .catch(function () {
+        document.getElementById('mars-title').textContent = 'Mars image unavailable';
+        document.getElementById('mars-noimgwrap').classList.remove('hidden');
+        document.getElementById('mars-img').style.opacity = '0';
+      });
+  }
+
+  function renderMars(photo) {
+    var el = document.getElementById('mars-img');
+    var noEl = document.getElementById('mars-noimgwrap');
+    if (photo.img_src) {
+      el.src = photo.img_src;
+      el.alt = 'Mars — Curiosity Rover';
+      el.style.opacity = '1';
+      noEl.classList.add('hidden');
+    } else {
+      el.style.opacity = '0';
+      noEl.classList.remove('hidden');
+    }
+    var cam = (photo.camera && photo.camera.full_name) || 'Camera';
+    var sol = photo.sol != null ? 'Sol ' + photo.sol : '';
+    document.getElementById('mars-title').textContent = cam + (sol ? ' · ' + sol : '');
+    document.getElementById('mars-desc').textContent =
+      'Captured by NASA\'s Curiosity rover on ' + (photo.earth_date || 'Mars') + '.';
   }
 
   // ── GBIF Observation ──────────────────────────────────────
@@ -278,24 +380,15 @@
       img.style.opacity = '0';
       noImgWrap.classList.remove('hidden');
     }
-
-    // Name: "Common Name (Genus species)" matching iNaturalist format
     var sci = occ.species || occ.scientificName || 'Unknown species';
     var common = occ.vernacularName || '';
     document.getElementById('gbif-title').textContent = common ? common + ' (' + sci + ')' : sci;
-
-    // Desc line: location + date
     var loc = [occ.stateProvince, occ.country].filter(Boolean).join(', ');
     var date = occ.eventDate ? occ.eventDate.slice(0, 10) : (occ.year ? String(occ.year) : '');
     document.getElementById('gbif-desc').textContent = [loc, date].filter(Boolean).join(' · ');
-
-    // Meta line: taxonomy breadcrumb + observer + basis
     var tax = [occ.kingdom, occ.phylum, occ.class, occ.family].filter(Boolean).join(' › ');
     var observer = occ.recordedBy ? 'obs. ' + occ.recordedBy.split(';')[0].trim() : '';
-    var basis = occ.basisOfRecord ? occ.basisOfRecord.replace(/_/g, ' ').toLowerCase() : '';
-    var meta = [tax, observer, basis].filter(Boolean).join(' · ');
-    document.getElementById('gbif-meta').textContent = meta;
-
+    document.getElementById('gbif-meta').textContent = [tax, observer].filter(Boolean).join(' · ');
     document.getElementById('gbif-link').href = 'https://www.gbif.org/occurrence/' + occ.key;
   }
 
@@ -387,14 +480,14 @@
   }
 
   function renderWiki(events) {
-    var now = new Date();
-    var html = '<div class="dw-wiki-hdr">' + now.toLocaleDateString('en-US',{month:'long',day:'numeric'}) + '</div>';
+    var html = '<div class="dw-tech-grid">';
     events.forEach(function (ev) {
       var page = ev.pages && ev.pages[0];
       var url = page ? 'https://en.wikipedia.org/wiki/' + encodeURIComponent(page.title) : null;
       var wikTxt = url ? '<a href="' + url + '" target="_blank" rel="noopener">' + esc(ev.text) + '</a>' : esc(ev.text);
-      html += '<div class="dw-wiki-ev"><span class="dw-wiki-yr">' + esc(String(ev.year)) + '</span><span class="dw-wiki-txt">' + wikTxt + '</span></div>';
+      html += '<div class="dw-tech-ev"><span class="dw-wiki-yr">' + esc(String(ev.year)) + '</span><span class="dw-wiki-txt">' + wikTxt + '</span></div>';
     });
+    html += '</div>';
     document.getElementById('wiki-body').innerHTML = html;
   }
 
@@ -471,13 +564,13 @@
     document.getElementById('hn-body').innerHTML =
       '<div class="dw-hn-title"><a href="' + esc(s.url || 'https://news.ycombinator.com/item?id=' + s.id) + '" target="_blank" rel="noopener">' + esc(s.title) + '</a></div>' +
       (domain ? '<div class="dw-meta">' + esc(domain) + '</div>' : '') +
-      '<div class="dw-stats-row" style="margin-top:8px;">' +
+      '<div class="dw-stats-row">' +
         '<span>▲ ' + (s.score||0) + ' pts</span>' +
         '<span>💬 ' + (s.descendants||0) + ' comments</span>' +
         '<span>by ' + esc(s.by||'') + '</span>' +
         (hrs !== null ? '<span>' + hrs + 'h ago</span>' : '') +
       '</div>' +
-      '<div class="dw-meta"><a href="https://news.ycombinator.com/item?id=' + s.id + '" target="_blank" rel="noopener">HN Discussion</a></div>';
+      '<div class="dw-meta" style="margin-top:6px;"><a href="https://news.ycombinator.com/item?id=' + s.id + '" target="_blank" rel="noopener">HN Discussion</a></div>';
   }
 
   // ── Tech History ──────────────────────────────────────────
@@ -521,7 +614,6 @@
 
   var SPEEDO = '<svg width="13" height="8" viewBox="0 0 13 8" style="vertical-align:middle;margin-right:2px;" xmlns="http://www.w3.org/2000/svg"><path d="M1 7.5 A 5.5 5.5 0 0 1 12 7.5" fill="none" stroke="rgba(140,200,255,0.55)" stroke-width="1.5" stroke-linecap="round"/><line x1="6.5" y1="7.5" x2="10.5" y2="2.8" stroke="rgba(255,160,80,0.9)" stroke-width="1.5" stroke-linecap="round"/><circle cx="6.5" cy="7.5" r="1.1" fill="rgba(255,255,255,0.75)"/></svg>';
 
-  /* Simplified world coastlines — [lon, lat] pairs; null = pen up */
   var COAST = [
     [[-6,36],[14,37],[25,33],[33,31],[37,22],[43,12],[51,11],[44,3],[40,-12],[36,-22],[34,-26],[27,-34],[19,-34],[12,-28],[12,-18],[9,-2],[2,4],[-8,5],[-15,10],[-17,14],[-17,21],[-13,27],[-6,36]],
     [[-9,36],[-9,44],[-5,48],[-2,52],[0,52],[5,54],[8,55],[14,55]],
@@ -546,11 +638,11 @@
     function proj(latd, lond) {
       var la = latd * Math.PI / 180;
       var lo = lond * Math.PI / 180;
-      var cosc = Math.sin(lat0) * Math.sin(la) + Math.cos(lat0) * Math.cos(la) * Math.cos(lo - lon0);
+      var cosc = Math.sin(lat0)*Math.sin(la) + Math.cos(lat0)*Math.cos(la)*Math.cos(lo-lon0);
       if (cosc < 0) return null;
       return [
-        cx + R * Math.cos(la) * Math.sin(lo - lon0),
-        cy - R * (Math.cos(lat0) * Math.sin(la) - Math.sin(lat0) * Math.cos(la) * Math.cos(lo - lon0))
+        cx + R*Math.cos(la)*Math.sin(lo-lon0),
+        cy - R*(Math.cos(lat0)*Math.sin(la) - Math.sin(lat0)*Math.cos(la)*Math.cos(lo-lon0))
       ];
     }
 
@@ -569,56 +661,39 @@
 
     var s = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">';
     s += '<defs><clipPath id="gc"><circle cx="' + cx + '" cy="' + cy + '" r="' + R + '"/></clipPath></defs>';
-    // Atmosphere glow
-    s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (R + 9) + '" fill="none" stroke="rgba(60,120,255,0.10)" stroke-width="9"/>';
-    // Earth fill
+    s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (R+9) + '" fill="none" stroke="rgba(60,120,255,0.10)" stroke-width="9"/>';
     s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="rgba(8,20,60,0.78)"/>';
-
-    // Continent outlines
     for (var ci = 0; ci < COAST.length; ci++) {
       var cpts = COAST[ci].map(function(p) { return p ? proj(p[1], p[0]) : null; });
       s += segs(cpts, 'rgba(80,195,115,0.72)', 0.85);
     }
-
     var gc = 'rgba(60,120,220,0.22)';
-    // Latitude lines every 30°
     for (var lat = -60; lat <= 60; lat += 30) {
       var pts = [];
       for (var lo = -180; lo <= 181; lo += 3) pts.push(lo <= 180 ? proj(lat, lo) : null);
       s += segs(pts, gc, 0.6);
     }
-    // Longitude lines every 30°
     for (var lon = -150; lon < 180; lon += 30) {
       var pts2 = [];
       for (var la = -88; la <= 89; la += 3) pts2.push(proj(la, lon));
       pts2.push(null);
       s += segs(pts2, gc, 0.6);
     }
-    // Equator, slightly brighter
     var eq = [];
     for (var elo = -180; elo <= 181; elo += 2) eq.push(elo <= 180 ? proj(0, elo) : null);
     s += segs(eq, 'rgba(80,160,255,0.38)', 0.9);
-
-    // Globe rim
     s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="none" stroke="rgba(80,150,255,0.4)" stroke-width="1.5"/>';
-    // ISS marker at center (orthographic is centered on ISS position)
     s += '<circle cx="' + cx + '" cy="' + cy + '" r="10" fill="rgba(255,60,60,0.13)"/>';
-    // Direction arrow (drawn before dot so shaft tail is hidden under dot)
     if (bearing != null) {
       var br = bearing * Math.PI / 180;
       var sinB = Math.sin(br), cosB = Math.cos(br);
       var L = 20;
-      var sx = cx + 6 * sinB,  sy = cy - 6 * cosB;   // shaft start (dot edge)
-      var tx = cx + L * sinB,  ty = cy - L * cosB;   // arrow tip
-      var wx1 = tx - sinB * 5 + cosB * 3.5, wy1 = ty + cosB * 5 + sinB * 3.5;
-      var wx2 = tx - sinB * 5 - cosB * 3.5, wy2 = ty + cosB * 5 - sinB * 3.5;
-      s += '<line x1="' + sx.toFixed(1) + '" y1="' + sy.toFixed(1) +
-           '" x2="' + tx.toFixed(1) + '" y2="' + ty.toFixed(1) +
-           '" stroke="rgba(255,215,70,0.92)" stroke-width="1.5" stroke-linecap="round"/>';
-      s += '<polygon points="' + tx.toFixed(1) + ',' + ty.toFixed(1) + ' ' +
-           wx1.toFixed(1) + ',' + wy1.toFixed(1) + ' ' +
-           wx2.toFixed(1) + ',' + wy2.toFixed(1) +
-           '" fill="rgba(255,215,70,0.95)"/>';
+      var sx = cx + 6*sinB, sy = cy - 6*cosB;
+      var tx = cx + L*sinB, ty = cy - L*cosB;
+      var wx1 = tx - sinB*5 + cosB*3.5, wy1 = ty + cosB*5 + sinB*3.5;
+      var wx2 = tx - sinB*5 - cosB*3.5, wy2 = ty + cosB*5 - sinB*3.5;
+      s += '<line x1="' + sx.toFixed(1) + '" y1="' + sy.toFixed(1) + '" x2="' + tx.toFixed(1) + '" y2="' + ty.toFixed(1) + '" stroke="rgba(255,215,70,0.92)" stroke-width="1.5" stroke-linecap="round"/>';
+      s += '<polygon points="' + tx.toFixed(1) + ',' + ty.toFixed(1) + ' ' + wx1.toFixed(1) + ',' + wy1.toFixed(1) + ' ' + wx2.toFixed(1) + ',' + wy2.toFixed(1) + '" fill="rgba(255,215,70,0.95)"/>';
     }
     s += '<circle cx="' + cx + '" cy="' + cy + '" r="5" fill="rgba(255,70,70,0.95)"/>';
     s += '</svg>';
@@ -635,8 +710,8 @@
       var lo1 = parseFloat(r[0].longitude) * Math.PI / 180;
       var la2 = parseFloat(r[1].latitude) * Math.PI / 180;
       var lo2 = parseFloat(r[1].longitude) * Math.PI / 180;
-      var y = Math.sin(lo2 - lo1) * Math.cos(la2);
-      var x = Math.cos(la1) * Math.sin(la2) - Math.sin(la1) * Math.cos(la2) * Math.cos(lo2 - lo1);
+      var y = Math.sin(lo2-lo1)*Math.cos(la2);
+      var x = Math.cos(la1)*Math.sin(la2) - Math.sin(la1)*Math.cos(la2)*Math.cos(lo2-lo1);
       var brg = Math.atan2(y, x) * 180 / Math.PI;
       renderISS(r[0], brg);
     }).catch(function () {
@@ -676,7 +751,6 @@
   document.addEventListener('DOMContentLoaded', function () {
     initCache();
 
-    // Date header
     document.getElementById('w-date').textContent =
       new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
@@ -688,7 +762,6 @@
       d.addEventListener('click', function () { resetAuto(); gotoSlide(parseInt(d.dataset.slide, 10)); });
     });
 
-    // Touch swipe
     var _tx = 0;
     carousel.addEventListener('touchstart', function (e) { _tx = e.touches[0].clientX; }, { passive: true });
     carousel.addEventListener('touchend', function (e) {
@@ -698,16 +771,10 @@
 
     startAuto();
 
-    // Weather
+    // Weather ticker
     var savedZip = '';
     try { savedZip = localStorage.getItem('pm_daily_zip') || ''; } catch(e) {}
     if (savedZip) { loadWeather(savedZip); } else { showZipPrompt(); }
-
-    document.getElementById('radar-toggle').addEventListener('click', function () {
-      var wrap = document.getElementById('radar-wrap');
-      var nowHidden = wrap.classList.toggle('hidden');
-      this.textContent = nowHidden ? 'Radar' : 'Radar ▲';
-    });
 
     document.getElementById('zip-submit').addEventListener('click', function () {
       var val = (document.getElementById('zip-input').value || '').trim();
@@ -726,8 +793,11 @@
       document.getElementById('zip-input').focus();
     });
 
-    // Load all widgets concurrently
+    // Load all concurrently
     fetchApod();
+    fetchWikiPotd();
+    fetchEpic();
+    fetchMars();
     fetchGbif();
     fetchInat();
     fetchQuake();

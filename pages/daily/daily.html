@@ -47,59 +47,43 @@
 
     <main class="aim-main">
 
-      <!-- Weather -->
-      <div class="dw-glass dw-weather-card">
-        <div class="dw-label">🌤 Weather</div>
-        <div id="zip-form">
-          <p class="dw-zip-prompt">Enter your ZIP code for local weather</p>
-          <div class="dw-zip-row">
-            <input type="text" id="zip-input" placeholder="ZIP code" maxlength="5" class="dw-input" inputmode="numeric" />
-            <button id="zip-submit" class="dw-btn">Go</button>
-          </div>
+      <!-- Weather ticker -->
+      <div class="dw-ticker">
+        <div id="ticker-prompt" class="dw-ticker-prompt">
+          <span class="dw-tick-lbl">Weather</span>
+          <input type="text" id="zip-input" placeholder="ZIP" maxlength="5" class="dw-tick-input" inputmode="numeric" />
+          <button id="zip-submit" class="dw-tick-go">Go</button>
         </div>
-        <div id="weather-content" class="hidden">
-          <div class="dw-w-main">
-            <span class="dw-weather-icon" id="w-icon">🌤</span>
-            <span class="dw-weather-temp" id="w-temp">—</span>
-            <div class="dw-weather-cond">
-              <span id="w-desc">—</span>
-              <span class="dw-sep">·</span>
-              <span id="w-loc">—</span>
-            </div>
-          </div>
-          <div class="dw-w-stats">
-            <span class="dw-ws"><span class="dw-wl">H</span><span id="w-hi">—</span></span>
-            <span class="dw-ws"><span class="dw-wl">L</span><span id="w-lo">—</span></span>
-            <span class="dw-ws"><span class="dw-wl">Humidity</span><span id="w-hum">—</span></span>
-            <span class="dw-ws"><span class="dw-wl">Precip</span><span id="w-precip">—</span></span>
-            <span class="dw-ws"><span class="dw-wl">🌅</span><span id="w-sunrise">—</span></span>
-            <span class="dw-ws"><span class="dw-wl">🌇</span><span id="w-sunset">—</span></span>
-          </div>
-          <div id="w-hourly" class="dw-hr-strip"></div>
-          <div class="dw-weather-footer">
-            <button class="dw-ghost-btn" id="radar-toggle">Radar</button>
-            <button class="dw-ghost-btn" id="zip-change">Change ZIP</button>
-            <span class="dw-src-badge">Open-Meteo · NWS</span>
-          </div>
-          <div id="radar-wrap" class="hidden">
-            <img src="https://radar.weather.gov/ridge/standard/CONUS_loop.gif" class="dw-radar" alt="CONUS Radar Loop" loading="lazy" />
-            <div class="dw-chart-label" style="margin-top:4px;text-align:right;">
-              <a href="https://radar.weather.gov" target="_blank" rel="noopener" class="dw-link">NWS Radar</a>
-            </div>
-          </div>
+        <div id="ticker-data" class="hidden">
+          <span id="w-icon"></span>
+          <span id="w-temp"></span>
+          <span class="dw-tick-sep">·</span>
+          <span id="w-desc"></span>
+          <span class="dw-tick-sep">·</span>
+          <span id="w-loc"></span>
+          <span class="dw-tick-sep">·</span>
+          <span class="dw-tick-lbl">H</span><span id="w-hi"></span>
+          <span class="dw-tick-sep dw-tick-narrow">/</span>
+          <span class="dw-tick-lbl">L</span><span id="w-lo"></span>
+          <span class="dw-tick-sep">·</span>
+          <span id="w-sunrise"></span>
+          <span class="dw-tick-sep dw-tick-narrow"> </span>
+          <span id="w-sunset"></span>
+          <a id="ticker-map-btn" href="../map/map.html" class="dw-tick-btn">Radar ↗</a>
+          <button id="zip-change" class="dw-tick-ghost">change</button>
         </div>
       </div>
 
-      <!-- Discovery Carousel -->
-      <div class="dw-carousel-section">
-        <div class="dw-section-head">
-          <span class="dw-section-title">Today's Discoveries</span>
-          <span class="dw-section-date" id="w-date"></span>
+      <!-- Hero: Discovery Carousel -->
+      <div class="dw-hero">
+        <div class="dw-hero-bar">
+          <span class="dw-hero-title">Today's Discoveries</span>
+          <span class="dw-hero-date" id="w-date"></span>
         </div>
         <div class="dw-carousel-wrap">
           <div class="dw-carousel" id="discovery-carousel">
 
-            <!-- Slide 0: APOD -->
+            <!-- 0: NASA APOD -->
             <div class="dw-slide">
               <img class="dw-slide-img" id="apod-img" alt="" />
               <div class="dw-slide-no-img hidden" id="apod-noimgwrap">
@@ -117,7 +101,55 @@
               </div>
             </div>
 
-            <!-- Slide 1: GBIF -->
+            <!-- 1: Wikimedia Picture of the Day -->
+            <div class="dw-slide">
+              <img class="dw-slide-img" id="potd-img" alt="" loading="lazy" />
+              <div class="dw-slide-no-img hidden" id="potd-noimgwrap">
+                <span class="dw-slide-no-img-icon">🖼</span>
+              </div>
+              <div class="dw-slide-overlay">
+                <span class="dw-slide-source">🖼 Wikimedia Picture of the Day</span>
+                <div class="dw-slide-title" id="potd-title">Loading…</div>
+                <div class="dw-slide-desc" id="potd-desc"></div>
+                <div class="dw-slide-footer">
+                  <a class="dw-slide-ext-link" id="potd-link" href="#" target="_blank" rel="noopener">Full image</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2: NASA EPIC Earth -->
+            <div class="dw-slide">
+              <img class="dw-slide-img" id="epic-img" alt="" loading="lazy" />
+              <div class="dw-slide-no-img hidden" id="epic-noimgwrap">
+                <span class="dw-slide-no-img-icon">🌎</span>
+              </div>
+              <div class="dw-slide-overlay">
+                <span class="dw-slide-source">🌍 NASA EPIC — Earth</span>
+                <div class="dw-slide-title" id="epic-title">Loading…</div>
+                <div class="dw-slide-desc" id="epic-desc"></div>
+                <div class="dw-slide-footer">
+                  <a class="dw-slide-ext-link" id="epic-link" href="https://epic.gsfc.nasa.gov" target="_blank" rel="noopener">NASA EPIC</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3: NASA Mars Curiosity -->
+            <div class="dw-slide">
+              <img class="dw-slide-img" id="mars-img" alt="" loading="lazy" />
+              <div class="dw-slide-no-img hidden" id="mars-noimgwrap">
+                <span class="dw-slide-no-img-icon">🔴</span>
+              </div>
+              <div class="dw-slide-overlay">
+                <span class="dw-slide-source">🔴 NASA Curiosity — Mars</span>
+                <div class="dw-slide-title" id="mars-title">Loading…</div>
+                <div class="dw-slide-desc" id="mars-desc"></div>
+                <div class="dw-slide-footer">
+                  <a class="dw-slide-ext-link" id="mars-link" href="https://mars.nasa.gov/msl/multimedia/raw-images/" target="_blank" rel="noopener">Raw images</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4: GBIF Observation -->
             <div class="dw-slide">
               <img class="dw-slide-img" id="gbif-img" alt="" loading="lazy" />
               <div class="dw-slide-no-img hidden" id="gbif-noimgwrap">
@@ -134,7 +166,7 @@
               </div>
             </div>
 
-            <!-- Slide 2: iNaturalist -->
+            <!-- 5: iNaturalist -->
             <div class="dw-slide">
               <img class="dw-slide-img" id="inat-img" alt="" loading="lazy" />
               <div class="dw-slide-no-img hidden" id="inat-noimgwrap">
@@ -157,51 +189,64 @@
             <span class="dw-dot active" data-slide="0"></span>
             <span class="dw-dot" data-slide="1"></span>
             <span class="dw-dot" data-slide="2"></span>
+            <span class="dw-dot" data-slide="3"></span>
+            <span class="dw-dot" data-slide="4"></span>
+            <span class="dw-dot" data-slide="5"></span>
           </div>
         </div>
       </div>
 
-      <!-- Info grid -->
-      <div class="dw-info-grid">
+      <!-- Supplementary feed -->
+      <div class="dw-feed">
 
-        <div class="dw-glass" id="w-word">
-          <div class="dw-label">📝 Word of the Day</div>
-          <div id="word-body"><div class="dw-loading">Loading…</div></div>
-        </div>
-
-        <div class="dw-glass" id="w-wiki">
-          <div class="dw-label">📖 On This Day</div>
+        <section class="dw-feed-sec dw-feed-full">
+          <h2 class="dw-feed-lbl">📖 On This Day</h2>
           <div id="wiki-body"><div class="dw-loading">Loading…</div></div>
+        </section>
+
+        <div class="dw-feed-divider"></div>
+
+        <section class="dw-feed-sec dw-feed-full">
+          <h2 class="dw-feed-lbl">💾 This Day in Tech History</h2>
+          <div id="tech-body"><div class="dw-loading">Loading…</div></div>
+        </section>
+
+        <div class="dw-feed-divider"></div>
+
+        <div class="dw-feed-row">
+          <section class="dw-feed-sec">
+            <h2 class="dw-feed-lbl">📝 Word of the Day</h2>
+            <div id="word-body"><div class="dw-loading">Loading…</div></div>
+          </section>
+          <section class="dw-feed-sec">
+            <h2 class="dw-feed-lbl">⭐ GitHub Trending</h2>
+            <div id="github-body"><div class="dw-loading">Loading…</div></div>
+          </section>
         </div>
 
-        <div class="dw-glass dw-compact" id="w-quake">
-          <div class="dw-label">🌍 Biggest Earthquake Yesterday</div>
-          <div id="quake-body"><div class="dw-loading">Loading…</div></div>
+        <div class="dw-feed-divider"></div>
+
+        <div class="dw-feed-row">
+          <section class="dw-feed-sec">
+            <h2 class="dw-feed-lbl">🌍 Biggest Earthquake Yesterday</h2>
+            <div id="quake-body"><div class="dw-loading">Loading…</div></div>
+          </section>
+          <section class="dw-feed-sec">
+            <h2 class="dw-feed-lbl">🔥 HackerNews Top Story</h2>
+            <div id="hn-body"><div class="dw-loading">Loading…</div></div>
+          </section>
         </div>
 
-        <div class="dw-glass dw-compact" id="w-github">
-          <div class="dw-label">⭐ GitHub Trending</div>
-          <div id="github-body"><div class="dw-loading">Loading…</div></div>
-        </div>
+        <div class="dw-feed-divider"></div>
 
-        <div class="dw-glass dw-grid-full" id="w-hn">
-          <div class="dw-label">🔥 HackerNews Top Story</div>
-          <div id="hn-body"><div class="dw-loading">Loading…</div></div>
-        </div>
-
-        <div class="dw-glass dw-grid-full" id="w-iss">
-          <div class="dw-iss-text">
-            <div class="dw-label">🛸 ISS Live Position</div>
+        <section class="dw-feed-iss dw-feed-full">
+          <div class="dw-feed-iss-text">
+            <h2 class="dw-feed-lbl">🛸 ISS Live Position</h2>
             <div id="iss-body"><div class="dw-loading">Loading…</div></div>
-            <div class="dw-meta" id="iss-crew" style="margin-top:6px;font-size:10px;"></div>
+            <div class="dw-meta" id="iss-crew"></div>
           </div>
           <div id="iss-globe" class="dw-iss-globe"></div>
-        </div>
-
-        <div class="dw-glass dw-grid-full" id="w-tech">
-          <div class="dw-label">💾 This Day in Tech History</div>
-          <div id="tech-body"><div class="dw-loading">Loading…</div></div>
-        </div>
+        </section>
 
       </div>
 
