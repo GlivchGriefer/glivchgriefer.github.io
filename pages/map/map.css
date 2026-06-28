@@ -266,6 +266,23 @@ html, body {
 .mp-marine { font-size: 11px; color: #40b8d8; margin-top: 6px; padding-top: 6px; border-top: 1px solid #0e2040; }
 .mp-loading { font-size: 11px; color: #3a5a70; font-style: italic; padding: 4px 0; }
 
+/* ── Globe overlay ──────────────────────────────────────────── */
+#globe-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #050e18;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.55s ease;
+  overflow: hidden;
+}
+#globe-wrap.globe-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+#globe-wrap canvas { display: block; }
+
 /* ── Mobile ─────────────────────────────────────────────────── */
 @media (max-width: 600px) {
   #search-input { width: 150px; }

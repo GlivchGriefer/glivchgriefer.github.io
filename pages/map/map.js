@@ -37,7 +37,7 @@
   var homeLat = DEFAULT_LAT, homeLon = DEFAULT_LON, homeZoom = DEFAULT_ZOOM;
 
   // ── Map init ────────────────────────────────────────────────
-  var map = L.map('map', { zoomControl: false, attributionControl: false, minZoom: 3 });
+  var map = L.map('map', { zoomControl: false, attributionControl: false, minZoom: 2, preferCanvas: true });
 
   L.control.attribution({ position: 'bottomright', prefix: false }).addTo(map);
   L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -45,7 +45,9 @@
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
     maxZoom: 19,
-    subdomains: 'abcd'
+    subdomains: 'abcd',
+    updateWhenZooming: false,
+    keepBuffer: 2
   }).addTo(map);
 
   // ── Layer groups ────────────────────────────────────────────
@@ -54,7 +56,8 @@
   var gdacsGroup = L.layerGroup();
   var buoyGroup  = L.layerGroup();
   var fireGroup  = L.layerGroup();
-  var radarTile  = null;
+  var radarTile      = null;
+  var cachedFireFeats = [];   // shared between Leaflet and Globe
 
   var LAYER_DEFS = [
     { key: 'radar',  name: 'Radar',       icon: '🌧', group: null,        on: true  },
@@ -137,20 +140,14 @@
     map.setView([DEFAULT_LAT, DEFAULT_LON], DEFAULT_ZOOM);
   }
 
-  // ── Radar — RainViewer ──────────────────────────────────────
-  $g('https://api.rainviewer.com/public/weather-maps.json')
-    .then(function (data) {
-      var past = data.radar && data.radar.past;
-      if (!past || !past.length) return;
-      var path = past[past.length - 1].path;
-      radarTile = L.tileLayer(
-        'https://tilecache.rainviewer.com' + path + '/256/{z}/{x}/{y}/2/1_1.png',
-        { opacity: 0.5, minZoom: 3, maxNativeZoom: 12, maxZoom: 19 }
-      );
-      if (state.radar) radarTile.addTo(map);
-      badge('radar', 'live', true);
-    })
-    .catch(function () { badge('radar', 'err'); });
+  // ── Radar — IEM NEXRAD (NOAA, no watermark, US) ─────────────
+  radarTile = L.tileLayer(
+    'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913/{z}/{x}/{y}.png',
+    { opacity: 0.75, minZoom: 4, maxNativeZoom: 12, maxZoom: 19, updateWhenZooming: false,
+      attribution: 'Radar &copy; <a href="https://mesonet.agron.iastate.edu">IEM / NOAA</a>' }
+  );
+  if (state.radar) radarTile.addTo(map);
+  badge('radar', 'live', true);
 
   // ── Earthquakes — USGS ──────────────────────────────────────
   $g('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson')
@@ -188,6 +185,7 @@
     .then(function (data) {
       var feats = (data.features || []).filter(function (f) { return f.geometry; });
       L.geoJSON({ type: 'FeatureCollection', features: feats }, {
+        smoothFactor: 3,
         style: function (f) {
           var s = (f.properties.severity || '').toLowerCase();
           var c = s === 'extreme' ? '#FF0000' : s === 'severe' ? '#FF7700' :
@@ -208,15 +206,17 @@
     .catch(function () { badge('alerts', '—'); });
 
   // ── Wildfires ────────────────────────────────────────────────
-  // Perimeters — NIFC via ArcGIS REST (no key)
-  var NIFC_PERIM = 'https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/' +
-    'Active_Fires/FeatureServer/0/query' +
-    '?where=1%3D1&outFields=*&returnGeometry=true&f=geojson&resultRecordCount=500';
+  // Perimeters — Esri Living Atlas public layer (no key, replaces auth-gated NIFC endpoint)
+  var NIFC_PERIM = 'https://services9.arcgis.com/RHVPKKiFTONKtxq3/arcgis/rest/services/' +
+    'USA_Wildfires_v1/FeatureServer/1/query' +
+    '?where=1%3D1&outFields=IncidentName,GISAcres,PercentContained,POOState,FireCause' +
+    '&returnGeometry=true&f=geojson&resultRecordCount=300';
 
   $g(NIFC_PERIM)
     .then(function (data) {
       var feats = data.features || [];
       L.geoJSON(data, {
+        smoothFactor: 3,
         style: function () {
           return { color: '#FF4400', weight: 1.5, fillColor: '#FF6600', fillOpacity: 0.22, opacity: 0.85 };
         },
@@ -235,16 +235,18 @@
           layer.bindPopup(html);
         }
       }).addTo(fireGroup);
+      cachedFireFeats = feats;
+      if (globeInst) globeInst.polygonsData(feats);
       badge('fire', feats.length + ' fires');
     })
     .catch(function () {
       badge('fire', FIRMS_KEY ? '—' : 'key needed');
     });
 
-  // Hotspots — NASA FIRMS VIIRS (requires free MAP_KEY)
+  // Hotspots — NASA FIRMS MODIS 2-day (VIIRS 1-day window returns empty; MODIS/2 is reliable)
   if (FIRMS_KEY) {
     var FIRMS_URL = 'https://firms.modaps.eosdis.nasa.gov/api/area/csv/' +
-      FIRMS_KEY + '/VIIRS_SNPP_NRT/world/1';
+      FIRMS_KEY + '/MODIS_NRT/world/2';
     $t(FIRMS_URL)
       .then(function (csv) {
         var lines = csv.trim().split('\n');
@@ -279,9 +281,11 @@
             (dt  ? '<br><span style="color:#aaa;font-size:10px">' + dt + ' UTC</span>' : '')
           ).addTo(fireGroup);
         }
-        // fireGroup already on map if state.fire
+        var hotCount = lines.length - 1;
+        var existing = (document.getElementById('ms-b-fire') || {}).textContent || '';
+        badge('fire', (existing && existing !== '—' ? existing.split(' ')[0] + ' fires · ' : '') + hotCount + ' hotspots', true);
       })
-      .catch(function () {});
+      .catch(function () { badge('fire', (document.getElementById('ms-b-fire') || {}).textContent || '—'); });
   }
 
   // ── GDACS Disasters (RSS) ────────────────────────────────────
@@ -525,6 +529,180 @@
       sidebar.classList.remove('open');
       if (searchRow.style.display !== 'none') closeSearch();
     }
+  });
+
+  // ── Globe + CelesTrak Satellite Tracking ─────────────────────
+  var globeWrap   = document.getElementById('globe-wrap');
+  var globeInst   = null;
+  var globeActive = false;
+  var satRecords  = [];
+  var satData     = [];
+  var satAnimId   = null;
+  var lastPropMs  = 0;
+
+  function loadScript(src, cb) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = cb;
+    document.head.appendChild(s);
+  }
+
+  // Altitude (Earth radii above surface) → approximate Leaflet zoom
+  function altToZoom(alt) {
+    if (alt < 0.15) return 8;
+    if (alt < 0.30) return 7;
+    if (alt < 0.55) return 6;
+    if (alt < 0.90) return 5;
+    return 4;
+  }
+
+  function buildGlobe() {
+    if (globeInst) return;
+    if (!window.Globe) {
+      loadScript('https://unpkg.com/globe.gl@2', buildGlobe);
+      return;
+    }
+    var ctr = map.getCenter();
+
+    globeInst = Globe()(globeWrap)
+      .width(window.innerWidth).height(window.innerHeight)
+      .backgroundColor('#050e18')
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
+      .atmosphereColor('#1a4a8a')
+      .atmosphereAltitude(0.18)
+      // Fire perimeters
+      .polygonsData(cachedFireFeats)
+      .polygonGeoJsonGeometry(function (d) { return d.geometry; })
+      .polygonCapColor(function () { return 'rgba(255,100,0,0.25)'; })
+      .polygonSideColor(function () { return 'rgba(255,70,0,0.55)'; })
+      .polygonStrokeColor(function () { return '#FF4400'; })
+      .polygonLabel(function (d) {
+        var p = d.properties || {};
+        var n = p.IncidentName || p.poly_IncidentName || p.incident_name || 'Fire';
+        var a = p.GISAcres || p.poly_GISAcres || p.gis_acres || null;
+        return n + (a ? ' · ' + Math.round(a).toLocaleString() + ' ac' : '');
+      })
+      // Satellites
+      .pointsData([])
+      .pointLat('lat').pointLng('lng')
+      .pointAltitude(function (d) { return Math.max(d.alt / 6371, 0.02); })
+      .pointRadius(0.25)
+      .pointColor(function (d) { return d.alt > 5000 ? '#ff8844' : '#44ffaa'; })
+      .pointLabel(function (d) {
+        return '<b>' + d.name + '</b><br>' + Math.round(d.alt) + ' km alt';
+      });
+
+    // Match Leaflet's current center
+    globeInst.pointOfView({ lat: ctr.lat, lng: ctr.lng, altitude: 2.5 }, 0);
+
+    // Zoom into globe → transition back to Leaflet
+    globeInst.controls().addEventListener('change', function () {
+      if (!globeActive) return;
+      var pov = globeInst.pointOfView();
+      if (pov.altitude < 0.8) {
+        exitGlobe(pov.lat, pov.lng, altToZoom(pov.altitude));
+      }
+    });
+
+    if (cachedFireFeats.length) globeInst.polygonsData(cachedFireFeats);
+    loadSatellites();
+  }
+
+  function enterGlobe() {
+    if (globeActive) return;
+    globeActive = true;
+    buildGlobe();
+    globeWrap.classList.add('globe-active');
+    startSatAnim();
+  }
+
+  function exitGlobe(lat, lng, zoom) {
+    if (!globeActive) return;
+    globeActive = false;
+    globeWrap.classList.remove('globe-active');
+    stopSatAnim();
+    map.setView([lat, lng], zoom, { animate: false });
+  }
+
+  // Leaflet zoom-out → enter globe at zoom ≤ 2
+  map.on('zoomend', function () {
+    if (!globeActive && map.getZoom() <= 2) {
+      enterGlobe();
+    }
+  });
+
+  // Home button also exits globe
+  document.getElementById('mc-home').addEventListener('click', function () {
+    if (globeActive) exitGlobe(homeLat, homeLon, homeZoom);
+  });
+
+  // ── CelesTrak + satellite.js ──────────────────────────────────
+  function loadSatellites() {
+    if (!window.satellite) {
+      loadScript(
+        'https://cdnjs.cloudflare.com/ajax/libs/satellite.js/5.0.0/satellite.min.js',
+        loadSatellites
+      );
+      return;
+    }
+    $t('https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=tle')
+      .then(function (text) {
+        var lines = text.trim().split(/\r?\n/);
+        satRecords = [];
+        for (var i = 0; i + 2 < lines.length; i += 3) {
+          var name = lines[i].trim();
+          var l1   = lines[i + 1].trim();
+          var l2   = lines[i + 2].trim();
+          if (l1[0] !== '1' || l2[0] !== '2') continue;
+          try {
+            satRecords.push({ name: name, rec: satellite.twoline2satrec(l1, l2) });
+          } catch (e) {}
+        }
+        var el = document.getElementById('ms-b-sats');
+        if (el) el.textContent = satRecords.length + ' sats';
+        propagateSats();
+      })
+      .catch(function () {});
+  }
+
+  function propagateSats() {
+    var now  = new Date();
+    var gmst = satellite.gstime(now);
+    satData  = [];
+    satRecords.forEach(function (s) {
+      try {
+        var pv = satellite.propagate(s.rec, now);
+        if (!pv || !pv.position) return;
+        var geo = satellite.eciToGeodetic(pv.position, gmst);
+        satData.push({
+          name: s.name,
+          lat:  satellite.degreesLat(geo.latitude),
+          lng:  satellite.degreesLong(geo.longitude),
+          alt:  geo.height   // km above surface
+        });
+      } catch (e) {}
+    });
+    if (globeInst) globeInst.pointsData(satData);
+  }
+
+  function satTick(ts) {
+    if (ts - lastPropMs > 1000) {   // re-propagate every second
+      propagateSats();
+      lastPropMs = ts;
+    }
+    satAnimId = requestAnimationFrame(satTick);
+  }
+
+  function startSatAnim() {
+    if (!satAnimId) satAnimId = requestAnimationFrame(satTick);
+  }
+
+  function stopSatAnim() {
+    if (satAnimId) { cancelAnimationFrame(satAnimId); satAnimId = null; }
+  }
+
+  window.addEventListener('resize', function () {
+    if (globeInst) globeInst.width(window.innerWidth).height(window.innerHeight);
   });
 
 }());

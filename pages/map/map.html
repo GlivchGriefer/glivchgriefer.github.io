@@ -11,6 +11,7 @@
 <body>
 
   <div id="map"></div>
+  <div id="globe-wrap"></div>
 
   <!-- Sidebar -->
   <div id="ms-sidebar">
@@ -52,12 +53,23 @@
         <div class="ms-leg-row"><span class="ms-swatch" style="background:#3399FF"></span>Minor</div>
       </div>
 
+      <div class="ms-section-lbl">Globe Mode</div>
+      <div class="ms-legend">
+        <div class="ms-leg-row" id="ms-globe-row">
+          <span class="ms-dot" style="background:#44ffaa"></span>LEO · <span class="ms-dot" style="background:#ff8844;margin-left:6px"></span>HEO/GEO
+          <span class="ms-layer-badge" id="ms-b-sats" style="margin-left:auto"></span>
+        </div>
+        <div class="ms-leg-row" style="font-size:9.5px;color:#3a5a70;font-style:italic;margin-top:2px">
+          Zoom out past level 2 to enter globe
+        </div>
+      </div>
+
       <div class="ms-tip">Click anywhere on the map for local weather &amp; marine conditions.</div>
 
       <div class="ms-attr">
         &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
         &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a><br>
-        <a href="https://www.rainviewer.com" target="_blank" rel="noopener">RainViewer</a> ·
+        <a href="https://mesonet.agron.iastate.edu" target="_blank" rel="noopener">IEM/NOAA Radar</a> ·
         <a href="https://earthquake.usgs.gov" target="_blank" rel="noopener">USGS</a> ·
         <a href="https://www.weather.gov" target="_blank" rel="noopener">NWS</a> ·
         <a href="https://www.gdacs.org" target="_blank" rel="noopener">GDACS</a> ·
