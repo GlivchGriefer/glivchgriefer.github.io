@@ -209,12 +209,102 @@
   // perimIndex: { name, acres, pct, state, bounds } — used for centroid click-to-fitBounds
   var perimIndex = [];
 
-  function firePopup(name, state, acres, pct, cause) {
-    var h = '<b>🔥 ' + name + '</b>';
-    if (state) h += '<br><span style="color:#aaa;font-size:10px">' + state + '</span>';
-    if (acres) h += '<br>' + Math.round(acres).toLocaleString() + ' acres';
-    if (pct != null) h += ' · ' + Math.round(pct) + '% contained';
-    if (cause) h += '<br><span style="color:#aaa;font-size:10px">Cause: ' + cause + '</span>';
+  // Fire type acronym definitions (shown in popup when type is not plain "WF")
+  var FIRE_TYPE_DEFS = {
+    'WF':   'Wildfire',
+    'RX':   'Prescribed Fire',
+    'WFU':  'Wildfire Under Rx Management',
+    'WFSA': 'Wildfire — Suppression Action',
+    'WFUA': 'Wildfire — Modified Suppression',
+    'OW':   'Other Wildfire',
+    'NR':   'Non-Reportable',
+    'SL':   'Authorized Hazardous Fuel Treatment'
+  };
+
+  // Pick first non-null, non-empty value from a list of candidate keys
+  function pick(p, keys) {
+    for (var i = 0; i < keys.length; i++) {
+      var v = p[keys[i]];
+      if (v != null && v !== '' && v !== 'null') return v;
+    }
+    return null;
+  }
+
+  // Esri returns dates as epoch-ms integers; also handles ISO strings
+  function fmtFireDate(val, withTime) {
+    if (val == null || val === '') return null;
+    var d = (typeof val === 'number') ? new Date(val) : new Date(val);
+    if (isNaN(d.getTime())) return null;
+    var opts = { month: 'short', day: 'numeric', year: 'numeric' };
+    if (withTime) { opts.hour = '2-digit'; opts.minute = '2-digit'; }
+    return d.toLocaleString('en-US', opts);
+  }
+
+  function firePopup(p) {
+    // Field names vary: plain, attr_-prefixed (WFIGS), poly_-prefixed (older NIFC), lowercase
+    var name      = pick(p, ['IncidentName','attr_IncidentName','FireName','poly_IncidentName','incident_name','Name','INCIDENT_NAME']) || 'Unknown Fire';
+    var county    = pick(p, ['POOCounty','attr_POOCounty','County','county','POO_COUNTY']);
+    var state     = pick(p, ['POOState','attr_POOState','State','state','poly_POOState','POO_STATE']);
+    var acres     = pick(p, ['GISAcres','attr_GISAcres','Acres','poly_GISAcres','gis_acres','CalculatedAcres','ACRES']);
+    var pctRaw    = pick(p, ['PercentContained','attr_PercentContained','percent_contained','PERCENT_CONTAINED']);
+    var cause     = pick(p, ['FireCause','attr_FireCause','fire_cause','Cause','CAUSE']);
+    var ftype     = pick(p, ['IncidentTypeCategory','attr_IncidentTypeCategory','IncidentType','IncidentTypeCategoryDescription']);
+    var startVal  = pick(p, ['FireDiscoveryDateTime','attr_FireDiscoveryDateTime','DiscoveryDate','FireDiscoveryDate','attr_FireDiscoveryDate','DISCOVERY_DATE']);
+    var contVal   = pick(p, ['ContainmentDateTime','attr_ContainmentDateTime','ContainedDate','attr_ContainedDate','CONTAINMENT_DATE']);
+    var ctrlVal   = pick(p, ['ControlDateTime','attr_ControlDateTime','ControlledDate','attr_ControlledDate','CONTROL_DATE']);
+    var personnel = pick(p, ['TotalIncidentPersonnel','attr_TotalIncidentPersonnel','PersonnelInvolved','attr_PersonnelInvolved']);
+    var uid       = pick(p, ['UniqueFireIdentifier','attr_UniqueFireIdentifier','IrwinID','attr_IrwinID','IncidentId']);
+    var complex   = pick(p, ['ComplexName','attr_ComplexName']);
+    var updated   = pick(p, ['ModifiedOnDateTime_dt','attr_ModifiedOnDateTime_dt','DateCurrent','ModifiedOnDate','EditDate','attr_ModifiedOnDate']);
+
+    var pctNum   = (pctRaw != null) ? Math.round(parseFloat(pctRaw)) : null;
+    var pctColor = pctNum >= 75 ? '#44cc66' : pctNum >= 25 ? '#ffcc44' : '#ff7744';
+
+    var ftypeUpper = ftype ? String(ftype).toUpperCase().trim() : '';
+    var ftypeDef   = FIRE_TYPE_DEFS[ftypeUpper];
+    var ftypeLabel = ftypeUpper && ftypeUpper !== 'WF'
+      ? ftypeUpper + (ftypeDef ? ' — ' + ftypeDef : '')
+      : (ftypeDef || '');
+
+    var h = '<b style="font-size:12px">🔥 ' + name + '</b>';
+
+    // Location
+    var loc = [county, state].filter(Boolean).join(', ');
+    if (loc) h += '<br><span style="color:#8aaace;font-size:10px">📍 ' + loc + '</span>';
+    if (ftypeLabel) h += '<br><span style="color:#6a8aaa;font-size:10px">Type: ' + ftypeLabel + '</span>';
+    if (complex) h += '<br><span style="color:#6a8aaa;font-size:10px">Complex: ' + complex + '</span>';
+
+    h += '<div style="margin:5px 0 3px;border-top:1px solid #1a3050"></div>';
+
+    // Start date/time — always shown if available; prominently flagged if missing
+    var startStr = fmtFireDate(startVal, true);
+    h += '<br>Started: <span style="color:#c0d0f0">' + (startStr || '<i style="color:#5a7a90">unknown</i>') + '</span>';
+
+    // Acreage
+    if (acres != null) {
+      h += '<br>Size: <span style="color:#ffaa44">' + Math.round(parseFloat(acres)).toLocaleString() + ' acres</span>';
+    }
+
+    // Containment
+    if (pctNum != null) {
+      h += '<br>Contained: <span style="color:' + pctColor + '">' + pctNum + '%</span>';
+    }
+    var contStr = fmtFireDate(contVal, false);
+    if (contStr) h += '<br>Containment date: <span style="color:#44cc66">' + contStr + '</span>';
+    var ctrlStr = fmtFireDate(ctrlVal, false);
+    if (ctrlStr) h += '<br>Control date: <span style="color:#44cc66">' + ctrlStr + '</span>';
+
+    // Cause & personnel
+    if (cause) h += '<br>Cause: <span style="color:#c0d0f0">' + cause + '</span>';
+    if (personnel) h += '<br>Personnel: <span style="color:#c0d0f0">' + parseInt(personnel).toLocaleString() + ' people</span>';
+
+    // Footer: last updated + fire ID (not OBJECTID — only show meaningful IDs)
+    var updStr = fmtFireDate(updated, false);
+    var footer = [];
+    if (updStr) footer.push('Updated ' + updStr);
+    if (uid) footer.push('ID: ' + String(uid).replace(/[{}]/g, ''));
+    if (footer.length) h += '<div style="margin-top:5px;color:#3a5a70;font-size:9px">' + footer.join(' &nbsp;·&nbsp; ') + '</div>';
+
     return h;
   }
 
@@ -223,7 +313,7 @@
       radius: 8, fillColor: '#FF5500', color: '#FF2200',
       weight: 1.5, fillOpacity: 0.9, zIndexOffset: 200
     });
-    m.bindPopup(popup);
+    m.bindPopup(popup, { maxWidth: 280 });
     // Clicking the centroid zooms to the full polygon extent
     m.on('click', function (e) {
       L.DomEvent.stopPropagation(e);
@@ -239,7 +329,7 @@
       '?where=1%3D1&outFields=*&returnGeometry=true&f=geojson&resultRecordCount=500',
     // WFIGS Current Interagency Fire Perimeters — NIFC / US Forest Service
     'https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/WFIGS_Interagency_Perimeters_Current/FeatureServer/0/query' +
-      '?where=1%3D1&outFields=IncidentName,GISAcres,PercentContained,POOState,FireCause&returnGeometry=true&f=geojson&resultRecordCount=500'
+      '?where=1%3D1&outFields=*&returnGeometry=true&f=geojson&resultRecordCount=500'
   ];
 
   function tryPerimEndpoint(idx) {
@@ -261,15 +351,11 @@
           },
           onEachFeature: function (f, layer) {
             var p = f.properties || {};
-            var name  = p.IncidentName  || p.FireName        || p.poly_IncidentName || p.incident_name || 'Fire';
-            var acres = p.GISAcres      || p.Acres           || p.poly_GISAcres     || null;
-            var pct   = p.PercentContained || p.percent_contained || null;
-            var state = p.POOState      || p.State           || p.poly_POOState     || '';
-            var cause = p.FireCause     || p.fire_cause      || '';
+            var name   = p.IncidentName || p.FireName || p.poly_IncidentName || p.incident_name || 'Fire';
             var bounds = layer.getBounds();
-            var popup = firePopup(name, state, acres, pct, cause);
-            layer.bindPopup(popup);
-            perimIndex.push({ name: name, acres: acres, pct: pct, state: state, bounds: bounds, popup: popup });
+            var popup  = firePopup(p);
+            layer.bindPopup(popup, { maxWidth: 280 });
+            perimIndex.push({ name: name, bounds: bounds, popup: popup });
           }
         });
         gjLayer.addTo(fireGroup);
