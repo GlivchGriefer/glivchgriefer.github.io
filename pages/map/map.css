@@ -45,12 +45,15 @@ html, body {
 
 /* ── Floating button base ──────────────────────────────────── */
 .mc-btn {
+  box-sizing: border-box;
   width: 34px; height: 34px;
+  padding: 0; margin: 0;
+  -webkit-appearance: none; appearance: none;
   background: rgba(8,16,32,0.92);
   border: 1px solid #1a3a70;
   border-radius: 6px;
   color: #a0c0f0;
-  font-size: 15px;
+  font-size: 13px;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   text-decoration: none;

@@ -206,87 +206,138 @@
     .catch(function () { badge('alerts', '—'); });
 
   // ── Wildfires ────────────────────────────────────────────────
-  // Perimeters — Esri Living Atlas public layer (no key, replaces auth-gated NIFC endpoint)
-  var NIFC_PERIM = 'https://services9.arcgis.com/RHVPKKiFTONKtxq3/arcgis/rest/services/' +
-    'USA_Wildfires_v1/FeatureServer/1/query' +
-    '?where=1%3D1&outFields=IncidentName,GISAcres,PercentContained,POOState,FireCause' +
-    '&returnGeometry=true&f=geojson&resultRecordCount=300';
+  // perimIndex: { name, acres, pct, state, bounds } — used for centroid click-to-fitBounds
+  var perimIndex = [];
 
-  $g(NIFC_PERIM)
-    .then(function (data) {
-      var feats = data.features || [];
-      L.geoJSON(data, {
-        smoothFactor: 3,
-        style: function () {
-          return { color: '#FF4400', weight: 1.5, fillColor: '#FF6600', fillOpacity: 0.22, opacity: 0.85 };
-        },
-        onEachFeature: function (f, layer) {
-          var p = f.properties || {};
-          var name  = p.IncidentName  || p.poly_IncidentName  || p.incident_name  || 'Unknown Fire';
-          var acres = p.GISAcres      || p.poly_GISAcres      || p.gis_acres      || null;
-          var pct   = p.PercentContained || p.percent_contained || null;
-          var st    = p.POOState      || p.poly_POOState      || p.state          || '';
-          var cause = p.FireCause     || p.fire_cause         || '';
-          var html  = '<b>🔥 ' + name + '</b>';
-          if (st)    html += '<br><span style="color:#aaa;font-size:10px">' + st + '</span>';
-          if (acres) html += '<br>' + Math.round(acres).toLocaleString() + ' acres';
-          if (pct != null) html += ' · ' + Math.round(pct) + '% contained';
-          if (cause) html += '<br><span style="color:#aaa;font-size:10px">Cause: ' + cause + '</span>';
-          layer.bindPopup(html);
-        }
-      }).addTo(fireGroup);
-      cachedFireFeats = feats;
-      if (globeInst) globeInst.polygonsData(feats);
-      badge('fire', feats.length + ' fires');
-    })
-    .catch(function () {
-      badge('fire', FIRMS_KEY ? '—' : 'key needed');
+  function firePopup(name, state, acres, pct, cause) {
+    var h = '<b>🔥 ' + name + '</b>';
+    if (state) h += '<br><span style="color:#aaa;font-size:10px">' + state + '</span>';
+    if (acres) h += '<br>' + Math.round(acres).toLocaleString() + ' acres';
+    if (pct != null) h += ' · ' + Math.round(pct) + '% contained';
+    if (cause) h += '<br><span style="color:#aaa;font-size:10px">Cause: ' + cause + '</span>';
+    return h;
+  }
+
+  function addFireCentroid(lat, lon, popup, bounds) {
+    var m = L.circleMarker([lat, lon], {
+      radius: 8, fillColor: '#FF5500', color: '#FF2200',
+      weight: 1.5, fillOpacity: 0.9, zIndexOffset: 200
     });
+    m.bindPopup(popup);
+    // Clicking the centroid zooms to the full polygon extent
+    m.on('click', function (e) {
+      L.DomEvent.stopPropagation(e);
+      if (bounds) map.fitBounds(bounds, { padding: [40, 40] });
+    });
+    m.addTo(fireGroup);
+  }
 
-  // Hotspots — NASA FIRMS MODIS 2-day (VIIRS 1-day window returns empty; MODIS/2 is reliable)
-  if (FIRMS_KEY) {
-    var FIRMS_URL = 'https://firms.modaps.eosdis.nasa.gov/api/area/csv/' +
-      FIRMS_KEY + '/MODIS_NRT/world/2';
-    $t(FIRMS_URL)
+  // Try two different public perimeter sources in order
+  var PERIM_URLS = [
+    // Esri Living Atlas USA Wildfires — polygon layer (layer 1), public item
+    'https://services9.arcgis.com/RHVPKKiFTONKtxq3/arcgis/rest/services/USA_Wildfires_v1/FeatureServer/1/query' +
+      '?where=1%3D1&outFields=*&returnGeometry=true&f=geojson&resultRecordCount=500',
+    // WFIGS Current Interagency Fire Perimeters — NIFC / US Forest Service
+    'https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/WFIGS_Interagency_Perimeters_Current/FeatureServer/0/query' +
+      '?where=1%3D1&outFields=IncidentName,GISAcres,PercentContained,POOState,FireCause&returnGeometry=true&f=geojson&resultRecordCount=500'
+  ];
+
+  function tryPerimEndpoint(idx) {
+    if (idx >= PERIM_URLS.length) {
+      // Both endpoints failed — fall back to grid-deduplicated FIRMS hotspots
+      loadFirmsAsFallback();
+      return;
+    }
+    $g(PERIM_URLS[idx])
+      .then(function (data) {
+        var feats = (data.features || []).filter(function (f) { return f.geometry; });
+        if (!feats.length) { tryPerimEndpoint(idx + 1); return; }
+
+        // Draw polygon outlines
+        var gjLayer = L.geoJSON({ type: 'FeatureCollection', features: feats }, {
+          smoothFactor: 2,
+          style: function () {
+            return { color: '#FF4400', weight: 1.5, fillColor: '#FF6600', fillOpacity: 0.20, opacity: 0.85 };
+          },
+          onEachFeature: function (f, layer) {
+            var p = f.properties || {};
+            var name  = p.IncidentName  || p.FireName        || p.poly_IncidentName || p.incident_name || 'Fire';
+            var acres = p.GISAcres      || p.Acres           || p.poly_GISAcres     || null;
+            var pct   = p.PercentContained || p.percent_contained || null;
+            var state = p.POOState      || p.State           || p.poly_POOState     || '';
+            var cause = p.FireCause     || p.fire_cause      || '';
+            var bounds = layer.getBounds();
+            var popup = firePopup(name, state, acres, pct, cause);
+            layer.bindPopup(popup);
+            perimIndex.push({ name: name, acres: acres, pct: pct, state: state, bounds: bounds, popup: popup });
+          }
+        });
+        gjLayer.addTo(fireGroup);
+
+        // One centroid marker per fire — clicking fits to polygon extent
+        perimIndex.forEach(function (pi) {
+          var c = pi.bounds.getCenter();
+          addFireCentroid(c.lat, c.lng, pi.popup, pi.bounds);
+        });
+
+        cachedFireFeats = feats;
+        if (globeInst) globeInst.polygonsData(feats);
+        badge('fire', feats.length + ' fires');
+      })
+      .catch(function () { tryPerimEndpoint(idx + 1); });
+  }
+
+  // Fallback: FIRMS MODIS 2-day, grid-deduplicated so one dot per fire cluster
+  function loadFirmsAsFallback() {
+    if (!FIRMS_KEY) { badge('fire', 'no key'); return; }
+    $t('https://firms.modaps.eosdis.nasa.gov/api/area/csv/' + FIRMS_KEY + '/MODIS_NRT/world/2')
       .then(function (csv) {
         var lines = csv.trim().split('\n');
-        if (lines.length < 2) return;
-        var hdr   = lines[0].split(',');
-        var iLat  = hdr.indexOf('latitude');
-        var iLon  = hdr.indexOf('longitude');
-        var iFrp  = hdr.indexOf('frp');
-        var iConf = hdr.indexOf('confidence');
-        var iDate = hdr.indexOf('acq_date');
-        var iTime = hdr.indexOf('acq_time');
-        var iDay  = hdr.indexOf('daynight');
+        if (lines.length < 2) { badge('fire', 'no data'); return; }
+        var hdr  = lines[0].split(',');
+        var iLat = hdr.indexOf('latitude'), iLon = hdr.indexOf('longitude');
+        var iFrp = hdr.indexOf('frp'), iDate = hdr.indexOf('acq_date'), iTime = hdr.indexOf('acq_time');
+        if (iLat < 0 || iLon < 0) { badge('fire', '—'); return; }
+
+        // Grid-based dedup: ~0.25° cell (~28 km) keeps one highest-FRP point per fire area
+        var grid = {};
         for (var i = 1; i < lines.length; i++) {
           var cols = lines[i].split(',');
-          var lat  = parseFloat(cols[iLat]);
-          var lon  = parseFloat(cols[iLon]);
+          var lat  = parseFloat(cols[iLat]), lon = parseFloat(cols[iLon]);
           if (isNaN(lat) || isNaN(lon)) continue;
-          var frp  = parseFloat(cols[iFrp])  || 0;
-          var conf = cols[iConf] || '';
-          var dt   = (cols[iDate] || '') + (cols[iTime] ? ' ' + cols[iTime].slice(0, 2) + ':' + cols[iTime].slice(2) : '');
-          var dn   = cols[iDay] || '';
-          var r    = Math.max(2.5, Math.min(10, frp / 25));
-          var c    = frp > 300 ? '#FF1100' : frp > 100 ? '#FF4400' : frp > 30 ? '#FF7700' : '#FFAA00';
-          L.circleMarker([lat, lon], {
-            radius: r, fillColor: c, color: 'rgba(60,0,0,0.5)',
-            weight: 0.5, fillOpacity: 0.88
-          }).bindPopup(
-            '<b>🔥 Fire Hotspot</b><br>' +
-            'FRP: ' + frp.toFixed(0) + ' MW' +
-            (conf ? ' · Conf: ' + conf : '') +
-            (dn  ? ' · ' + (dn === 'D' ? '☀ Day' : '● Night') : '') +
-            (dt  ? '<br><span style="color:#aaa;font-size:10px">' + dt + ' UTC</span>' : '')
-          ).addTo(fireGroup);
+          var frp  = iFrp  >= 0 ? (parseFloat(cols[iFrp])  || 0) : 0;
+          var dt   = (iDate >= 0 ? cols[iDate] : '') +
+                     (iTime >= 0 && cols[iTime] ? ' ' + cols[iTime].slice(0, 2) + ':' + cols[iTime].slice(2) : '');
+          var gk   = Math.round(lat / 0.25) + '|' + Math.round(lon / 0.25);
+          if (!grid[gk]) {
+            grid[gk] = { sumLat: lat, sumLon: lon, frp: frp, dt: dt, n: 1 };
+          } else {
+            grid[gk].sumLat += lat; grid[gk].sumLon += lon; grid[gk].n++;
+            if (frp > grid[gk].frp) { grid[gk].frp = frp; grid[gk].dt = dt; }
+          }
         }
-        var hotCount = lines.length - 1;
-        var existing = (document.getElementById('ms-b-fire') || {}).textContent || '';
-        badge('fire', (existing && existing !== '—' ? existing.split(' ')[0] + ' fires · ' : '') + hotCount + ' hotspots', true);
+
+        var keys = Object.keys(grid), count = keys.length;
+        keys.forEach(function (k) {
+          var cell = grid[k];
+          var lat  = cell.sumLat / cell.n, lon = cell.sumLon / cell.n;
+          var frp  = cell.frp;
+          var r    = Math.max(4, Math.min(12, 4 + frp / 40));
+          var c    = frp > 300 ? '#FF1100' : frp > 100 ? '#FF4400' : frp > 30 ? '#FF7700' : '#FFAA00';
+          var popup = '<b>🔥 Fire Hotspot</b><br>Peak FRP: ' + frp.toFixed(0) + ' MW' +
+            (cell.n > 1 ? '<br>' + cell.n + ' detections' : '') +
+            (cell.dt ? '<br><span style="color:#aaa;font-size:10px">' + cell.dt + ' UTC</span>' : '');
+          var sz   = 0.25;
+          var bounds = L.latLngBounds([[lat - sz, lon - sz], [lat + sz, lon + sz]]);
+          addFireCentroid(lat, lon, popup, bounds);
+        });
+
+        badge('fire', count + ' clusters (FIRMS)');
       })
-      .catch(function () { badge('fire', (document.getElementById('ms-b-fire') || {}).textContent || '—'); });
+      .catch(function () { badge('fire', '—'); });
   }
+
+  tryPerimEndpoint(0);
 
   // ── GDACS Disasters (RSS) ────────────────────────────────────
   function gdacsIcon(title) {
@@ -519,8 +570,11 @@
   });
 
   document.addEventListener('fullscreenchange', function () {
-    document.getElementById('mc-fs').textContent = document.fullscreenElement ? '✕' : '⛶';
-    document.getElementById('mc-fs').title = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
+    var btn = document.getElementById('mc-fs');
+    btn.title = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
+    btn.innerHTML = document.fullscreenElement
+      ? '<svg width="13" height="13" viewBox="0 0 13 13" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"><path d="M5 1V5H1M8 1h4v4M12 8H8v4M5 12H1V8"/></svg>'
+      : '<svg width="13" height="13" viewBox="0 0 13 13" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"><path d="M1 5V1h4M8 1h4v4M12 8v4H8M5 12H1V8"/></svg>';
   });
 
   // ── Keyboard shortcut: Escape closes sidebar/search ─────────
