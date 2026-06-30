@@ -71,6 +71,15 @@
     });
   }
 
+  /* fetch$ with AbortController timeout; rejects after ms milliseconds */
+  function timedFetch$(url, ms) {
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, ms);
+    return fetch(url, ctrl ? { signal: ctrl.signal } : {})
+      .then(function (r) { clearTimeout(timer); if (!r.ok) throw new Error(r.status); return r.json(); })
+      .catch(function (e) { clearTimeout(timer); throw e; });
+  }
+
   function esc(str) {
     if (!str && str !== 0) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -199,27 +208,32 @@
   function fetchApodDirect() {
     var h = new Date().getHours();
     var date = h < 6 ? yesterdayStr() : todayStr();
-    fetch$('https://api.nasa.gov/planetary/apod?api_key=' + NASA_KEY + '&date=' + date)
+    timedFetch$('https://api.nasa.gov/planetary/apod?api_key=' + NASA_KEY + '&date=' + date, 30000)
       .then(function (data) { setCache('apod', data); renderApod(data); })
       .catch(function () {
         document.getElementById('apod-title').textContent = 'APOD unavailable';
+        document.getElementById('apod-desc').textContent = '';
         document.getElementById('apod-img').style.opacity = '0';
+        document.getElementById('apod-noimgwrap').classList.remove('hidden');
+        document.getElementById('apod-video-link').classList.add('hidden');
       });
   }
 
   function renderApod(data) {
     var img = document.getElementById('apod-img');
     var noImgWrap = document.getElementById('apod-noimgwrap');
+    var vl = document.getElementById('apod-video-link');
     if (data.media_type === 'image') {
       img.src = data.url;
       img.alt = data.title || '';
       img.style.opacity = '1';
       noImgWrap.classList.add('hidden');
+      vl.classList.add('hidden');
     } else {
       img.style.opacity = '0';
       noImgWrap.classList.remove('hidden');
-      var vl = document.getElementById('apod-video-link');
       vl.href = data.url || '#';
+      vl.classList.remove('hidden');
     }
     document.getElementById('apod-title').textContent = data.title || '';
     var expl = data.explanation || '';
@@ -269,83 +283,104 @@
     if (src) document.getElementById('potd-link').href = src;
   }
 
-  // ── NASA EPIC (Earth) ─────────────────────────────────────
+  // ── NASA Image Library ────────────────────────────────────
 
-  function fetchEpic() {
-    if (_cache && _cache.epic) { renderEpic(_cache.epic); return; }
-    fetch$('https://api.nasa.gov/EPIC/api/natural/latest?api_key=' + NASA_KEY)
+  var SPACE_QUERIES = ['nebula', 'galaxy', 'supernova remnant', 'aurora borealis', 'deep space hubble'];
+
+  function fetchNasaLib() {
+    if (_cache && _cache.nasalib) { renderNasaLib(_cache.nasalib); return; }
+    var query = SPACE_QUERIES[dayOfYear() % SPACE_QUERIES.length];
+    var page  = (Math.floor(dayOfYear() / SPACE_QUERIES.length) % 20) + 1;
+    fetch$('https://images-api.nasa.gov/search?q=' + encodeURIComponent(query) + '&media_type=image&page_size=1&page=' + page)
       .then(function (data) {
-        var item = data && data[0];
+        var item = data.collection && data.collection.items && data.collection.items[0];
         if (!item) throw new Error('none');
-        setCache('epic', item);
-        renderEpic(item);
+        var result = {
+          title: (item.data[0].title || '').trim(),
+          desc:  (item.data[0].description || '').trim(),
+          img:   item.links && item.links[0] && item.links[0].href || '',
+          url:   'https://images.nasa.gov/details/' + item.data[0].nasa_id
+        };
+        setCache('nasalib', result);
+        renderNasaLib(result);
       })
       .catch(function () {
-        document.getElementById('epic-title').textContent = 'Earth image unavailable';
-        document.getElementById('epic-noimgwrap').classList.remove('hidden');
-        document.getElementById('epic-img').style.opacity = '0';
+        document.getElementById('nasalib-title').textContent = 'NASA image unavailable';
+        document.getElementById('nasalib-noimgwrap').classList.remove('hidden');
+        document.getElementById('nasalib-img').style.opacity = '0';
       });
   }
 
-  function renderEpic(item) {
-    var el = document.getElementById('epic-img');
-    var noEl = document.getElementById('epic-noimgwrap');
-    var parts = item.date ? item.date.slice(0, 10).split('-') : null;
-    var url = parts
-      ? 'https://api.nasa.gov/EPIC/archive/natural/' + parts[0] + '/' + parts[1] + '/' + parts[2] +
-        '/jpg/' + item.image + '.jpg?api_key=' + NASA_KEY
-      : null;
-    if (url) {
-      el.src = url;
-      el.alt = 'Earth from DSCOVR/EPIC';
+  function renderNasaLib(result) {
+    var el = document.getElementById('nasalib-img');
+    var noEl = document.getElementById('nasalib-noimgwrap');
+    if (result.img) {
+      el.onerror = function () { el.style.opacity = '0'; noEl.classList.remove('hidden'); };
+      el.src = result.img;
+      el.alt = result.title || 'NASA';
       el.style.opacity = '1';
       noEl.classList.add('hidden');
     } else {
       el.style.opacity = '0';
       noEl.classList.remove('hidden');
     }
-    document.getElementById('epic-title').textContent = 'Earth — ' + (item.date ? item.date.slice(0, 10) : '');
-    document.getElementById('epic-desc').textContent =
-      'Natural color image captured by the DSCOVR satellite at L1, ~1.5 million km from Earth.' +
-      (item.caption ? ' ' + item.caption : '');
+    document.getElementById('nasalib-title').textContent = result.title || '';
+    var desc = result.desc || '';
+    document.getElementById('nasalib-desc').textContent = desc.length > 220 ? desc.slice(0, 220) + '…' : desc;
+    document.getElementById('nasalib-link').href = result.url || 'https://images.nasa.gov';
   }
 
-  // ── NASA Mars Rover (Curiosity) ───────────────────────────
+  // ── Masterworks via Wikimedia Commons (images on upload.wikimedia.org, no hotlink block) ──
 
-  function fetchMars() {
-    if (_cache && _cache.mars) { renderMars(_cache.mars); return; }
-    fetch$('https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/latest_photos?api_key=' + NASA_KEY)
+  var MASTERWORKS = [
+    {file:'The_Great_Wave_off_Kanagawa.jpg',                                             title:'The Great Wave off Kanagawa',    artist:'Katsushika Hokusai',      year:'c. 1831'},
+    {file:'Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg',                           title:'The Starry Night',               artist:'Vincent van Gogh',        year:'1889'},
+    {file:'Girl_with_a_Pearl_Earring.jpg',                                               title:'Girl with a Pearl Earring',      artist:'Johannes Vermeer',        year:'c. 1665'},
+    {file:'Mona_Lisa,_by_Leonardo_da_Vinci,_from_C2RMF_retouched.jpg',                  title:'Mona Lisa',                      artist:'Leonardo da Vinci',       year:'c. 1503'},
+    {file:'John_Constable_-_The_Hay_Wain.jpg',                                          title:'The Hay Wain',                   artist:'John Constable',          year:'1821'},
+    {file:'Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg',                 title:'Wanderer above the Sea of Fog',  artist:'Caspar David Friedrich',  year:'c. 1818'},
+    {file:'Eugène_Delacroix_-_La_liberté_guidant_le_peuple.jpg',              title:'Liberty Leading the People',     artist:'Éugène Delacroix', year:'1830'},
+    {file:'Las_Meninas_01.jpg',                                                          title:'Las Meninas',                    artist:'Diego Velázquez',    year:'1656'},
+    {file:'Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg', title:'The Birth of Venus',             artist:'Sandro Botticelli',       year:'c. 1485'},
+    {file:'Rembrandt_van_Rijn_-_Self-Portrait_-_Google_Art_Project.jpg',                title:'Self-Portrait',                  artist:'Rembrandt van Rijn',      year:'c. 1659'},
+    {file:'Georges_Seurat_021.jpg',                                                      title:'Young Woman Powdering Herself',  artist:'Georges Seurat',          year:'1890'},
+    {file:'Turner_-_Rain,_Steam_and_Speed_-_National_Gallery_file.jpg',                 title:'Rain, Steam, and Speed',         artist:'J.M.W. Turner',           year:'1844'},
+    {file:'The_Fighting_Temeraire,_JMW_Turner,_National_Gallery.jpg',                   title:'The Fighting Temeraire',         artist:'J.M.W. Turner',           year:'1839'},
+    {file:'Edvard_Munch_-_The_Scream_-_Google_Art_Project.jpg',                         title:'The Scream',                     artist:'Edvard Munch',            year:'1893'},
+    {file:'Michelangelo_-_Creation_of_Adam_(cropped).jpg',                              title:'The Creation of Adam',           artist:'Michelangelo',            year:'c. 1512'},
+  ];
+
+  function fetchCommonsArt() {
+    if (_cache && _cache.commonsart) { renderCommonsArt(_cache.commonsart); return; }
+    var mw = MASTERWORKS[dayOfYear() % MASTERWORKS.length];
+    fetch$('https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url&iiurlwidth=900&format=json&origin=*&titles=File:' + encodeURIComponent(mw.file))
       .then(function (data) {
-        var photos = data && data.latest_photos;
-        var photo = photos && photos[0];
-        if (!photo) throw new Error('none');
-        setCache('mars', photo);
-        renderMars(photo);
+        var pages = data.query && data.query.pages;
+        var page  = pages && Object.values(pages)[0];
+        var ii    = page && page.imageinfo && page.imageinfo[0];
+        if (!ii || !ii.thumburl) throw new Error('no image');
+        var result = { src: ii.thumburl, title: mw.title, artist: mw.artist, year: mw.year, file: mw.file };
+        setCache('commonsart', result);
+        renderCommonsArt(result);
       })
       .catch(function () {
-        document.getElementById('mars-title').textContent = 'Mars image unavailable';
-        document.getElementById('mars-noimgwrap').classList.remove('hidden');
-        document.getElementById('mars-img').style.opacity = '0';
+        document.getElementById('art-title').textContent = 'Artwork unavailable';
+        document.getElementById('art-noimgwrap').classList.remove('hidden');
+        document.getElementById('art-img').style.opacity = '0';
       });
   }
 
-  function renderMars(photo) {
-    var el = document.getElementById('mars-img');
-    var noEl = document.getElementById('mars-noimgwrap');
-    if (photo.img_src) {
-      el.src = photo.img_src;
-      el.alt = 'Mars — Curiosity Rover';
-      el.style.opacity = '1';
-      noEl.classList.add('hidden');
-    } else {
-      el.style.opacity = '0';
-      noEl.classList.remove('hidden');
-    }
-    var cam = (photo.camera && photo.camera.full_name) || 'Camera';
-    var sol = photo.sol != null ? 'Sol ' + photo.sol : '';
-    document.getElementById('mars-title').textContent = cam + (sol ? ' · ' + sol : '');
-    document.getElementById('mars-desc').textContent =
-      'Captured by NASA\'s Curiosity rover on ' + (photo.earth_date || 'Mars') + '.';
+  function renderCommonsArt(result) {
+    var el   = document.getElementById('art-img');
+    var noEl = document.getElementById('art-noimgwrap');
+    el.onerror = function () { el.style.opacity = '0'; noEl.classList.remove('hidden'); };
+    el.src = result.src;
+    el.alt = result.title;
+    el.style.opacity = '1';
+    noEl.classList.add('hidden');
+    document.getElementById('art-title').textContent = result.title;
+    document.getElementById('art-desc').textContent  = result.artist + ' · ' + result.year;
+    document.getElementById('art-link').href = 'https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(result.file);
   }
 
   // ── GBIF Observation ──────────────────────────────────────
@@ -796,8 +831,8 @@
     // Load all concurrently
     fetchApod();
     fetchWikiPotd();
-    fetchEpic();
-    fetchMars();
+    fetchNasaLib();
+    fetchCommonsArt();
     fetchGbif();
     fetchInat();
     fetchQuake();
