@@ -818,10 +818,7 @@ body.daily-page .aim-titlebar .dm-btn:not(.mnav-dm) { display: none; }
 
 body.daily-page .aim-app { position: relative; }
 
-body.daily-page .aim-titlebar,
-body.daily-page .mobile-nav,
-body.daily-page .aim-main,
-body.daily-page .aim-statusbar {
+body.daily-page .aim-main {
   position: relative;
   z-index: 1;
 }
