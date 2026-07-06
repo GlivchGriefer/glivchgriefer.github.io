@@ -11,6 +11,7 @@
 </head>
 <body class="daily-page">
   <div class="aim-app">
+    <canvas id="bg-canvas" class="dw-bg-canvas"></canvas>
     <input type="checkbox" id="mnav-toggle" class="mnav-toggle" />
     <header class="aim-titlebar">
       <div class="aim-titlebar-logo">
@@ -55,23 +56,68 @@
           <button id="zip-submit" class="dw-tick-go">Go</button>
         </div>
         <div id="ticker-data" class="hidden">
-          <span id="w-icon"></span>
-          <span id="w-temp"></span>
-          <span class="dw-tick-sep">·</span>
-          <span id="w-desc"></span>
-          <span class="dw-tick-sep">·</span>
-          <span id="w-loc"></span>
-          <span class="dw-tick-sep">·</span>
-          <span class="dw-tick-lbl">H</span><span id="w-hi"></span>
-          <span class="dw-tick-sep dw-tick-narrow">/</span>
-          <span class="dw-tick-lbl">L</span><span id="w-lo"></span>
-          <span class="dw-tick-sep">·</span>
-          <span id="w-sunrise"></span>
-          <span class="dw-tick-sep dw-tick-narrow"> </span>
-          <span id="w-sunset"></span>
+          <div class="dw-tick-panels">
+            <div class="dw-tick-panel active" id="tick-panel-weather">
+              <span id="w-icon"></span>
+              <span id="w-temp"></span>
+              <span class="dw-tick-sep">·</span>
+              <span id="w-desc"></span>
+              <span class="dw-tick-sep">·</span>
+              <span id="w-loc"></span>
+              <span class="dw-tick-sep">·</span>
+              <span class="dw-tick-lbl">H</span><span id="w-hi"></span>
+              <span class="dw-tick-sep dw-tick-narrow">/</span>
+              <span class="dw-tick-lbl">L</span><span id="w-lo"></span>
+              <span class="dw-tick-sep">·</span>
+              <span id="w-sunrise"></span>
+              <span class="dw-tick-sep dw-tick-narrow"> </span>
+              <span id="w-sunset"></span>
+            </div>
+            <div class="dw-tick-panel" id="tick-panel-aqi">
+              <span class="dw-tick-lbl">AQI</span>
+              <span id="tick-aqi-val">—</span>
+              <span class="dw-tick-sep">·</span>
+              <span id="tick-aqi-level">—</span>
+              <span class="dw-tick-sep">·</span>
+              <span id="tick-aqi-pm">—</span>
+            </div>
+            <div class="dw-tick-panel" id="tick-panel-swx">
+              <span class="dw-tick-lbl">SWX</span>
+              <span id="tick-swx-kp">—</span>
+              <span class="dw-tick-sep">·</span>
+              <span id="tick-swx-level">—</span>
+              <span class="dw-tick-sep">·</span>
+              <span id="tick-swx-trend">—</span>
+            </div>
+            <div class="dw-tick-panel" id="tick-panel-quake">
+              <span class="dw-tick-lbl">EQ</span>
+              <span id="tick-quake-mag">—</span>
+              <span class="dw-tick-sep">·</span>
+              <span id="tick-quake-place">—</span>
+            </div>
+          </div>
+          <div class="dw-tick-pdots">
+            <span class="dw-tick-pdot active" data-panel="0" title="Weather"></span>
+            <span class="dw-tick-pdot" data-panel="1" title="Air Quality"></span>
+            <span class="dw-tick-pdot" data-panel="2" title="Space Weather"></span>
+            <span class="dw-tick-pdot" data-panel="3" title="Earthquake"></span>
+          </div>
           <a id="ticker-map-btn" href="../map/map.html" class="dw-tick-btn">Radar ↗</a>
+          <button id="art-toggle-btn" class="dw-tick-btn" title="Background art">✦</button>
           <button id="zip-change" class="dw-tick-ghost">change</button>
         </div>
+      </div>
+      <!-- Gen art popup -->
+      <div id="art-popup" class="dw-art-popup hidden">
+        <button class="dw-art-style-btn active" data-style="0">Flow</button>
+        <button class="dw-art-style-btn" data-style="1">Stars</button>
+        <button class="dw-art-style-btn" data-style="2">Waves</button>
+        <span class="dw-tick-sep">·</span>
+        <button class="dw-art-op-btn active" data-op="0.15">Dim</button>
+        <button class="dw-art-op-btn" data-op="0.3">Med</button>
+        <button class="dw-art-op-btn" data-op="0.5">Bright</button>
+        <span class="dw-tick-sep">·</span>
+        <button id="art-off-btn" class="dw-tick-ghost">Off</button>
       </div>
 
       <!-- Hero: Discovery Carousel -->
@@ -214,6 +260,14 @@
       <!-- Supplementary feed -->
       <div class="dw-feed">
 
+        <!-- Word of the Day — thin banner -->
+        <section class="dw-feed-sec dw-feed-full dw-word-banner">
+          <h2 class="dw-feed-lbl dw-word-banner-lbl">📝 Word</h2>
+          <div id="word-body"><div class="dw-loading">Loading…</div></div>
+        </section>
+
+        <div class="dw-feed-divider"></div>
+
         <!-- Trivia Quiz -->
         <section class="dw-feed-sec dw-feed-full">
           <h2 class="dw-feed-lbl">🎯 Daily Trivia</h2>
@@ -249,28 +303,6 @@
 
         <div class="dw-feed-divider"></div>
 
-        <!-- Space Weather + Air Quality -->
-        <div class="dw-feed-row">
-          <section class="dw-feed-sec">
-            <h2 class="dw-feed-lbl">☀ Space Weather</h2>
-            <div id="swx-body"><div class="dw-loading">Loading…</div></div>
-          </section>
-          <section class="dw-feed-sec">
-            <h2 class="dw-feed-lbl">💨 Air Quality</h2>
-            <div id="aqi-body"><div class="dw-loading">Loading…</div></div>
-          </section>
-        </div>
-
-        <div class="dw-feed-divider"></div>
-
-        <!-- Upcoming Launches -->
-        <section class="dw-feed-sec dw-feed-full">
-          <h2 class="dw-feed-lbl">🚀 Upcoming Launches</h2>
-          <div id="launches-body"><div class="dw-loading">Loading…</div></div>
-        </section>
-
-        <div class="dw-feed-divider"></div>
-
         <!-- xkcd Comic -->
         <section class="dw-feed-sec dw-feed-full">
           <h2 class="dw-feed-lbl">😂 xkcd</h2>
@@ -279,49 +311,29 @@
 
         <div class="dw-feed-divider"></div>
 
-        <div class="dw-feed-row">
-          <section class="dw-feed-sec">
-            <h2 class="dw-feed-lbl">📝 Word of the Day</h2>
-            <div id="word-body"><div class="dw-loading">Loading…</div></div>
-          </section>
-          <section class="dw-feed-sec">
-            <h2 class="dw-feed-lbl">⭐ GitHub Trending</h2>
-            <div id="github-body"><div class="dw-loading">Loading…</div></div>
-          </section>
-        </div>
-
-        <div class="dw-feed-divider"></div>
-
-        <div class="dw-feed-row">
-          <section class="dw-feed-sec">
-            <h2 class="dw-feed-lbl">🌍 Biggest Earthquake Yesterday</h2>
-            <div id="quake-body"><div class="dw-loading">Loading…</div></div>
-          </section>
-          <section class="dw-feed-sec">
-            <h2 class="dw-feed-lbl">🔥 HackerNews Top Story</h2>
-            <div id="hn-body"><div class="dw-loading">Loading…</div></div>
-          </section>
-        </div>
-
-        <div class="dw-feed-divider"></div>
-
-        <!-- Scratch Pad -->
         <section class="dw-feed-sec dw-feed-full">
-          <h2 class="dw-feed-lbl">📝 Scratch Pad</h2>
-          <textarea id="scratch-area" class="dw-scratch-area" placeholder="Type anything… auto-saved locally." rows="7" spellcheck="false"></textarea>
-          <div class="dw-scratch-footer">
-            <span id="scratch-count" class="dw-meta">0 chars</span>
-            <button id="scratch-clear" class="dw-tick-ghost">Clear</button>
-          </div>
+          <h2 class="dw-feed-lbl">⭐ GitHub Trending</h2>
+          <div id="github-body"><div class="dw-loading">Loading…</div></div>
         </section>
 
         <div class="dw-feed-divider"></div>
 
+        <section class="dw-feed-sec dw-feed-full">
+          <h2 class="dw-feed-lbl">🔥 HackerNews Top Story</h2>
+          <div id="hn-body"><div class="dw-loading">Loading…</div></div>
+        </section>
+
+        <div class="dw-feed-divider"></div>
+
+        <!-- ISS + Launches combined -->
         <section class="dw-feed-iss dw-feed-full">
           <div class="dw-feed-iss-text">
             <h2 class="dw-feed-lbl">🛸 ISS Live Position</h2>
             <div id="iss-body"><div class="dw-loading">Loading…</div></div>
             <div class="dw-meta" id="iss-crew"></div>
+            <div class="dw-iss-launches-sep"></div>
+            <h2 class="dw-feed-lbl">🚀 Upcoming Launches</h2>
+            <div id="launches-body"><div class="dw-loading">Loading…</div></div>
           </div>
           <div id="iss-globe" class="dw-iss-globe"></div>
         </section>

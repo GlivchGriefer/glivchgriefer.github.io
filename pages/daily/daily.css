@@ -803,6 +803,234 @@ body.daily-page .aim-titlebar .dm-btn:not(.mnav-dm) { display: none; }
 }
 .dw-tick-ghost:hover { border-color: rgba(255,80,80,0.4); color: rgba(255,120,120,0.8); }
 
+/* ── Background canvas ───────────────────────────────────── */
+
+.dw-bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.15;
+  transition: opacity 0.5s;
+}
+
+body.daily-page .aim-app { position: relative; }
+
+body.daily-page .aim-titlebar,
+body.daily-page .mobile-nav,
+body.daily-page .aim-main,
+body.daily-page .aim-statusbar {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Ticker panel cycling ────────────────────────────────── */
+
+#ticker-data {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dw-tick-panels {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.dw-tick-panel {
+  display: none;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.dw-tick-panel.active { display: flex; }
+
+.dw-tick-pdots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 0 4px;
+}
+
+.dw-tick-pdot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  cursor: pointer;
+  transition: background 0.25s;
+  flex-shrink: 0;
+}
+
+.dw-tick-pdot.active { background: rgba(120,180,255,0.85); }
+.dw-tick-pdot:hover  { background: rgba(255,255,255,0.4); }
+
+/* ── Gen art popup ───────────────────────────────────────── */
+
+.dw-art-popup {
+  position: fixed;
+  z-index: 300;
+  background: rgba(8, 12, 28, 0.96);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  white-space: nowrap;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.dw-art-style-btn,
+.dw-art-op-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 5px;
+  color: rgba(255,255,255,0.5);
+  font-size: 10px;
+  font-family: inherit;
+  padding: 2px 10px;
+  height: 22px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.dw-art-style-btn.active,
+.dw-art-op-btn.active {
+  background: rgba(60,100,200,0.5);
+  border-color: rgba(100,150,255,0.4);
+  color: rgba(180,210,255,0.95);
+}
+
+.dw-art-style-btn:hover,
+.dw-art-op-btn:hover {
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.85);
+}
+
+/* ── Word of the Day — thin banner ──────────────────────── */
+
+.dw-word-banner {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: baseline;
+  gap: 12px;
+  padding: 7px 0 !important;
+  flex-wrap: nowrap;
+}
+
+.dw-word-banner-lbl {
+  margin-bottom: 0 !important;
+  flex-shrink: 0;
+  font-size: 9px;
+}
+
+.dw-word-banner #word-body {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dw-word-thin-word {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(200,220,255,0.92);
+  letter-spacing: 0.2px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.dw-word-thin-word:hover { color: #fff; text-decoration: underline; }
+
+.dw-word-thin-pos {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+
+.dw-word-thin-def {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Compact launch rows ─────────────────────────────────── */
+
+.dw-launch-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 11px;
+  flex-wrap: wrap;
+}
+
+.dw-launch-row:last-child { border-bottom: none; }
+
+.dw-launch-time {
+  font-size: 10px;
+  color: rgba(120,180,255,0.85);
+  font-family: var(--font-mono, monospace);
+  flex-shrink: 0;
+  min-width: 58px;
+}
+
+.dw-launch-row .dw-launch-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+.dw-launch-meta {
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+
+.dw-launch-pad {
+  font-size: 10px;
+  color: rgba(255,255,255,0.2);
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── ISS + Launches separator ────────────────────────────── */
+
+.dw-iss-launches-sep {
+  margin: 14px 0 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 
 @media (max-width: 640px) {
@@ -820,4 +1048,7 @@ body.daily-page .aim-titlebar .dm-btn:not(.mnav-dm) { display: none; }
   .dw-feed-full { padding: 16px 0 12px; }
   .dw-tech-grid { grid-template-columns: 1fr; }
   .dw-iss-globe { width: 100px; height: 100px; margin-top: 24px; }
+
+  .dw-word-banner { padding: 7px 12px !important; }
+  .dw-launch-pad { display: none; }
 }

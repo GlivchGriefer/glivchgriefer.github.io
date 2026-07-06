@@ -146,6 +146,7 @@
   function loadWeather(zip) {
     document.getElementById('ticker-prompt').classList.add('hidden');
     document.getElementById('ticker-data').classList.remove('hidden');
+    startTickerCycle();
     document.getElementById('w-icon').textContent = '⏳';
     document.getElementById('w-desc').textContent = 'Loading…';
     document.getElementById('w-loc').textContent = '';
@@ -493,20 +494,19 @@
         if (!f) throw new Error('none');
         setCache('quake', f); renderQuake(f);
       })
-      .catch(function () { document.getElementById('quake-body').innerHTML = '<div class="dw-error">No significant earthquakes found for yesterday.</div>'; });
+      .catch(function () {
+        var el = document.getElementById('tick-quake-place');
+        if (el) el.textContent = 'no data';
+      });
   }
 
   function renderQuake(f) {
     var p = f.properties;
     var mag = parseFloat(p.mag).toFixed(1);
-    var coords = f.geometry && f.geometry.coordinates;
-    var depth = coords ? parseFloat(coords[2]).toFixed(0) + ' km deep' : '';
-    var time = p.time ? new Date(p.time).toUTCString() : '';
-    var cls = parseFloat(mag) >= 6 ? 'dw-mag-high' : parseFloat(mag) >= 4 ? 'dw-mag-med' : 'dw-mag-low';
-    document.getElementById('quake-body').innerHTML =
-      '<div class="dw-quake-row"><span class="dw-mag ' + cls + '">M' + mag + '</span><span class="dw-quake-place">' + esc(p.place || 'Unknown') + '</span></div>' +
-      (time ? '<div class="dw-meta">' + esc(time) + (depth ? ' · ' + esc(depth) : '') + '</div>' : '') +
-      '<div class="dw-meta"><a href="' + esc(p.url) + '" target="_blank" rel="noopener">USGS Details</a></div>';
+    var magEl   = document.getElementById('tick-quake-mag');
+    var placeEl = document.getElementById('tick-quake-place');
+    if (magEl)   magEl.textContent   = 'M' + mag;
+    if (placeEl) placeEl.textContent = p.place || 'Unknown';
   }
 
   // ── Wikipedia On This Day ─────────────────────────────────
@@ -551,22 +551,17 @@
   }
 
   function renderWord(data) {
-    var html = '<div class="dw-word-title">' + esc(data.word) + '</div>';
     var entry = data.entry;
-    if (entry) {
-      var phon = entry.phonetic || ((entry.phonetics || []).find(function(p){return p.text;}) || {}).text || '';
-      if (phon) html += '<div class="dw-word-phonetic">' + esc(phon) + '</div>';
-      (entry.meanings || []).slice(0, 2).forEach(function (m) {
-        html += '<div class="dw-word-pos">' + esc(m.partOfSpeech) + '</div>';
-        var def = m.definitions && m.definitions[0];
-        if (def) {
-          html += '<div class="dw-word-def">' + esc(def.definition) + '</div>';
-          if (def.example) html += '<div class="dw-word-ex">"' + esc(def.example) + '"</div>';
-        }
-      });
+    var pos = '', def = '';
+    if (entry && entry.meanings && entry.meanings[0]) {
+      pos = entry.meanings[0].partOfSpeech || '';
+      var d = entry.meanings[0].definitions && entry.meanings[0].definitions[0];
+      if (d) def = d.definition || '';
     }
-    html += '<div class="dw-meta" style="margin-top:10px;"><a href="https://www.merriam-webster.com/dictionary/' + encodeURIComponent(data.word) + '" target="_blank" rel="noopener">Merriam-Webster</a></div>';
-    document.getElementById('word-body').innerHTML = html;
+    document.getElementById('word-body').innerHTML =
+      '<a class="dw-word-thin-word" href="https://www.merriam-webster.com/dictionary/' + encodeURIComponent(data.word) + '" target="_blank" rel="noopener">' + esc(data.word) + '</a>' +
+      (pos ? '<span class="dw-word-thin-pos">' + esc(pos) + '</span>' : '') +
+      (def ? '<span class="dw-word-thin-def">' + esc(def) + '</span>' : '');
   }
 
   // ── GitHub Trending ───────────────────────────────────────
@@ -885,30 +880,6 @@
       '</span>';
   }
 
-  // ── Scratch Pad ───────────────────────────────────────────
-
-  function initScratchPad() {
-    var area  = document.getElementById('scratch-area');
-    var count = document.getElementById('scratch-count');
-    try { area.value = localStorage.getItem('pm_scratchpad') || ''; } catch (e) {}
-    count.textContent = area.value.length + ' chars';
-    var saveTimer;
-    area.addEventListener('input', function () {
-      count.textContent = area.value.length + ' chars';
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(function () {
-        try { localStorage.setItem('pm_scratchpad', area.value); } catch (e) {}
-      }, 400);
-    });
-    document.getElementById('scratch-clear').addEventListener('click', function () {
-      if (!area.value || confirm('Clear the scratch pad?')) {
-        area.value = ''; count.textContent = '0 chars';
-        try { localStorage.removeItem('pm_scratchpad'); } catch (e) {}
-        area.focus();
-      }
-    });
-  }
-
   // ── Space Weather (NOAA Kp) ───────────────────────────────
 
   function fetchSpaceWeather() {
@@ -926,38 +897,26 @@
         setCache('swx', result); renderSpaceWeather(result);
       })
       .catch(function () {
-        document.getElementById('swx-body').innerHTML = '<div class="dw-error">Space weather data unavailable.</div>';
+        var el = document.getElementById('tick-swx-level');
+        if (el) el.textContent = 'unavailable';
       });
   }
 
   function renderSpaceWeather(data) {
-    var kp = data.kp;
     var LEVELS = ['Quiet','Quiet','Quiet','Quiet','Minor Watch','G1 Minor','G2 Moderate','G3 Strong','G4 Severe','G5 Extreme'];
-    var COLORS = ['rgba(50,170,70,0.9)','rgba(50,170,70,0.9)','rgba(50,170,70,0.9)','rgba(50,170,70,0.9)',
-                  'rgba(210,200,40,0.9)','rgba(255,130,0,0.9)','rgba(240,70,0,0.9)',
-                  'rgba(210,20,20,0.9)','rgba(150,0,180,0.9)','rgba(80,0,0,0.9)'];
-    var aurora = kp >= 9 ? 'Visible to ~40° lat' : kp >= 8 ? 'Visible to ~45° lat' :
-                 kp >= 7 ? 'Visible to ~50° lat' : kp >= 6 ? 'Visible to ~55° lat' :
-                 kp >= 5 ? 'Visible to ~60° lat (Alaska/Scandinavia)' :
-                 kp >= 4 ? 'Possible at high latitudes' : 'Not likely';
     var arrow = { rising: '↑', falling: '↓', steady: '→' }[data.trend] || '→';
-    document.getElementById('swx-body').innerHTML =
-      '<div style="display:flex;align-items:center;gap:14px;margin-bottom:8px;">' +
-        '<div style="font-size:38px;font-weight:200;color:#fff;line-height:1;">' + esc(data.kp_exact) + '</div>' +
-        '<div><div style="font-size:11px;font-weight:600;color:' + COLORS[Math.min(kp,9)] + ';margin-bottom:2px;">Kp ' + kp + ' — ' + LEVELS[Math.min(kp,9)] + '</div>' +
-        '<div class="dw-meta" style="margin:0;">' + arrow + ' ' + esc(data.trend) + '</div></div>' +
-      '</div>' +
-      '<div style="font-size:12px;color:rgba(255,255,255,0.58);margin-bottom:8px;">🌌 Aurora: ' + esc(aurora) + '</div>' +
-      '<div class="dw-meta"><a href="https://www.swpc.noaa.gov" target="_blank" rel="noopener">NOAA SWPC</a> · <a href="https://spaceweather.com" target="_blank" rel="noopener">spaceweather.com</a></div>';
+    var kpEl    = document.getElementById('tick-swx-kp');
+    var lvlEl   = document.getElementById('tick-swx-level');
+    var trendEl = document.getElementById('tick-swx-trend');
+    if (kpEl)    kpEl.textContent    = 'Kp ' + data.kp_exact;
+    if (lvlEl)   lvlEl.textContent   = LEVELS[Math.min(data.kp, 9)];
+    if (trendEl) trendEl.textContent = arrow + ' ' + data.trend;
   }
 
   // ── Air Quality (Open-Meteo) ──────────────────────────────
 
   function fetchAirQuality(lat, lon) {
-    if (!lat || !lon) {
-      document.getElementById('aqi-body').innerHTML = '<div class="dw-meta" style="padding:4px 0;">Set your weather ZIP above for local air quality.</div>';
-      return;
-    }
+    if (!lat || !lon) return;
     if (_cache && _cache.aqi) { renderAirQuality(_cache.aqi); return; }
     fetch$('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lon + '&current=us_aqi,pm2_5,ozone')
       .then(function (data) {
@@ -966,28 +925,26 @@
         setCache('aqi', result); renderAirQuality(result);
       })
       .catch(function () {
-        document.getElementById('aqi-body').innerHTML = '<div class="dw-error">Air quality data unavailable.</div>';
+        var el = document.getElementById('tick-aqi-level');
+        if (el) el.textContent = 'unavailable';
       });
   }
 
   function renderAirQuality(data) {
     var aqi = data.aqi || 0;
-    var level, color;
-    if      (aqi <= 50)  { level = 'Good';                           color = 'rgba(50,170,70,0.9)'; }
-    else if (aqi <= 100) { level = 'Moderate';                       color = 'rgba(210,200,40,0.9)'; }
-    else if (aqi <= 150) { level = 'Unhealthy for Sensitive Groups';  color = 'rgba(255,130,0,0.9)'; }
-    else if (aqi <= 200) { level = 'Unhealthy';                      color = 'rgba(210,40,40,0.9)'; }
-    else if (aqi <= 300) { level = 'Very Unhealthy';                 color = 'rgba(150,0,200,0.9)'; }
-    else                 { level = 'Hazardous';                      color = 'rgba(90,0,0,0.9)'; }
-    document.getElementById('aqi-body').innerHTML =
-      '<div style="display:flex;align-items:center;gap:14px;margin-bottom:8px;">' +
-        '<div style="font-size:38px;font-weight:200;color:#fff;line-height:1;">' + aqi + '</div>' +
-        '<div><div style="font-size:11px;font-weight:600;color:' + color + ';margin-bottom:2px;">' + esc(level) + '</div>' +
-        '<div class="dw-meta" style="margin:0;">US AQI</div></div>' +
-      '</div>' +
-      (data.pm25 != null ? '<div class="dw-meta">PM2.5: ' + parseFloat(data.pm25).toFixed(1) + ' μg/m³' +
-        (data.ozone != null ? ' · O₃: ' + parseFloat(data.ozone).toFixed(0) + ' μg/m³' : '') + '</div>' : '') +
-      '<div class="dw-meta" style="margin-top:6px;"><a href="https://www.airnow.gov" target="_blank" rel="noopener">AirNow.gov</a></div>';
+    var level;
+    if      (aqi <= 50)  level = 'Good';
+    else if (aqi <= 100) level = 'Moderate';
+    else if (aqi <= 150) level = 'Unhealthy SG';
+    else if (aqi <= 200) level = 'Unhealthy';
+    else if (aqi <= 300) level = 'Very Unhealthy';
+    else                 level = 'Hazardous';
+    var valEl = document.getElementById('tick-aqi-val');
+    var lvlEl = document.getElementById('tick-aqi-level');
+    var pmEl  = document.getElementById('tick-aqi-pm');
+    if (valEl) valEl.textContent = aqi;
+    if (lvlEl) lvlEl.textContent = level;
+    if (pmEl && data.pm25 != null) pmEl.textContent = 'PM2.5 ' + parseFloat(data.pm25).toFixed(1);
   }
 
   // ── xkcd Comic ───────────────────────────────────────────
@@ -1096,8 +1053,7 @@
           var mins = Math.floor((diff % 3600000) / 60000);
           timeStr = 'T‑ ' + (days > 0 ? days + 'd ' + hrs + 'h' : hrs + 'h ' + mins + 'm');
         } else if (diff > 0) {
-          timeStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · ' +
-                    dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+          timeStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         } else {
           timeStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
@@ -1105,13 +1061,12 @@
       var vehicle  = r.vehicle  && r.vehicle.name  ? r.vehicle.name  : '';
       var pad      = r.pad      && r.pad.name      ? r.pad.name      : '';
       var provider = r.provider && r.provider.name ? r.provider.name : '';
-      html += '<div class="dw-launch-item">' +
-        '<div class="dw-launch-name">' + esc(r.name || 'Unknown Mission') + '</div>' +
-        '<div class="dw-meta">' + [provider, vehicle].filter(Boolean).map(esc).join(' · ') + '</div>' +
-        '<div class="dw-stats-row">' +
-          '<span>🕐 ' + esc(timeStr) + '</span>' +
-          (pad ? '<span>📍 ' + esc(pad) + '</span>' : '') +
-        '</div>' +
+      var meta     = [provider, vehicle].filter(Boolean).map(esc).join(' · ');
+      html += '<div class="dw-launch-row">' +
+        '<span class="dw-launch-time">' + esc(timeStr) + '</span>' +
+        '<span class="dw-launch-name">' + esc(r.name || 'Unknown Mission') + '</span>' +
+        (meta ? '<span class="dw-launch-meta">' + meta + '</span>' : '') +
+        (pad  ? '<span class="dw-launch-pad">'  + esc(pad) + '</span>' : '') +
       '</div>';
     });
     document.getElementById('launches-body').innerHTML = html || '<div class="dw-error">No upcoming launches found.</div>';
@@ -1247,6 +1202,148 @@
     step();
   }
 
+  // ── Background Canvas Art ────────────────────────────────
+
+  var _bgStyle      = 0;
+  var _bgOpacity    = 0.15;
+  var _bgEnabled    = true;
+  var _bgAnimFrame  = null;
+
+  function initBgArt() {
+    var canvas = document.getElementById('bg-canvas');
+    if (!canvas) return;
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.opacity = _bgOpacity;
+    regenBgArt();
+    window.addEventListener('resize', function () {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      regenBgArt();
+    });
+  }
+
+  function regenBgArt() {
+    if (_bgAnimFrame) { cancelAnimationFrame(_bgAnimFrame); _bgAnimFrame = null; }
+    var canvas = document.getElementById('bg-canvas');
+    if (!canvas || !_bgEnabled) return;
+    canvas.style.opacity = _bgOpacity;
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if      (_bgStyle === 0) runBgFlow(canvas, ctx);
+    else if (_bgStyle === 1) runBgStars(canvas, ctx);
+    else                     runBgWaves(canvas, ctx);
+  }
+
+  function runBgFlow(canvas, ctx) {
+    var W = canvas.width, H = canvas.height;
+    var particles = [];
+    for (var i = 0; i < 280; i++) {
+      particles.push({ x: Math.random() * W, y: Math.random() * H, age: Math.random() * 80 });
+    }
+    var t = 0;
+    ctx.fillStyle = '#07091A';
+    ctx.fillRect(0, 0, W, H);
+    function step() {
+      ctx.fillStyle = 'rgba(7,9,26,0.18)';
+      ctx.fillRect(0, 0, W, H);
+      for (var j = 0; j < particles.length; j++) {
+        var p = particles[j];
+        var angle = Math.sin(p.x * 0.006 + t) * Math.cos(p.y * 0.006 + t * 0.7) * Math.PI * 2;
+        p.x += Math.cos(angle) * 1.2;
+        p.y += Math.sin(angle) * 1.2;
+        p.age++;
+        if (p.x < 0 || p.x > W || p.y < 0 || p.y > H || p.age > 140) {
+          p.x = Math.random() * W; p.y = Math.random() * H; p.age = 0;
+        }
+        var hue = (p.x / W * 200 + 180 + t * 30) % 360;
+        ctx.fillStyle = 'hsla(' + hue + ',80%,65%,0.55)';
+        ctx.fillRect(p.x, p.y, 1.5, 1.5);
+      }
+      t += 0.006;
+      _bgAnimFrame = requestAnimationFrame(step);
+    }
+    step();
+  }
+
+  function runBgStars(canvas, ctx) {
+    var W = canvas.width, H = canvas.height;
+    var CX = W / 2, CY = H / 2;
+    var stars = [];
+    for (var i = 0; i < 400; i++) {
+      stars.push({ x: (Math.random() - 0.5) * W, y: (Math.random() - 0.5) * H, z: Math.random() * W });
+    }
+    ctx.fillStyle = '#020408';
+    ctx.fillRect(0, 0, W, H);
+    function step() {
+      ctx.fillStyle = 'rgba(2,4,8,0.25)';
+      ctx.fillRect(0, 0, W, H);
+      for (var j = 0; j < stars.length; j++) {
+        var s = stars[j];
+        s.z -= 3.5;
+        if (s.z <= 0) { s.x = (Math.random() - 0.5) * W; s.y = (Math.random() - 0.5) * H; s.z = W; }
+        var sx = (s.x / s.z) * W + CX;
+        var sy = (s.y / s.z) * H + CY;
+        var r  = Math.max(0.4, (1 - s.z / W) * 2.8);
+        var op = Math.min(1, (1 - s.z / W) * 1.6);
+        ctx.fillStyle = 'rgba(180,210,255,' + op + ')';
+        ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.fill();
+      }
+      _bgAnimFrame = requestAnimationFrame(step);
+    }
+    step();
+  }
+
+  function runBgWaves(canvas, ctx) {
+    var W = canvas.width, H = canvas.height;
+    var t = 0;
+    function step() {
+      ctx.fillStyle = '#050810';
+      ctx.fillRect(0, 0, W, H);
+      for (var l = 0; l < 6; l++) {
+        var hue   = (l * 55 + t * 25) % 360;
+        var amp   = H * (0.12 + l * 0.04);
+        var freq  = 0.006 + l * 0.003;
+        var phase = t + l * 0.9;
+        ctx.beginPath();
+        for (var x = 0; x <= W; x += 2) {
+          var y = H / 2 + Math.sin(x * freq + phase) * amp + Math.sin(x * freq * 2.3 + phase * 1.7) * amp * 0.4;
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = 'hsla(' + hue + ',75%,62%,' + (0.3 + l * 0.08) + ')';
+        ctx.lineWidth = 1.5 + l * 0.3;
+        ctx.stroke();
+      }
+      t += 0.018;
+      _bgAnimFrame = requestAnimationFrame(step);
+    }
+    step();
+  }
+
+  // ── Ticker Panel Cycling ──────────────────────────────────
+
+  var _tickerPanelIdx   = 0;
+  var _tickerPanelTimer = null;
+  var TICKER_PANELS = ['tick-panel-weather', 'tick-panel-aqi', 'tick-panel-swx', 'tick-panel-quake'];
+
+  function showTickerPanel(idx) {
+    _tickerPanelIdx = ((idx % TICKER_PANELS.length) + TICKER_PANELS.length) % TICKER_PANELS.length;
+    TICKER_PANELS.forEach(function (id, i) {
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('active', i === _tickerPanelIdx);
+    });
+    document.querySelectorAll('.dw-tick-pdot').forEach(function (dot) {
+      dot.classList.toggle('active', parseInt(dot.dataset.panel, 10) === _tickerPanelIdx);
+    });
+  }
+
+  function startTickerCycle() {
+    if (_tickerPanelTimer) clearInterval(_tickerPanelTimer);
+    _tickerPanelTimer = setInterval(function () {
+      showTickerPanel(_tickerPanelIdx + 1);
+    }, 7000);
+  }
+
   // ── Init ──────────────────────────────────────────────────
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -1305,16 +1402,74 @@
       if (_quizPool && _quizPool.length >= 5) buildQuiz();
     });
 
-    // Scratch pad
-    initScratchPad();
+    // Background art
+    initBgArt();
+
+    // Gen art popup toggle
+    document.getElementById('art-toggle-btn').addEventListener('click', function () {
+      var popup = document.getElementById('art-popup');
+      var hidden = popup.classList.toggle('hidden');
+      if (!hidden) {
+        var rect = this.getBoundingClientRect();
+        popup.style.top   = (rect.bottom + 4) + 'px';
+        popup.style.right = (window.innerWidth - rect.right) + 'px';
+      }
+    });
+    document.querySelectorAll('.dw-art-style-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        _bgStyle = parseInt(btn.dataset.style, 10);
+        document.querySelectorAll('.dw-art-style-btn').forEach(function (b) {
+          b.classList.toggle('active', b === btn);
+        });
+        regenBgArt();
+      });
+    });
+    document.querySelectorAll('.dw-art-op-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        _bgOpacity = parseFloat(btn.dataset.op);
+        document.querySelectorAll('.dw-art-op-btn').forEach(function (b) {
+          b.classList.toggle('active', b === btn);
+        });
+        var canvas = document.getElementById('bg-canvas');
+        if (canvas && _bgEnabled) canvas.style.opacity = _bgOpacity;
+      });
+    });
+    document.getElementById('art-off-btn').addEventListener('click', function () {
+      _bgEnabled = !_bgEnabled;
+      var canvas = document.getElementById('bg-canvas');
+      if (_bgEnabled) {
+        regenBgArt();
+        this.textContent = 'Off';
+      } else {
+        if (_bgAnimFrame) { cancelAnimationFrame(_bgAnimFrame); _bgAnimFrame = null; }
+        if (canvas) canvas.style.opacity = 0;
+        this.textContent = 'On';
+      }
+      document.getElementById('art-popup').classList.add('hidden');
+    });
+    document.addEventListener('click', function (e) {
+      var popup = document.getElementById('art-popup');
+      if (!popup.classList.contains('hidden') &&
+          !popup.contains(e.target) &&
+          e.target.id !== 'art-toggle-btn') {
+        popup.classList.add('hidden');
+      }
+    });
+
+    // Ticker panel dots
+    document.querySelectorAll('.dw-tick-pdot').forEach(function (dot) {
+      dot.addEventListener('click', function () {
+        if (_tickerPanelTimer) clearInterval(_tickerPanelTimer);
+        showTickerPanel(parseInt(dot.dataset.panel, 10));
+        startTickerCycle();
+      });
+    });
 
     // Air quality from saved location
     var savedLatLon = null;
     try { savedLatLon = JSON.parse(localStorage.getItem('pm_daily_latlon')); } catch (e) {}
     if (savedLatLon && savedLatLon.length === 2) {
       fetchAirQuality(savedLatLon[0], savedLatLon[1]);
-    } else {
-      fetchAirQuality(null, null);
     }
 
     // Load all concurrently
