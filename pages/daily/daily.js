@@ -109,15 +109,22 @@
   // ── Carousel ─────────────────────────────────────────────
 
   var _slide = 0;
-  var _slideCount = 6;
+  var _slideCount = 7;
   var _autoTimer = null;
 
   function gotoSlide(idx) {
+    var prev = _slide;
     _slide = ((idx % _slideCount) + _slideCount) % _slideCount;
     document.getElementById('discovery-carousel').style.transform = 'translateX(-' + (_slide * 100) + '%)';
     document.querySelectorAll('.dw-dot').forEach(function (d, i) {
       d.classList.toggle('active', i === _slide);
     });
+    if (_slide === 6) {
+      initGenArt();
+    } else if (prev === 6 && _genAnimFrame) {
+      cancelAnimationFrame(_genAnimFrame);
+      _genAnimFrame = null;
+    }
   }
 
   function startAuto() {
@@ -148,6 +155,9 @@
       .then(function (z) {
         var p = z.places[0];
         var city = p['place name'] + ', ' + p['state abbreviation'];
+        var lat = parseFloat(p.latitude), lon = parseFloat(p.longitude);
+        try { localStorage.setItem('pm_daily_latlon', JSON.stringify([lat, lon])); } catch (e) {}
+        fetchAirQuality(lat, lon);
         return fetch$(
           'https://api.open-meteo.com/v1/forecast?latitude=' + p.latitude + '&longitude=' + p.longitude +
           '&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset' +
@@ -524,6 +534,7 @@
     });
     html += '</div>';
     document.getElementById('wiki-body').innerHTML = html;
+    feedQuizPool(events);
   }
 
   // ── Word of the Day ───────────────────────────────────────
@@ -643,6 +654,7 @@
     });
     html += '</div>';
     document.getElementById('tech-body').innerHTML = html;
+    feedQuizPool(events);
   }
 
   // ── ISS ───────────────────────────────────────────────────
@@ -781,6 +793,460 @@
     document.getElementById('iss-globe').innerHTML = buildGlobe(lat, lon, brg);
   }
 
+  // ── Trivia Quiz ───────────────────────────────────────────
+
+  var _quizPool = null;
+  var _quizQ    = [];
+  var _quizIdx  = 0;
+  var _quizScore = 0;
+  var _quizLocked = false;
+
+  function feedQuizPool(events) {
+    if (_quizPool === null) _quizPool = [];
+    events.forEach(function (ev) {
+      var yr  = parseInt(ev.year, 10);
+      var txt = ev.text ? ev.text.replace(/<[^>]+>/g, '') : '';
+      if (yr > 0 && yr <= 2024 && txt.length > 20) {
+        _quizPool.push({ year: yr, text: txt });
+      }
+    });
+    if (_quizPool.length >= 5 && _quizQ.length === 0) buildQuiz();
+  }
+
+  function buildQuiz() {
+    var pool = _quizPool.slice().sort(function () { return Math.random() - 0.5; });
+    _quizQ = pool.slice(0, 5).map(function (ev) {
+      var correct = ev.year;
+      var range = correct > 1800 ? 25 : correct > 1400 ? 80 : 150;
+      var wrongs = [], attempts = 0;
+      while (wrongs.length < 3 && attempts < 60) {
+        attempts++;
+        var offset = Math.floor(Math.random() * range) + 5;
+        var w = correct + (Math.random() < 0.5 ? -offset : offset);
+        if (w > 0 && w !== correct && wrongs.indexOf(w) === -1) wrongs.push(w);
+      }
+      while (wrongs.length < 3) wrongs.push(correct + (wrongs.length + 1) * 17);
+      var choices = [correct].concat(wrongs).sort(function (a, b) { return a - b; });
+      return { text: ev.text.length > 150 ? ev.text.slice(0, 150) + '…' : ev.text, correct: correct, choices: choices };
+    });
+    _quizIdx = 0; _quizScore = 0; _quizLocked = false;
+    document.getElementById('quiz-loading').classList.add('hidden');
+    document.getElementById('quiz-result').classList.add('hidden');
+    document.getElementById('quiz-game').classList.remove('hidden');
+    showQuizQ();
+  }
+
+  function showQuizQ() {
+    var q = _quizQ[_quizIdx];
+    document.getElementById('quiz-bar').style.width = (_quizIdx / _quizQ.length * 100) + '%';
+    document.getElementById('quiz-question').textContent = q.text;
+    document.getElementById('quiz-status').textContent = 'Question ' + (_quizIdx + 1) + ' of ' + _quizQ.length;
+    document.getElementById('quiz-next').classList.add('hidden');
+    var choicesEl = document.getElementById('quiz-choices');
+    choicesEl.innerHTML = '';
+    q.choices.forEach(function (yr) {
+      var btn = document.createElement('button');
+      btn.className = 'dw-quiz-choice';
+      btn.textContent = yr;
+      btn.addEventListener('click', function () { if (!_quizLocked) answerQuiz(yr, btn); });
+      choicesEl.appendChild(btn);
+    });
+  }
+
+  function answerQuiz(yr, btn) {
+    _quizLocked = true;
+    var q = _quizQ[_quizIdx];
+    if (yr === q.correct) _quizScore++;
+    document.querySelectorAll('.dw-quiz-choice').forEach(function (b) {
+      b.setAttribute('disabled', 'disabled');
+      var byr = parseInt(b.textContent, 10);
+      if (byr === q.correct) b.classList.add('correct');
+      else if (byr === yr && yr !== q.correct) b.classList.add('wrong');
+    });
+    document.getElementById('quiz-status').textContent =
+      yr === q.correct ? '✓ Correct!' : '✗ The answer was ' + q.correct;
+    if (_quizIdx < _quizQ.length - 1) {
+      document.getElementById('quiz-next').classList.remove('hidden');
+    } else {
+      setTimeout(showQuizResult, 1300);
+    }
+  }
+
+  function showQuizResult() {
+    document.getElementById('quiz-game').classList.add('hidden');
+    document.getElementById('quiz-result').classList.remove('hidden');
+    document.getElementById('quiz-bar').style.width = '100%';
+    var s = _quizScore, t = _quizQ.length;
+    var em = ['😔','😐','🙂','😊','🎉','🏆'][Math.min(Math.round(s / t * 5), 5)];
+    document.getElementById('quiz-score-display').innerHTML =
+      em + '<br>' + s + ' / ' + t + ' correct<br>' +
+      '<span style="font-size:13px;color:rgba(255,255,255,0.4);">' +
+        (s === t ? 'Perfect!' : s === 0 ? 'Better luck next time.' : 'Not bad!') +
+      '</span>';
+  }
+
+  // ── Scratch Pad ───────────────────────────────────────────
+
+  function initScratchPad() {
+    var area  = document.getElementById('scratch-area');
+    var count = document.getElementById('scratch-count');
+    try { area.value = localStorage.getItem('pm_scratchpad') || ''; } catch (e) {}
+    count.textContent = area.value.length + ' chars';
+    var saveTimer;
+    area.addEventListener('input', function () {
+      count.textContent = area.value.length + ' chars';
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(function () {
+        try { localStorage.setItem('pm_scratchpad', area.value); } catch (e) {}
+      }, 400);
+    });
+    document.getElementById('scratch-clear').addEventListener('click', function () {
+      if (!area.value || confirm('Clear the scratch pad?')) {
+        area.value = ''; count.textContent = '0 chars';
+        try { localStorage.removeItem('pm_scratchpad'); } catch (e) {}
+        area.focus();
+      }
+    });
+  }
+
+  // ── Space Weather (NOAA Kp) ───────────────────────────────
+
+  function fetchSpaceWeather() {
+    if (_cache && _cache.swx) { renderSpaceWeather(_cache.swx); return; }
+    fetch$('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json')
+      .then(function (data) {
+        var recent = data.slice(-60);
+        var latest = recent[recent.length - 1];
+        var kp = Math.round(parseFloat(latest.estimated_kp || latest.kp_index || 0));
+        var older = recent[0];
+        var kpNow  = parseFloat(latest.estimated_kp || 0);
+        var kpPrev = parseFloat(older.estimated_kp || 0);
+        var trend = kpNow > kpPrev + 0.5 ? 'rising' : kpNow < kpPrev - 0.5 ? 'falling' : 'steady';
+        var result = { kp: kp, kp_exact: kpNow.toFixed(1), trend: trend };
+        setCache('swx', result); renderSpaceWeather(result);
+      })
+      .catch(function () {
+        document.getElementById('swx-body').innerHTML = '<div class="dw-error">Space weather data unavailable.</div>';
+      });
+  }
+
+  function renderSpaceWeather(data) {
+    var kp = data.kp;
+    var LEVELS = ['Quiet','Quiet','Quiet','Quiet','Minor Watch','G1 Minor','G2 Moderate','G3 Strong','G4 Severe','G5 Extreme'];
+    var COLORS = ['rgba(50,170,70,0.9)','rgba(50,170,70,0.9)','rgba(50,170,70,0.9)','rgba(50,170,70,0.9)',
+                  'rgba(210,200,40,0.9)','rgba(255,130,0,0.9)','rgba(240,70,0,0.9)',
+                  'rgba(210,20,20,0.9)','rgba(150,0,180,0.9)','rgba(80,0,0,0.9)'];
+    var aurora = kp >= 9 ? 'Visible to ~40° lat' : kp >= 8 ? 'Visible to ~45° lat' :
+                 kp >= 7 ? 'Visible to ~50° lat' : kp >= 6 ? 'Visible to ~55° lat' :
+                 kp >= 5 ? 'Visible to ~60° lat (Alaska/Scandinavia)' :
+                 kp >= 4 ? 'Possible at high latitudes' : 'Not likely';
+    var arrow = { rising: '↑', falling: '↓', steady: '→' }[data.trend] || '→';
+    document.getElementById('swx-body').innerHTML =
+      '<div style="display:flex;align-items:center;gap:14px;margin-bottom:8px;">' +
+        '<div style="font-size:38px;font-weight:200;color:#fff;line-height:1;">' + esc(data.kp_exact) + '</div>' +
+        '<div><div style="font-size:11px;font-weight:600;color:' + COLORS[Math.min(kp,9)] + ';margin-bottom:2px;">Kp ' + kp + ' — ' + LEVELS[Math.min(kp,9)] + '</div>' +
+        '<div class="dw-meta" style="margin:0;">' + arrow + ' ' + esc(data.trend) + '</div></div>' +
+      '</div>' +
+      '<div style="font-size:12px;color:rgba(255,255,255,0.58);margin-bottom:8px;">🌌 Aurora: ' + esc(aurora) + '</div>' +
+      '<div class="dw-meta"><a href="https://www.swpc.noaa.gov" target="_blank" rel="noopener">NOAA SWPC</a> · <a href="https://spaceweather.com" target="_blank" rel="noopener">spaceweather.com</a></div>';
+  }
+
+  // ── Air Quality (Open-Meteo) ──────────────────────────────
+
+  function fetchAirQuality(lat, lon) {
+    if (!lat || !lon) {
+      document.getElementById('aqi-body').innerHTML = '<div class="dw-meta" style="padding:4px 0;">Set your weather ZIP above for local air quality.</div>';
+      return;
+    }
+    if (_cache && _cache.aqi) { renderAirQuality(_cache.aqi); return; }
+    fetch$('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lon + '&current=us_aqi,pm2_5,ozone')
+      .then(function (data) {
+        var c = data.current || {};
+        var result = { aqi: c.us_aqi, pm25: c.pm2_5, ozone: c.ozone };
+        setCache('aqi', result); renderAirQuality(result);
+      })
+      .catch(function () {
+        document.getElementById('aqi-body').innerHTML = '<div class="dw-error">Air quality data unavailable.</div>';
+      });
+  }
+
+  function renderAirQuality(data) {
+    var aqi = data.aqi || 0;
+    var level, color;
+    if      (aqi <= 50)  { level = 'Good';                           color = 'rgba(50,170,70,0.9)'; }
+    else if (aqi <= 100) { level = 'Moderate';                       color = 'rgba(210,200,40,0.9)'; }
+    else if (aqi <= 150) { level = 'Unhealthy for Sensitive Groups';  color = 'rgba(255,130,0,0.9)'; }
+    else if (aqi <= 200) { level = 'Unhealthy';                      color = 'rgba(210,40,40,0.9)'; }
+    else if (aqi <= 300) { level = 'Very Unhealthy';                 color = 'rgba(150,0,200,0.9)'; }
+    else                 { level = 'Hazardous';                      color = 'rgba(90,0,0,0.9)'; }
+    document.getElementById('aqi-body').innerHTML =
+      '<div style="display:flex;align-items:center;gap:14px;margin-bottom:8px;">' +
+        '<div style="font-size:38px;font-weight:200;color:#fff;line-height:1;">' + aqi + '</div>' +
+        '<div><div style="font-size:11px;font-weight:600;color:' + color + ';margin-bottom:2px;">' + esc(level) + '</div>' +
+        '<div class="dw-meta" style="margin:0;">US AQI</div></div>' +
+      '</div>' +
+      (data.pm25 != null ? '<div class="dw-meta">PM2.5: ' + parseFloat(data.pm25).toFixed(1) + ' μg/m³' +
+        (data.ozone != null ? ' · O₃: ' + parseFloat(data.ozone).toFixed(0) + ' μg/m³' : '') + '</div>' : '') +
+      '<div class="dw-meta" style="margin-top:6px;"><a href="https://www.airnow.gov" target="_blank" rel="noopener">AirNow.gov</a></div>';
+  }
+
+  // ── xkcd Comic ───────────────────────────────────────────
+
+  function fetchXkcd() {
+    if (_cache && _cache.xkcd) { renderXkcd(_cache.xkcd); return; }
+    fetch('xkcd-today.json?v=' + todayStr())
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function (data) {
+        if (!data || !data.num) { renderXkcdPending(); return; }
+        setCache('xkcd', data); renderXkcd(data);
+      })
+      .catch(function () { renderXkcdPending(); });
+  }
+
+  function renderXkcdPending() {
+    document.getElementById('xkcd-body').innerHTML =
+      '<div class="dw-xkcd-pending">' +
+        '<div style="font-size:32px;margin-bottom:10px;">📰</div>' +
+        '<div style="font-size:12.5px;color:rgba(255,255,255,0.5);margin-bottom:14px;">Daily comic caches at midnight UTC via GitHub Actions.</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<a href="https://xkcd.com" target="_blank" rel="noopener" class="dw-gen-btn" style="text-decoration:none;">xkcd.com ↗</a>' +
+          '<button class="dw-gen-btn" id="xkcd-shuffle-pending">↺ Random comic</button>' +
+        '</div>' +
+      '</div>';
+    document.getElementById('xkcd-shuffle-pending').addEventListener('click', fetchXkcdRandom);
+  }
+
+  function renderXkcd(data) {
+    document.getElementById('xkcd-body').innerHTML =
+      '<div class="dw-xkcd-wrap">' +
+        '<a href="https://xkcd.com/' + data.num + '/" target="_blank" rel="noopener">' +
+          '<img class="dw-xkcd-img" src="' + esc(data.img) + '" alt="' + esc(data.alt) + '" title="' + esc(data.alt) + '" />' +
+        '</a>' +
+        '<div class="dw-xkcd-caption">' +
+          '<div>' +
+            '<span style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.85);">' + esc(data.safe_title || data.title) + '</span>' +
+            ' <span style="font-size:10px;color:rgba(255,255,255,0.3);">#' + data.num + '</span>' +
+            '<div class="dw-xkcd-alt">' + esc(data.alt) + '</div>' +
+          '</div>' +
+          '<div style="display:flex;gap:6px;flex-shrink:0;">' +
+            '<a href="https://explainxkcd.com/' + data.num + '/" target="_blank" rel="noopener" class="dw-gen-btn" style="text-decoration:none;font-size:10px;padding:3px 10px;">Explain ↗</a>' +
+            '<button id="xkcd-shuffle" class="dw-gen-btn" style="font-size:10px;padding:3px 10px;">↺ Random</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    document.getElementById('xkcd-shuffle').addEventListener('click', fetchXkcdRandom);
+  }
+
+  var _xkcdPool = null;
+
+  function loadXkcdPool(callback) {
+    if (_xkcdPool) { callback(_xkcdPool); return; }
+    fetch('xkcd-pool.json?v=' + todayStr())
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function (data) {
+        if (!Array.isArray(data) || !data.length) throw new Error();
+        _xkcdPool = data;
+        callback(_xkcdPool);
+      })
+      .catch(function () { callback(null); });
+  }
+
+  function fetchXkcdRandom() {
+    var btn = document.getElementById('xkcd-shuffle') || document.getElementById('xkcd-shuffle-pending');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
+    loadXkcdPool(function (pool) {
+      if (btn) { btn.disabled = false; btn.textContent = '↺ Random'; }
+      if (!pool) {
+        var body = document.getElementById('xkcd-body');
+        if (body) body.insertAdjacentHTML('beforeend',
+          '<div class="dw-error" style="margin-top:8px;">Pool not yet cached — run the GitHub Actions workflow once.</div>');
+        return;
+      }
+      var comic = pool[Math.floor(Math.random() * pool.length)];
+      renderXkcd(comic);
+    });
+  }
+
+  // ── Upcoming Launches ─────────────────────────────────────
+
+  function fetchLaunches() {
+    if (_cache && _cache.launches) { renderLaunches(_cache.launches); return; }
+    fetch$('https://fdo.rocketlaunch.live/json/launches/next/5')
+      .then(function (data) {
+        var results = data.result || [];
+        if (!results.length) throw new Error('empty');
+        setCache('launches', results); renderLaunches(results);
+      })
+      .catch(function () {
+        document.getElementById('launches-body').innerHTML = '<div class="dw-error">Launch schedule unavailable.</div>';
+      });
+  }
+
+  function renderLaunches(results) {
+    var html = '';
+    results.forEach(function (r) {
+      var t0 = r.t0 || r.win_open;
+      var timeStr = 'TBD';
+      if (t0) {
+        var dt   = new Date(t0);
+        var diff = dt - Date.now();
+        if (diff > 0 && diff < 7 * 86400000) {
+          var days = Math.floor(diff / 86400000);
+          var hrs  = Math.floor((diff % 86400000) / 3600000);
+          var mins = Math.floor((diff % 3600000) / 60000);
+          timeStr = 'T‑ ' + (days > 0 ? days + 'd ' + hrs + 'h' : hrs + 'h ' + mins + 'm');
+        } else if (diff > 0) {
+          timeStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · ' +
+                    dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+        } else {
+          timeStr = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+      }
+      var vehicle  = r.vehicle  && r.vehicle.name  ? r.vehicle.name  : '';
+      var pad      = r.pad      && r.pad.name      ? r.pad.name      : '';
+      var provider = r.provider && r.provider.name ? r.provider.name : '';
+      html += '<div class="dw-launch-item">' +
+        '<div class="dw-launch-name">' + esc(r.name || 'Unknown Mission') + '</div>' +
+        '<div class="dw-meta">' + [provider, vehicle].filter(Boolean).map(esc).join(' · ') + '</div>' +
+        '<div class="dw-stats-row">' +
+          '<span>🕐 ' + esc(timeStr) + '</span>' +
+          (pad ? '<span>📍 ' + esc(pad) + '</span>' : '') +
+        '</div>' +
+      '</div>';
+    });
+    document.getElementById('launches-body').innerHTML = html || '<div class="dw-error">No upcoming launches found.</div>';
+  }
+
+  // ── Generative Art ───────────────────────────────────────
+
+  var _genStyle  = 0;
+  var _genAnimFrame = null;
+  var _genReady  = false;
+  var GEN_STYLES = ['Flow Field', 'Starfield', 'Waveform'];
+  var GEN_DESCS  = [
+    'Particles following a sine-wave vector field',
+    'Perspective star field expanding from center',
+    'Layered sine oscillations in color space'
+  ];
+
+  function initGenArt() {
+    var canvas = document.getElementById('gen-canvas');
+    if (!canvas) return;
+    if (!_genReady) {
+      _genReady = true;
+      document.getElementById('gen-style-btn').addEventListener('click', function () {
+        _genStyle = (_genStyle + 1) % GEN_STYLES.length;
+        document.getElementById('gen-title').textContent = GEN_STYLES[_genStyle];
+        document.getElementById('gen-desc').textContent  = GEN_DESCS[_genStyle];
+        regenArt();
+      });
+      document.getElementById('gen-regen-btn').addEventListener('click', regenArt);
+    }
+    canvas.width  = canvas.offsetWidth  || canvas.parentElement.offsetWidth  || 800;
+    canvas.height = canvas.offsetHeight || canvas.parentElement.offsetHeight || 480;
+    regenArt();
+  }
+
+  function regenArt() {
+    if (_genAnimFrame) { cancelAnimationFrame(_genAnimFrame); _genAnimFrame = null; }
+    var canvas = document.getElementById('gen-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (_genStyle === 0) runFlowField(canvas, ctx);
+    else if (_genStyle === 1) runStarfield(canvas, ctx);
+    else runWaveform(canvas, ctx);
+  }
+
+  function runFlowField(canvas, ctx) {
+    var W = canvas.width, H = canvas.height;
+    var particles = [];
+    for (var i = 0; i < 220; i++) {
+      particles.push({ x: Math.random() * W, y: Math.random() * H, age: Math.random() * 80 });
+    }
+    var t = 0;
+    ctx.fillStyle = '#07091A';
+    ctx.fillRect(0, 0, W, H);
+    function step() {
+      ctx.fillStyle = 'rgba(7,9,26,0.18)';
+      ctx.fillRect(0, 0, W, H);
+      for (var j = 0; j < particles.length; j++) {
+        var p = particles[j];
+        var angle = Math.sin(p.x * 0.006 + t) * Math.cos(p.y * 0.006 + t * 0.7) * Math.PI * 2;
+        var speed = 1.2;
+        p.x += Math.cos(angle) * speed;
+        p.y += Math.sin(angle) * speed;
+        p.age++;
+        if (p.x < 0 || p.x > W || p.y < 0 || p.y > H || p.age > 140) {
+          p.x = Math.random() * W; p.y = Math.random() * H; p.age = 0;
+        }
+        var hue = (p.x / W * 200 + 180 + t * 30) % 360;
+        ctx.fillStyle = 'hsla(' + hue + ',80%,65%,0.55)';
+        ctx.fillRect(p.x, p.y, 1.5, 1.5);
+      }
+      t += 0.006;
+      _genAnimFrame = requestAnimationFrame(step);
+    }
+    step();
+  }
+
+  function runStarfield(canvas, ctx) {
+    var W = canvas.width, H = canvas.height;
+    var CX = W / 2, CY = H / 2;
+    var stars = [];
+    for (var i = 0; i < 320; i++) {
+      stars.push({ x: (Math.random() - 0.5) * W, y: (Math.random() - 0.5) * H, z: Math.random() * W });
+    }
+    ctx.fillStyle = '#020408';
+    ctx.fillRect(0, 0, W, H);
+    function step() {
+      ctx.fillStyle = 'rgba(2,4,8,0.25)';
+      ctx.fillRect(0, 0, W, H);
+      for (var j = 0; j < stars.length; j++) {
+        var s = stars[j];
+        s.z -= 3.5;
+        if (s.z <= 0) { s.x = (Math.random() - 0.5) * W; s.y = (Math.random() - 0.5) * H; s.z = W; }
+        var sx = (s.x / s.z) * W + CX;
+        var sy = (s.y / s.z) * H + CY;
+        var r  = Math.max(0.4, (1 - s.z / W) * 2.8);
+        var op = Math.min(1, (1 - s.z / W) * 1.6);
+        ctx.fillStyle = 'rgba(180,210,255,' + op + ')';
+        ctx.beginPath();
+        ctx.arc(sx, sy, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      _genAnimFrame = requestAnimationFrame(step);
+    }
+    step();
+  }
+
+  function runWaveform(canvas, ctx) {
+    var W = canvas.width, H = canvas.height;
+    var t = 0;
+    var LAYERS = 6;
+    function step() {
+      ctx.fillStyle = '#050810';
+      ctx.fillRect(0, 0, W, H);
+      for (var l = 0; l < LAYERS; l++) {
+        var hue  = (l * 55 + t * 25) % 360;
+        var amp  = H * (0.12 + l * 0.04);
+        var freq = 0.006 + l * 0.003;
+        var phase = t + l * 0.9;
+        ctx.beginPath();
+        for (var x = 0; x <= W; x += 2) {
+          var y = H / 2 + Math.sin(x * freq + phase) * amp + Math.sin(x * freq * 2.3 + phase * 1.7) * amp * 0.4;
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = 'hsla(' + hue + ',75%,62%,' + (0.3 + l * 0.08) + ')';
+        ctx.lineWidth = 1.5 + l * 0.3;
+        ctx.stroke();
+      }
+      t += 0.018;
+      _genAnimFrame = requestAnimationFrame(step);
+    }
+    step();
+  }
+
   // ── Init ──────────────────────────────────────────────────
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -828,6 +1294,29 @@
       document.getElementById('zip-input').focus();
     });
 
+    // Quiz wiring
+    document.getElementById('quiz-next').addEventListener('click', function () {
+      _quizIdx++; _quizLocked = false;
+      if (_quizIdx < _quizQ.length) showQuizQ();
+    });
+    document.getElementById('quiz-retry').addEventListener('click', function () {
+      document.getElementById('quiz-result').classList.add('hidden');
+      _quizQ = [];
+      if (_quizPool && _quizPool.length >= 5) buildQuiz();
+    });
+
+    // Scratch pad
+    initScratchPad();
+
+    // Air quality from saved location
+    var savedLatLon = null;
+    try { savedLatLon = JSON.parse(localStorage.getItem('pm_daily_latlon')); } catch (e) {}
+    if (savedLatLon && savedLatLon.length === 2) {
+      fetchAirQuality(savedLatLon[0], savedLatLon[1]);
+    } else {
+      fetchAirQuality(null, null);
+    }
+
     // Load all concurrently
     fetchApod();
     fetchWikiPotd();
@@ -842,6 +1331,9 @@
     fetchHN();
     fetchTechHistory();
     fetchISS();
+    fetchSpaceWeather();
+    fetchXkcd();
+    fetchLaunches();
   });
 
 }());

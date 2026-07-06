@@ -182,6 +182,20 @@
               </div>
             </div>
 
+            <!-- 6: Procedural / Generative Art -->
+            <div class="dw-slide dw-slide-gen">
+              <canvas id="gen-canvas" class="dw-gen-canvas"></canvas>
+              <div class="dw-slide-overlay">
+                <span class="dw-slide-source">✦ Procedural Art</span>
+                <div class="dw-slide-title" id="gen-title">Flow Field</div>
+                <div class="dw-slide-desc" id="gen-desc">Particles following a sine-wave vector field</div>
+                <div class="dw-slide-footer">
+                  <button id="gen-style-btn" class="dw-gen-btn">◈ Style</button>
+                  <button id="gen-regen-btn" class="dw-gen-btn">↺ Regenerate</button>
+                </div>
+              </div>
+            </div>
+
           </div>
           <button class="dw-carousel-btn dw-prev" aria-label="Previous">‹</button>
           <button class="dw-carousel-btn dw-next" aria-label="Next">›</button>
@@ -192,12 +206,34 @@
             <span class="dw-dot" data-slide="3"></span>
             <span class="dw-dot" data-slide="4"></span>
             <span class="dw-dot" data-slide="5"></span>
+            <span class="dw-dot" data-slide="6"></span>
           </div>
         </div>
       </div>
 
       <!-- Supplementary feed -->
       <div class="dw-feed">
+
+        <!-- Trivia Quiz -->
+        <section class="dw-feed-sec dw-feed-full">
+          <h2 class="dw-feed-lbl">🎯 Daily Trivia</h2>
+          <div id="quiz-body">
+            <div class="dw-loading" id="quiz-loading">Questions load from today's history data…</div>
+            <div id="quiz-game" class="hidden">
+              <div class="dw-quiz-progress-wrap"><div class="dw-quiz-bar" id="quiz-bar"></div></div>
+              <div class="dw-quiz-q" id="quiz-question"></div>
+              <div class="dw-quiz-choices" id="quiz-choices"></div>
+              <div class="dw-quiz-status" id="quiz-status"></div>
+              <button class="dw-quiz-next hidden" id="quiz-next">Next →</button>
+            </div>
+            <div id="quiz-result" class="hidden">
+              <div class="dw-quiz-score" id="quiz-score-display"></div>
+              <button class="dw-quiz-retry" id="quiz-retry">Play Again ↺</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="dw-feed-divider"></div>
 
         <section class="dw-feed-sec dw-feed-full">
           <h2 class="dw-feed-lbl">📖 On This Day</h2>
@@ -209,6 +245,36 @@
         <section class="dw-feed-sec dw-feed-full">
           <h2 class="dw-feed-lbl">💾 This Day in Tech History</h2>
           <div id="tech-body"><div class="dw-loading">Loading…</div></div>
+        </section>
+
+        <div class="dw-feed-divider"></div>
+
+        <!-- Space Weather + Air Quality -->
+        <div class="dw-feed-row">
+          <section class="dw-feed-sec">
+            <h2 class="dw-feed-lbl">☀ Space Weather</h2>
+            <div id="swx-body"><div class="dw-loading">Loading…</div></div>
+          </section>
+          <section class="dw-feed-sec">
+            <h2 class="dw-feed-lbl">💨 Air Quality</h2>
+            <div id="aqi-body"><div class="dw-loading">Loading…</div></div>
+          </section>
+        </div>
+
+        <div class="dw-feed-divider"></div>
+
+        <!-- Upcoming Launches -->
+        <section class="dw-feed-sec dw-feed-full">
+          <h2 class="dw-feed-lbl">🚀 Upcoming Launches</h2>
+          <div id="launches-body"><div class="dw-loading">Loading…</div></div>
+        </section>
+
+        <div class="dw-feed-divider"></div>
+
+        <!-- xkcd Comic -->
+        <section class="dw-feed-sec dw-feed-full">
+          <h2 class="dw-feed-lbl">😂 xkcd</h2>
+          <div id="xkcd-body"><div class="dw-loading">Loading…</div></div>
         </section>
 
         <div class="dw-feed-divider"></div>
@@ -236,6 +302,18 @@
             <div id="hn-body"><div class="dw-loading">Loading…</div></div>
           </section>
         </div>
+
+        <div class="dw-feed-divider"></div>
+
+        <!-- Scratch Pad -->
+        <section class="dw-feed-sec dw-feed-full">
+          <h2 class="dw-feed-lbl">📝 Scratch Pad</h2>
+          <textarea id="scratch-area" class="dw-scratch-area" placeholder="Type anything… auto-saved locally." rows="7" spellcheck="false"></textarea>
+          <div class="dw-scratch-footer">
+            <span id="scratch-count" class="dw-meta">0 chars</span>
+            <button id="scratch-clear" class="dw-tick-ghost">Clear</button>
+          </div>
+        </section>
 
         <div class="dw-feed-divider"></div>
 

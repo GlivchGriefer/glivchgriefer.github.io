@@ -543,6 +543,266 @@ body.daily-page .aim-titlebar .dm-btn:not(.mnav-dm) { display: none; }
 }
 .dw-tech-ev:last-child { border-bottom: none; }
 
+/* ── Generative Art Slide ───────────────────────────────── */
+.dw-slide-gen { background: #07091A; }
+.dw-gen-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.dw-gen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  color: rgba(255,255,255,0.85);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dw-gen-btn:hover { background: rgba(255,255,255,0.16); }
+
+/* ── Trivia Quiz ─────────────────────────────────────────── */
+.dw-quiz-progress-wrap {
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.dw-quiz-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4a9eff, #a78bfa);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.dw-quiz-q {
+  font-size: 14px;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.6;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.04);
+  border-left: 3px solid rgba(74,158,255,0.5);
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 14px;
+}
+.dw-quiz-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.dw-quiz-choice {
+  padding: 9px 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  color: rgba(255,255,255,0.8);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s;
+}
+.dw-quiz-choice:hover:not(:disabled) { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+.dw-quiz-choice.correct { background: rgba(34,197,94,0.18); border-color: rgba(34,197,94,0.4); color: #86efac; }
+.dw-quiz-choice.wrong   { background: rgba(239,68,68,0.18);  border-color: rgba(239,68,68,0.4);  color: #fca5a5; }
+.dw-quiz-choice:disabled { cursor: default; }
+.dw-quiz-status { font-size: 11px; color: rgba(255,255,255,0.45); min-height: 16px; margin-bottom: 8px; }
+.dw-quiz-next {
+  padding: 7px 18px;
+  background: rgba(74,158,255,0.2);
+  border: 1px solid rgba(74,158,255,0.35);
+  border-radius: 20px;
+  color: #93c5fd;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dw-quiz-next:hover { background: rgba(74,158,255,0.32); }
+.dw-quiz-score {
+  font-size: 24px;
+  text-align: center;
+  padding: 20px 0 10px;
+  color: #fff;
+}
+.dw-quiz-retry {
+  display: block;
+  margin: 0 auto;
+  padding: 8px 22px;
+  background: rgba(167,139,250,0.18);
+  border: 1px solid rgba(167,139,250,0.3);
+  border-radius: 20px;
+  color: #c4b5fd;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dw-quiz-retry:hover { background: rgba(167,139,250,0.3); }
+
+/* ── Space Weather ──────────────────────────────────────── */
+.dw-swx-kp {
+  font-size: 36px;
+  font-weight: 200;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.dw-swx-level {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  padding: 2px 9px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.dw-swx-g0 { background: rgba(34,197,94,0.15);  color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+.dw-swx-g1 { background: rgba(234,179,8,0.15);   color: #fde047; border: 1px solid rgba(234,179,8,0.3); }
+.dw-swx-g2 { background: rgba(249,115,22,0.15);  color: #fdba74; border: 1px solid rgba(249,115,22,0.3); }
+.dw-swx-g3 { background: rgba(239,68,68,0.15);   color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+.dw-swx-g4 { background: rgba(168,85,247,0.15);  color: #d8b4fe; border: 1px solid rgba(168,85,247,0.3); }
+.dw-swx-g5 { background: rgba(239,68,68,0.3);    color: #ff6b6b; border: 1px solid rgba(239,68,68,0.5); }
+
+/* ── Air Quality ─────────────────────────────────────────── */
+.dw-aqi-num {
+  font-size: 36px;
+  font-weight: 200;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.dw-aqi-level {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  padding: 2px 9px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.dw-aqi-good     { background: rgba(34,197,94,0.15);  color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+.dw-aqi-moderate { background: rgba(234,179,8,0.15);   color: #fde047; border: 1px solid rgba(234,179,8,0.3); }
+.dw-aqi-ufsg     { background: rgba(249,115,22,0.15);  color: #fdba74; border: 1px solid rgba(249,115,22,0.3); }
+.dw-aqi-unhealthy { background: rgba(239,68,68,0.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+.dw-aqi-very     { background: rgba(168,85,247,0.15);  color: #d8b4fe; border: 1px solid rgba(168,85,247,0.3); }
+.dw-aqi-hazardous { background: rgba(185,28,28,0.25);  color: #ff6b6b; border: 1px solid rgba(185,28,28,0.5); }
+
+/* ── Upcoming Launches ──────────────────────────────────── */
+.dw-launch-item {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.dw-launch-item:last-child { border-bottom: none; }
+.dw-launch-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 4px;
+}
+
+/* ── xkcd ────────────────────────────────────────────────── */
+.dw-xkcd-pending {
+  text-align: center;
+  padding: 24px 0;
+  color: rgba(255,255,255,0.55);
+}
+.dw-xkcd-wrap { text-align: center; }
+.dw-xkcd-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+  padding: 8px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.dw-xkcd-img:hover { opacity: 0.85; }
+.dw-xkcd-caption {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  text-align: left;
+}
+.dw-xkcd-alt {
+  font-size: 11px;
+  font-style: italic;
+  color: rgba(255,255,255,0.35);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+/* ── Reddit Reader ───────────────────────────────────────── */
+.dw-reddit-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 0;
+}
+.dw-reddit-header .dw-feed-lbl { margin-bottom: 0; }
+.dw-reddit-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.dw-reddit-post {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.dw-reddit-post:last-child { border-bottom: none; }
+.dw-reddit-title {
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+.dw-reddit-title a { color: inherit; text-decoration: none; }
+.dw-reddit-title a:hover { text-decoration: underline; }
+.dw-reddit-list { margin-top: 12px; }
+
+/* ── Scratch Pad ─────────────────────────────────────────── */
+.dw-scratch-area {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 12px;
+  color: rgba(255,255,255,0.85);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.65;
+  resize: vertical;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.dw-scratch-area:focus { border-color: rgba(255,255,255,0.18); }
+.dw-scratch-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+.dw-tick-ghost {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  color: rgba(255,255,255,0.4);
+  font-size: 11px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.dw-tick-ghost:hover { border-color: rgba(255,80,80,0.4); color: rgba(255,120,120,0.8); }
+
 /* ── Responsive ──────────────────────────────────────────── */
 
 @media (max-width: 640px) {
