@@ -26,6 +26,21 @@
         <a href="../faq/faq.html">FAQ</a>
         <a href="daily.html">Daily</a>
         <a href="../map/map.html">Map</a>
+        <span class="nav-group dw-art-nav-group" tabindex="0">✦ Art ▾<span class="nav-dropdown dw-art-dropdown">
+          <div class="dw-art-nav-row">
+            <span class="dw-art-nav-lbl">Style</span>
+            <button class="dw-art-style-btn active" data-style="0">Flow</button>
+            <button class="dw-art-style-btn" data-style="1">Stars</button>
+            <button class="dw-art-style-btn" data-style="2">Waves</button>
+          </div>
+          <div class="dw-art-nav-row">
+            <span class="dw-art-nav-lbl">Opacity</span>
+            <button class="dw-art-op-btn active" data-op="0.15">Dim</button>
+            <button class="dw-art-op-btn" data-op="0.3">Med</button>
+            <button class="dw-art-op-btn" data-op="0.5">Bright</button>
+          </div>
+          <button class="dw-art-off-btn">● On</button>
+        </span></span>
       </nav>
       <button class="dm-btn" aria-label="Toggle dark mode">◐</button>
       <label for="mnav-toggle" class="mnav-btn" aria-label="Toggle navigation">
@@ -43,6 +58,20 @@
       <a href="../faq/faq.html">FAQ</a>
       <a href="daily.html">Daily</a>
       <a href="../map/map.html">Map</a>
+      <span class="mnav-section">✦ Background Art</span>
+      <div class="dw-art-mnav-row">
+        <span class="dw-art-nav-lbl">Style</span>
+        <button class="dw-art-style-btn active" data-style="0">Flow</button>
+        <button class="dw-art-style-btn" data-style="1">Stars</button>
+        <button class="dw-art-style-btn" data-style="2">Waves</button>
+      </div>
+      <div class="dw-art-mnav-row">
+        <span class="dw-art-nav-lbl">Opacity</span>
+        <button class="dw-art-op-btn active" data-op="0.15">Dim</button>
+        <button class="dw-art-op-btn" data-op="0.3">Med</button>
+        <button class="dw-art-op-btn" data-op="0.5">Bright</button>
+      </div>
+      <button class="dw-art-off-btn dw-art-mnav-off">● On</button>
       <button class="dm-btn mnav-dm" aria-label="Toggle dark mode">◐ Dark Mode</button>
     </nav>
 
@@ -103,21 +132,8 @@
             <span class="dw-tick-pdot" data-panel="3" title="Earthquake"></span>
           </div>
           <a id="ticker-map-btn" href="../map/map.html" class="dw-tick-btn">Radar ↗</a>
-          <button id="art-toggle-btn" class="dw-tick-btn" title="Background art">✦</button>
           <button id="zip-change" class="dw-tick-ghost">change</button>
         </div>
-      </div>
-      <!-- Gen art popup -->
-      <div id="art-popup" class="dw-art-popup hidden">
-        <button class="dw-art-style-btn active" data-style="0">Flow</button>
-        <button class="dw-art-style-btn" data-style="1">Stars</button>
-        <button class="dw-art-style-btn" data-style="2">Waves</button>
-        <span class="dw-tick-sep">·</span>
-        <button class="dw-art-op-btn active" data-op="0.15">Dim</button>
-        <button class="dw-art-op-btn" data-op="0.3">Med</button>
-        <button class="dw-art-op-btn" data-op="0.5">Bright</button>
-        <span class="dw-tick-sep">·</span>
-        <button id="art-off-btn" class="dw-tick-ghost">Off</button>
       </div>
 
       <!-- Hero: Discovery Carousel -->
@@ -228,20 +244,6 @@
               </div>
             </div>
 
-            <!-- 6: Procedural / Generative Art -->
-            <div class="dw-slide dw-slide-gen">
-              <canvas id="gen-canvas" class="dw-gen-canvas"></canvas>
-              <div class="dw-slide-overlay">
-                <span class="dw-slide-source">✦ Procedural Art</span>
-                <div class="dw-slide-title" id="gen-title">Flow Field</div>
-                <div class="dw-slide-desc" id="gen-desc">Particles following a sine-wave vector field</div>
-                <div class="dw-slide-footer">
-                  <button id="gen-style-btn" class="dw-gen-btn">◈ Style</button>
-                  <button id="gen-regen-btn" class="dw-gen-btn">↺ Regenerate</button>
-                </div>
-              </div>
-            </div>
-
           </div>
           <button class="dw-carousel-btn dw-prev" aria-label="Previous">‹</button>
           <button class="dw-carousel-btn dw-next" aria-label="Next">›</button>
@@ -252,7 +254,6 @@
             <span class="dw-dot" data-slide="3"></span>
             <span class="dw-dot" data-slide="4"></span>
             <span class="dw-dot" data-slide="5"></span>
-            <span class="dw-dot" data-slide="6"></span>
           </div>
         </div>
       </div>

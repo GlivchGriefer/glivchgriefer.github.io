@@ -109,22 +109,15 @@
   // ── Carousel ─────────────────────────────────────────────
 
   var _slide = 0;
-  var _slideCount = 7;
+  var _slideCount = 6;
   var _autoTimer = null;
 
   function gotoSlide(idx) {
-    var prev = _slide;
     _slide = ((idx % _slideCount) + _slideCount) % _slideCount;
     document.getElementById('discovery-carousel').style.transform = 'translateX(-' + (_slide * 100) + '%)';
     document.querySelectorAll('.dw-dot').forEach(function (d, i) {
       d.classList.toggle('active', i === _slide);
     });
-    if (_slide === 6) {
-      initGenArt();
-    } else if (prev === 6 && _genAnimFrame) {
-      cancelAnimationFrame(_genAnimFrame);
-      _genAnimFrame = null;
-    }
   }
 
   function startAuto() {
@@ -1072,136 +1065,6 @@
     document.getElementById('launches-body').innerHTML = html || '<div class="dw-error">No upcoming launches found.</div>';
   }
 
-  // ── Generative Art ───────────────────────────────────────
-
-  var _genStyle  = 0;
-  var _genAnimFrame = null;
-  var _genReady  = false;
-  var GEN_STYLES = ['Flow Field', 'Starfield', 'Waveform'];
-  var GEN_DESCS  = [
-    'Particles following a sine-wave vector field',
-    'Perspective star field expanding from center',
-    'Layered sine oscillations in color space'
-  ];
-
-  function initGenArt() {
-    var canvas = document.getElementById('gen-canvas');
-    if (!canvas) return;
-    if (!_genReady) {
-      _genReady = true;
-      document.getElementById('gen-style-btn').addEventListener('click', function () {
-        _genStyle = (_genStyle + 1) % GEN_STYLES.length;
-        document.getElementById('gen-title').textContent = GEN_STYLES[_genStyle];
-        document.getElementById('gen-desc').textContent  = GEN_DESCS[_genStyle];
-        regenArt();
-      });
-      document.getElementById('gen-regen-btn').addEventListener('click', regenArt);
-    }
-    canvas.width  = canvas.offsetWidth  || canvas.parentElement.offsetWidth  || 800;
-    canvas.height = canvas.offsetHeight || canvas.parentElement.offsetHeight || 480;
-    regenArt();
-  }
-
-  function regenArt() {
-    if (_genAnimFrame) { cancelAnimationFrame(_genAnimFrame); _genAnimFrame = null; }
-    var canvas = document.getElementById('gen-canvas');
-    if (!canvas) return;
-    var ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (_genStyle === 0) runFlowField(canvas, ctx);
-    else if (_genStyle === 1) runStarfield(canvas, ctx);
-    else runWaveform(canvas, ctx);
-  }
-
-  function runFlowField(canvas, ctx) {
-    var W = canvas.width, H = canvas.height;
-    var particles = [];
-    for (var i = 0; i < 220; i++) {
-      particles.push({ x: Math.random() * W, y: Math.random() * H, age: Math.random() * 80 });
-    }
-    var t = 0;
-    ctx.fillStyle = '#07091A';
-    ctx.fillRect(0, 0, W, H);
-    function step() {
-      ctx.fillStyle = 'rgba(7,9,26,0.18)';
-      ctx.fillRect(0, 0, W, H);
-      for (var j = 0; j < particles.length; j++) {
-        var p = particles[j];
-        var angle = Math.sin(p.x * 0.006 + t) * Math.cos(p.y * 0.006 + t * 0.7) * Math.PI * 2;
-        var speed = 1.2;
-        p.x += Math.cos(angle) * speed;
-        p.y += Math.sin(angle) * speed;
-        p.age++;
-        if (p.x < 0 || p.x > W || p.y < 0 || p.y > H || p.age > 140) {
-          p.x = Math.random() * W; p.y = Math.random() * H; p.age = 0;
-        }
-        var hue = (p.x / W * 200 + 180 + t * 30) % 360;
-        ctx.fillStyle = 'hsla(' + hue + ',80%,65%,0.55)';
-        ctx.fillRect(p.x, p.y, 1.5, 1.5);
-      }
-      t += 0.006;
-      _genAnimFrame = requestAnimationFrame(step);
-    }
-    step();
-  }
-
-  function runStarfield(canvas, ctx) {
-    var W = canvas.width, H = canvas.height;
-    var CX = W / 2, CY = H / 2;
-    var stars = [];
-    for (var i = 0; i < 320; i++) {
-      stars.push({ x: (Math.random() - 0.5) * W, y: (Math.random() - 0.5) * H, z: Math.random() * W });
-    }
-    ctx.fillStyle = '#020408';
-    ctx.fillRect(0, 0, W, H);
-    function step() {
-      ctx.fillStyle = 'rgba(2,4,8,0.25)';
-      ctx.fillRect(0, 0, W, H);
-      for (var j = 0; j < stars.length; j++) {
-        var s = stars[j];
-        s.z -= 3.5;
-        if (s.z <= 0) { s.x = (Math.random() - 0.5) * W; s.y = (Math.random() - 0.5) * H; s.z = W; }
-        var sx = (s.x / s.z) * W + CX;
-        var sy = (s.y / s.z) * H + CY;
-        var r  = Math.max(0.4, (1 - s.z / W) * 2.8);
-        var op = Math.min(1, (1 - s.z / W) * 1.6);
-        ctx.fillStyle = 'rgba(180,210,255,' + op + ')';
-        ctx.beginPath();
-        ctx.arc(sx, sy, r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      _genAnimFrame = requestAnimationFrame(step);
-    }
-    step();
-  }
-
-  function runWaveform(canvas, ctx) {
-    var W = canvas.width, H = canvas.height;
-    var t = 0;
-    var LAYERS = 6;
-    function step() {
-      ctx.fillStyle = '#050810';
-      ctx.fillRect(0, 0, W, H);
-      for (var l = 0; l < LAYERS; l++) {
-        var hue  = (l * 55 + t * 25) % 360;
-        var amp  = H * (0.12 + l * 0.04);
-        var freq = 0.006 + l * 0.003;
-        var phase = t + l * 0.9;
-        ctx.beginPath();
-        for (var x = 0; x <= W; x += 2) {
-          var y = H / 2 + Math.sin(x * freq + phase) * amp + Math.sin(x * freq * 2.3 + phase * 1.7) * amp * 0.4;
-          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = 'hsla(' + hue + ',75%,62%,' + (0.3 + l * 0.08) + ')';
-        ctx.lineWidth = 1.5 + l * 0.3;
-        ctx.stroke();
-      }
-      t += 0.018;
-      _genAnimFrame = requestAnimationFrame(step);
-    }
-    step();
-  }
-
   // ── Background Canvas Art ────────────────────────────────
 
   var _bgStyle      = 0;
@@ -1405,21 +1268,12 @@
     // Background art
     initBgArt();
 
-    // Gen art popup toggle
-    document.getElementById('art-toggle-btn').addEventListener('click', function () {
-      var popup = document.getElementById('art-popup');
-      var hidden = popup.classList.toggle('hidden');
-      if (!hidden) {
-        var rect = this.getBoundingClientRect();
-        popup.style.top   = (rect.bottom + 4) + 'px';
-        popup.style.right = (window.innerWidth - rect.right) + 'px';
-      }
-    });
+    // Art nav controls — wired across desktop nav + mobile nav buttons
     document.querySelectorAll('.dw-art-style-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         _bgStyle = parseInt(btn.dataset.style, 10);
         document.querySelectorAll('.dw-art-style-btn').forEach(function (b) {
-          b.classList.toggle('active', b === btn);
+          b.classList.toggle('active', b.dataset.style === btn.dataset.style);
         });
         regenBgArt();
       });
@@ -1428,32 +1282,25 @@
       btn.addEventListener('click', function () {
         _bgOpacity = parseFloat(btn.dataset.op);
         document.querySelectorAll('.dw-art-op-btn').forEach(function (b) {
-          b.classList.toggle('active', b === btn);
+          b.classList.toggle('active', b.dataset.op === btn.dataset.op);
         });
         var canvas = document.getElementById('bg-canvas');
         if (canvas && _bgEnabled) canvas.style.opacity = _bgOpacity;
       });
     });
-    document.getElementById('art-off-btn').addEventListener('click', function () {
-      _bgEnabled = !_bgEnabled;
-      var canvas = document.getElementById('bg-canvas');
-      if (_bgEnabled) {
-        regenBgArt();
-        this.textContent = 'Off';
-      } else {
-        if (_bgAnimFrame) { cancelAnimationFrame(_bgAnimFrame); _bgAnimFrame = null; }
-        if (canvas) canvas.style.opacity = 0;
-        this.textContent = 'On';
-      }
-      document.getElementById('art-popup').classList.add('hidden');
-    });
-    document.addEventListener('click', function (e) {
-      var popup = document.getElementById('art-popup');
-      if (!popup.classList.contains('hidden') &&
-          !popup.contains(e.target) &&
-          e.target.id !== 'art-toggle-btn') {
-        popup.classList.add('hidden');
-      }
+    document.querySelectorAll('.dw-art-off-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        _bgEnabled = !_bgEnabled;
+        var canvas = document.getElementById('bg-canvas');
+        if (_bgEnabled) {
+          regenBgArt();
+          document.querySelectorAll('.dw-art-off-btn').forEach(function (b) { b.textContent = '● On'; });
+        } else {
+          if (_bgAnimFrame) { cancelAnimationFrame(_bgAnimFrame); _bgAnimFrame = null; }
+          if (canvas) canvas.style.opacity = 0;
+          document.querySelectorAll('.dw-art-off-btn').forEach(function (b) { b.textContent = '○ Off'; });
+        }
+      });
     });
 
     // Ticker panel dots
