@@ -19,12 +19,12 @@
         <span class="aim-logo-text">Procedural Media</span>
       </div>
       <nav class="aim-desktop-nav">
+        <a href="daily.html">Daily</a>
         <span class="nav-group" tabindex="0">Projects ▾<span class="nav-dropdown"><a href="../skanner/index.html">SKANNER</a><a href="../netbreaker/netbreaker.html">NETBREAKER</a><a href="https://interportal.neocities.org" target="_blank" rel="noopener">Interportal ↗</a></span></span>
         <a href="../gallery/gallery.html">Gallery</a>
         <a href="../about/about.html">About</a>
         <a href="../contact/contact.html">Contact</a>
         <a href="../faq/faq.html">FAQ</a>
-        <a href="daily.html">Daily</a>
         <a href="../map/map.html">Map</a>
         <span class="nav-group dw-art-nav-group" tabindex="0">✦ Art ▾<span class="nav-dropdown dw-art-dropdown">
           <div class="dw-art-nav-row">
@@ -48,15 +48,17 @@
       </label>
     </header>
     <nav class="mobile-nav">
-      <span class="mnav-section">Projects</span>
-      <a href="../skanner/index.html">SKANNER</a>
-      <a href="../netbreaker/netbreaker.html">NETBREAKER</a>
-      <a href="https://interportal.neocities.org" target="_blank" rel="noopener">Interportal ↗</a>
+      <a href="daily.html">Daily</a>
+      <details class="mnav-group">
+        <summary class="mnav-group-summary">Projects ▾</summary>
+        <a href="../skanner/index.html">SKANNER</a>
+        <a href="../netbreaker/netbreaker.html">NETBREAKER</a>
+        <a href="https://interportal.neocities.org" target="_blank" rel="noopener">Interportal ↗</a>
+      </details>
       <a href="../gallery/gallery.html">Gallery</a>
       <a href="../about/about.html">About</a>
       <a href="../contact/contact.html">Contact</a>
       <a href="../faq/faq.html">FAQ</a>
-      <a href="daily.html">Daily</a>
       <a href="../map/map.html">Map</a>
       <span class="mnav-section">✦ Background Art</span>
       <div class="dw-art-mnav-row">
@@ -85,62 +87,20 @@
           <button id="zip-submit" class="dw-tick-go">Go</button>
         </div>
         <div id="ticker-data" class="hidden">
-          <div class="dw-tick-panels">
-            <div class="dw-tick-panel active" id="tick-panel-weather">
-              <span id="w-icon"></span>
-              <span id="w-temp"></span>
-              <span class="dw-tick-sep">·</span>
-              <span id="w-desc"></span>
-              <span class="dw-tick-sep">·</span>
-              <span id="w-loc"></span>
-              <span class="dw-tick-sep">·</span>
-              <span class="dw-tick-lbl">H</span><span id="w-hi"></span>
-              <span class="dw-tick-sep dw-tick-narrow">/</span>
-              <span class="dw-tick-lbl">L</span><span id="w-lo"></span>
-              <span class="dw-tick-sep">·</span>
-              <span id="w-sunrise"></span>
-              <span class="dw-tick-sep dw-tick-narrow"> </span>
-              <span id="w-sunset"></span>
-            </div>
-            <div class="dw-tick-panel" id="tick-panel-aqi">
-              <span class="dw-tick-lbl">AQI</span>
-              <span id="tick-aqi-val">—</span>
-              <span class="dw-tick-sep">·</span>
-              <span id="tick-aqi-level">—</span>
-              <span class="dw-tick-sep">·</span>
-              <span id="tick-aqi-pm">—</span>
-            </div>
-            <div class="dw-tick-panel" id="tick-panel-swx">
-              <span class="dw-tick-lbl">SWX</span>
-              <span id="tick-swx-kp">—</span>
-              <span class="dw-tick-sep">·</span>
-              <span id="tick-swx-level">—</span>
-              <span class="dw-tick-sep">·</span>
-              <span id="tick-swx-trend">—</span>
-            </div>
-            <div class="dw-tick-panel" id="tick-panel-quake">
-              <span class="dw-tick-lbl">EQ</span>
-              <span id="tick-quake-mag">—</span>
-              <span class="dw-tick-sep">·</span>
-              <span id="tick-quake-place">—</span>
-            </div>
+          <div class="dw-tick-stream-wrap">
+            <div class="dw-tick-stream" id="dw-tick-stream"></div>
           </div>
-          <div class="dw-tick-pdots">
-            <span class="dw-tick-pdot active" data-panel="0" title="Weather"></span>
-            <span class="dw-tick-pdot" data-panel="1" title="Air Quality"></span>
-            <span class="dw-tick-pdot" data-panel="2" title="Space Weather"></span>
-            <span class="dw-tick-pdot" data-panel="3" title="Earthquake"></span>
+          <div class="dw-tick-menu-wrap">
+            <button class="dw-tick-menu-btn" id="dw-tick-menu-btn" aria-label="Ticker options">⋮</button>
           </div>
-          <a id="ticker-map-btn" href="../map/map.html" class="dw-tick-btn">Radar ↗</a>
-          <button id="zip-change" class="dw-tick-ghost">change</button>
         </div>
       </div>
 
       <!-- Hero: Discovery Carousel -->
       <div class="dw-hero">
         <div class="dw-hero-bar">
-          <span class="dw-hero-title">Today's Discoveries</span>
-          <span class="dw-hero-date" id="w-date"></span>
+          <h1 class="dw-hero-date" id="w-date"></h1>
+          <div class="dw-zulu" id="w-zulu"></div>
         </div>
         <div class="dw-carousel-wrap">
           <div class="dw-carousel" id="discovery-carousel">
@@ -263,7 +223,7 @@
 
         <!-- Word of the Day — thin banner -->
         <section class="dw-feed-sec dw-feed-full dw-word-banner">
-          <h2 class="dw-feed-lbl dw-word-banner-lbl">📝 Word</h2>
+          <h2 class="dw-feed-lbl dw-word-banner-lbl">Word</h2>
           <div id="word-body"><div class="dw-loading">Loading…</div></div>
         </section>
 
@@ -271,7 +231,7 @@
 
         <!-- Trivia Quiz -->
         <section class="dw-feed-sec dw-feed-full">
-          <h2 class="dw-feed-lbl">🎯 Daily Trivia</h2>
+          <h2 class="dw-feed-lbl">Daily Trivia</h2>
           <div id="quiz-body">
             <div class="dw-loading" id="quiz-loading">Questions load from today's history data…</div>
             <div id="quiz-game" class="hidden">
@@ -291,14 +251,14 @@
         <div class="dw-feed-divider"></div>
 
         <section class="dw-feed-sec dw-feed-full">
-          <h2 class="dw-feed-lbl">📖 On This Day</h2>
+          <h2 class="dw-feed-lbl">On This Day</h2>
           <div id="wiki-body"><div class="dw-loading">Loading…</div></div>
         </section>
 
         <div class="dw-feed-divider"></div>
 
         <section class="dw-feed-sec dw-feed-full">
-          <h2 class="dw-feed-lbl">💾 This Day in Tech History</h2>
+          <h2 class="dw-feed-lbl">This Day in Tech History</h2>
           <div id="tech-body"><div class="dw-loading">Loading…</div></div>
         </section>
 
@@ -306,21 +266,21 @@
 
         <!-- xkcd Comic -->
         <section class="dw-feed-sec dw-feed-full">
-          <h2 class="dw-feed-lbl">😂 xkcd</h2>
+          <h2 class="dw-feed-lbl">Comic Generator</h2>
           <div id="xkcd-body"><div class="dw-loading">Loading…</div></div>
         </section>
 
         <div class="dw-feed-divider"></div>
 
         <section class="dw-feed-sec dw-feed-full">
-          <h2 class="dw-feed-lbl">⭐ GitHub Trending</h2>
+          <h2 class="dw-feed-lbl">GitHub Trending</h2>
           <div id="github-body"><div class="dw-loading">Loading…</div></div>
         </section>
 
         <div class="dw-feed-divider"></div>
 
         <section class="dw-feed-sec dw-feed-full">
-          <h2 class="dw-feed-lbl">🔥 HackerNews Top Story</h2>
+          <h2 class="dw-feed-lbl">HackerNews Top Story</h2>
           <div id="hn-body"><div class="dw-loading">Loading…</div></div>
         </section>
 
@@ -329,11 +289,11 @@
         <!-- ISS + Launches combined -->
         <section class="dw-feed-iss dw-feed-full">
           <div class="dw-feed-iss-text">
-            <h2 class="dw-feed-lbl">🛸 ISS Live Position</h2>
+            <h2 class="dw-feed-lbl">ISS Live Position</h2>
             <div id="iss-body"><div class="dw-loading">Loading…</div></div>
             <div class="dw-meta" id="iss-crew"></div>
             <div class="dw-iss-launches-sep"></div>
-            <h2 class="dw-feed-lbl">🚀 Upcoming Launches</h2>
+            <h2 class="dw-feed-lbl">Upcoming Launches</h2>
             <div id="launches-body"><div class="dw-loading">Loading…</div></div>
           </div>
           <div id="iss-globe" class="dw-iss-globe"></div>
@@ -357,5 +317,9 @@
   </script>
   <script src="../../scripts/year.js"></script>
   <script src="daily.js"></script>
+  <div class="dw-tick-menu" id="dw-tick-menu">
+    <a id="ticker-map-btn" href="../map/map.html" class="dw-tick-menu-item">📡 Radar ↗</a>
+    <button class="dw-tick-menu-item" id="zip-change">Change Location</button>
+  </div>
 </body>
 </html>

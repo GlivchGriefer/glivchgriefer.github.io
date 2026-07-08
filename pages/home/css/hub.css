@@ -182,6 +182,24 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
   border-bottom: 1px solid var(--chrome-mid);
 }
 
+/* Mobile nav collapsible Projects group */
+.mnav-group {
+  border-bottom: 1px solid var(--chrome-mid);
+}
+.mnav-group-summary {
+  display: block;
+  list-style: none;
+  padding: 11px 16px;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+}
+.mnav-group-summary::-webkit-details-marker { display: none; }
+.mnav-group a {
+  padding-left: 28px;
+}
+
 /* Hamburger */
 .mnav-btn {
   display: none;
@@ -206,6 +224,7 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
 }
 .mnav-toggle:checked ~ .aim-titlebar .mnav-btn span:nth-child(2) {
   opacity: 0;
+  transform: scaleX(0);
 }
 .mnav-toggle:checked ~ .aim-titlebar .mnav-btn span:nth-child(3) {
   transform: rotate(-45deg) translate(4px, -4px);
@@ -230,6 +249,7 @@ a.aim-logo-mark:hover { opacity: 1; filter: drop-shadow(0 0 4px #00EE55); }
 }
 
 .mobile-nav a:hover { background: #C8D8F4; }
+.mobile-nav a.nav-active { color: #1040A0; background: rgba(20,80,200,0.07); border-left: 3px solid #1040A0; padding-left: 13px; font-weight: 600; }
 
 /* ── Profile bar ───────────────────────────────────────── */
 .aim-profile-bar {
@@ -836,7 +856,11 @@ html.dark .aim-main    { background: #141824; }
 html.dark .mobile-nav              { background: #141824; border-bottom-color: #1A2040; }
 html.dark .mobile-nav a            { color: #B0C4E8; border-bottom-color: #1E2840; }
 html.dark .mobile-nav a:hover      { background: #1E2848; }
+html.dark .mobile-nav a.nav-active { color: #D8E8FF; background: rgba(100,140,255,0.12); border-left: 3px solid #6488FF; padding-left: 13px; }
 html.dark .mnav-section            { background: #0E1220; color: #4A5A88; border-bottom-color: #1E2840; }
+html.dark .mnav-group              { border-bottom-color: #1E2840; }
+html.dark .mnav-group-summary      { color: #B0C4E8; }
+html.dark .mnav-group-summary:hover { background: #1E2848; }
 html.dark .dm-btn.mnav-dm          { background: transparent; color: #B0C4E8; border-bottom-color: #1E2840; }
 html.dark .dm-btn.mnav-dm:hover    { background: #1E2848; color: #C8D8F0; }
 

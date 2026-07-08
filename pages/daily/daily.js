@@ -4,28 +4,6 @@
   var CACHE_KEY = 'pm_daily_v5';
   var NASA_KEY  = 'LwKocN7opRPq0C5Bl06PoswP7ZPgSMIs7RtsKNZ9';
 
-  var WORDS = [
-    'ephemeral','luminous','serendipity','catalyst','entropy',
-    'labyrinth','melancholy','nebulous','paradox','quintessential',
-    'resilience','synchrony','tranquil','ubiquitous','verbose',
-    'wanderlust','xenial','yearning','zenith','absurdity',
-    'brevity','cascade','diligent','equinox','fractal',
-    'gossamer','halcyon','iridescent','jubilant','kinetic',
-    'liminal','maelstrom','nascent','ominous','perspicacious',
-    'quixotic','radiant','solstice','tenacious','undulate',
-    'vivid','wistful','exuberant','yielding','zealous',
-    'amorphous','benevolent','cadence','dappled','effervescent',
-    'fleeting','grandiose','humble','iridescence','jovial',
-    'kaleidoscope','laconic','mercurial','nonchalant','oscillate',
-    'placid','querulous','ruminate','scintilla','turbulent',
-    'uncanny','vertiginous','whimsical','axiom','bemused',
-    'chimera','deft','elusive','fervent','glistening',
-    'holistic','inquisitive','jaded','keen','loquacious',
-    'muse','nuance','opulent','poignant','quirky',
-    'reverence','sagacious','tenuous','umber','vestige',
-    'wane','exquisite','yonder','zeal','aloof',
-    'boundless','candid','dauntless','eloquent','furtive'
-  ];
 
   var TECH_KW = [
     'computer','internet','software','hardware','nasa','apple','microsoft','ibm',
@@ -47,6 +25,26 @@
   function dayOfYear() {
     var now = new Date(), start = new Date(now.getFullYear(), 0, 0);
     return Math.floor((now - start) / 86400000);
+  }
+
+  function renderZuluTime() {
+    var now = new Date();
+    var hh  = String(now.getUTCHours()).padStart(2, '0');
+    var mm  = String(now.getUTCMinutes()).padStart(2, '0');
+    var el  = document.getElementById('w-zulu');
+    if (el) el.textContent = hh + mm + 'Z';
+  }
+
+  function renderDateHeading() {
+    var now   = new Date();
+    var jday  = String(dayOfYear()).padStart(3, '0');
+    var parts = new Intl.DateTimeFormat('en-US', {
+      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+    }).formatToParts(now);
+    var get   = function (t) { return (parts.find(function (p) { return p.type === t; }) || {}).value || ''; };
+    document.getElementById('w-date').innerHTML =
+      get('weekday') + ', ' + get('day') + ' ' + get('month') +
+      ' <span class="dw-jday">' + jday + '</span> ' + get('year');
   }
 
   function initCache() {
@@ -139,11 +137,11 @@
   function loadWeather(zip) {
     document.getElementById('ticker-prompt').classList.add('hidden');
     document.getElementById('ticker-data').classList.remove('hidden');
-    startTickerCycle();
-    document.getElementById('w-icon').textContent = '⏳';
-    document.getElementById('w-desc').textContent = 'Loading…';
-    document.getElementById('w-loc').textContent = '';
-    document.getElementById('w-temp').textContent = '';
+    var streamEl = document.getElementById('dw-tick-stream');
+    if (streamEl && !_tickerState.weather) {
+      var loadFrag = '<span class="dw-tick-lbl-wx">Weather</span> Loading…';
+      streamEl.innerHTML = loadFrag + '   |   ' + loadFrag;
+    }
 
     fetch$('https://api.zippopotam.us/us/' + zip)
       .then(function (z) {
@@ -167,26 +165,16 @@
         var hr = new Date().getHours();
         var curTemp = Math.round(w.hourly.temperature_2m[hr] || w.hourly.temperature_2m[12]);
 
-        document.getElementById('w-icon').textContent = info[0];
-        document.getElementById('w-temp').textContent = curTemp + '°';
-        document.getElementById('w-desc').textContent = info[1];
-        document.getElementById('w-loc').textContent = city;
-        document.getElementById('w-hi').textContent = hi + '°';
-        document.getElementById('w-lo').textContent = lo + '°';
-        document.getElementById('w-sunrise').textContent = '☀ ' + fmtTime(d.sunrise[0]);
-        document.getElementById('w-sunset').textContent = '⬇ ' + fmtTime(d.sunset[0]);
+        _tickerState.weatherCity = city;
+        _tickerState.weather = info[0] + ' ' + curTemp + '° · ' + info[1] +
+          ' · High ' + hi + '° / Low ' + lo + '° · Rise ' + fmtTime(d.sunrise[0]) + '  Set ' + fmtTime(d.sunset[0]);
+        rebuildTickerStrip();
 
-        var btn = document.getElementById('ticker-map-btn');
-        if (btn) btn.href = '../map/map.html';
-
-        document.getElementById('w-date').textContent =
-          new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        renderDateHeading();
       })
       .catch(function () {
-        document.getElementById('w-icon').textContent = '⚠';
-        document.getElementById('w-desc').textContent = 'Weather unavailable — check ZIP';
-        document.getElementById('w-loc').textContent = '';
-        document.getElementById('w-temp').textContent = '';
+        _tickerState.weather = '⚠ Weather unavailable — check ZIP';
+        rebuildTickerStrip();
       });
   }
 
@@ -487,19 +475,18 @@
         if (!f) throw new Error('none');
         setCache('quake', f); renderQuake(f);
       })
-      .catch(function () {
-        var el = document.getElementById('tick-quake-place');
-        if (el) el.textContent = 'no data';
-      });
+      .catch(function () {});
   }
 
   function renderQuake(f) {
     var p = f.properties;
     var mag = parseFloat(p.mag).toFixed(1);
-    var magEl   = document.getElementById('tick-quake-mag');
-    var placeEl = document.getElementById('tick-quake-place');
-    if (magEl)   magEl.textContent   = 'M' + mag;
-    if (placeEl) placeEl.textContent = p.place || 'Unknown';
+    var dt = new Date(p.time);
+    var datePart = dt.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', timeZone: 'America/Denver' });
+    var timePart = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Denver' });
+    var tzPart   = dt.toLocaleString('en-US', { timeZone: 'America/Denver', timeZoneName: 'short' }).split(' ').pop();
+    _tickerState.quake = 'M' + mag + ' · ' + datePart + ' ' + timePart + ' ' + tzPart + ' · ' + (p.place || 'Unknown location');
+    rebuildTickerStrip();
   }
 
   // ── Wikipedia On This Day ─────────────────────────────────
@@ -534,16 +521,39 @@
 
   function fetchWord() {
     if (_cache && _cache.word) { renderWord(_cache.word); return; }
-    var word = WORDS[dayOfYear() % WORDS.length];
-    fetch$('https://api.dictionaryapi.dev/api/v2/entries/en/' + word)
+    var months = ['January','February','March','April','May','June',
+                  'July','August','September','October','November','December'];
+    var now  = new Date();
+    var page = 'Wiktionary:Word_of_the_day/' + now.getUTCFullYear() +
+               '/' + months[now.getUTCMonth()] + '_' + now.getUTCDate();
+    fetch$('https://en.wiktionary.org/w/api.php?action=parse&page=' +
+           encodeURIComponent(page) + '&prop=wikitext&format=json&origin=*')
       .then(function (data) {
-        var payload = { word: word, entry: data[0] || null };
-        setCache('word', payload); renderWord(payload);
+        var wikitext = (data.parse && data.parse.wikitext && data.parse.wikitext['*']) || '';
+        var word = null, m;
+        if ((m = wikitext.match(/\|word\s*=\s*([^\|\}\n\r]+)/i))) word = m[1].trim();
+        if (!word && (m = wikitext.match(/\[\[([a-z][a-z ''-]+?)[\|\]]/))) word = m[1].trim();
+        if (!word) throw new Error('parse');
+        word = word.toLowerCase();
+        return fetch$('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(word))
+          .then(function (def) {
+            var payload = { word: word, entry: def[0] || null };
+            setCache('word', payload); renderWord(payload);
+          })
+          .catch(function () {
+            var payload = { word: word, entry: null };
+            setCache('word', payload); renderWord(payload);
+          });
       })
-      .catch(function () { renderWord({ word: word, entry: null }); });
+      .catch(function () { renderWord({ word: null, entry: null }); });
   }
 
   function renderWord(data) {
+    var body = document.getElementById('word-body');
+    if (!data.word) {
+      body.innerHTML = '<span class="dw-word-def-wrap"><span class="dw-word-def-inner">Unavailable today</span></span>';
+      return;
+    }
     var entry = data.entry;
     var pos = '', def = '';
     if (entry && entry.meanings && entry.meanings[0]) {
@@ -551,10 +561,19 @@
       var d = entry.meanings[0].definitions && entry.meanings[0].definitions[0];
       if (d) def = d.definition || '';
     }
-    document.getElementById('word-body').innerHTML =
+    body.innerHTML =
       '<a class="dw-word-thin-word" href="https://www.merriam-webster.com/dictionary/' + encodeURIComponent(data.word) + '" target="_blank" rel="noopener">' + esc(data.word) + '</a>' +
       (pos ? '<span class="dw-word-thin-pos">' + esc(pos) + '</span>' : '') +
-      (def ? '<span class="dw-word-thin-def">' + esc(def) + '</span>' : '');
+      (def ? '<span class="dw-word-def-wrap"><span class="dw-word-def-inner">' + esc(def) + '</span></span>' : '');
+    if (def) requestAnimationFrame(function () {
+      var wrap  = body.querySelector('.dw-word-def-wrap');
+      var inner = body.querySelector('.dw-word-def-inner');
+      if (wrap && inner && inner.scrollWidth > wrap.clientWidth + 2) {
+        inner.textContent = inner.textContent + '   —   ' + inner.textContent;
+        inner.classList.add('dw-word-def-scroll');
+        inner.style.animationDuration = Math.max(10, Math.round(inner.scrollWidth * 0.04)) + 's';
+      }
+    });
   }
 
   // ── GitHub Trending ───────────────────────────────────────
@@ -975,21 +994,14 @@
         var result = { kp: kp, kp_exact: kpNow.toFixed(1), trend: trend };
         setCache('swx', result); renderSpaceWeather(result);
       })
-      .catch(function () {
-        var el = document.getElementById('tick-swx-level');
-        if (el) el.textContent = 'unavailable';
-      });
+      .catch(function () {});
   }
 
   function renderSpaceWeather(data) {
-    var LEVELS = ['Quiet','Quiet','Quiet','Quiet','Minor Watch','G1 Minor','G2 Moderate','G3 Strong','G4 Severe','G5 Extreme'];
+    var LEVELS = ['Quiet','Quiet','Quiet','Quiet','Minor Storm Watch','G1 Minor Storm','G2 Moderate Storm','G3 Strong Storm','G4 Severe Storm','G5 Extreme Storm'];
     var arrow = { rising: '↑', falling: '↓', steady: '→' }[data.trend] || '→';
-    var kpEl    = document.getElementById('tick-swx-kp');
-    var lvlEl   = document.getElementById('tick-swx-level');
-    var trendEl = document.getElementById('tick-swx-trend');
-    if (kpEl)    kpEl.textContent    = 'Kp ' + data.kp_exact;
-    if (lvlEl)   lvlEl.textContent   = LEVELS[Math.min(data.kp, 9)];
-    if (trendEl) trendEl.textContent = arrow + ' ' + data.trend;
+    _tickerState.swx = 'Geomagnetic Index Kp ' + data.kp_exact + ' · ' + LEVELS[Math.min(data.kp, 9)] + ' · ' + arrow + ' ' + data.trend;
+    rebuildTickerStrip();
   }
 
   // ── Air Quality (Open-Meteo) ──────────────────────────────
@@ -1003,10 +1015,7 @@
         var result = { aqi: c.us_aqi, pm25: c.pm2_5, ozone: c.ozone };
         setCache('aqi', result); renderAirQuality(result);
       })
-      .catch(function () {
-        var el = document.getElementById('tick-aqi-level');
-        if (el) el.textContent = 'unavailable';
-      });
+      .catch(function () {});
   }
 
   function renderAirQuality(data) {
@@ -1014,16 +1023,13 @@
     var level;
     if      (aqi <= 50)  level = 'Good';
     else if (aqi <= 100) level = 'Moderate';
-    else if (aqi <= 150) level = 'Unhealthy SG';
+    else if (aqi <= 150) level = 'Unhealthy for Sensitive Groups';
     else if (aqi <= 200) level = 'Unhealthy';
     else if (aqi <= 300) level = 'Very Unhealthy';
     else                 level = 'Hazardous';
-    var valEl = document.getElementById('tick-aqi-val');
-    var lvlEl = document.getElementById('tick-aqi-level');
-    var pmEl  = document.getElementById('tick-aqi-pm');
-    if (valEl) valEl.textContent = aqi;
-    if (lvlEl) lvlEl.textContent = level;
-    if (pmEl && data.pm25 != null) pmEl.textContent = 'PM2.5 ' + parseFloat(data.pm25).toFixed(1);
+    _tickerState.aqi = 'AQI ' + aqi + ' · ' + level +
+      (data.pm25 != null ? ' · Fine Particles ' + parseFloat(data.pm25).toFixed(1) + ' µg/m³' : '');
+    rebuildTickerStrip();
   }
 
   // ── xkcd Comic ───────────────────────────────────────────
@@ -1033,7 +1039,7 @@
     fetch('xkcd-today.json?v=' + todayStr())
       .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
       .then(function (data) {
-        if (!data || !data.num) { renderXkcdPending(); return; }
+        if (!data || !data.num) throw new Error('bad');
         setCache('xkcd', data); renderXkcd(data);
       })
       .catch(function () { renderXkcdPending(); });
@@ -1041,13 +1047,8 @@
 
   function renderXkcdPending() {
     document.getElementById('xkcd-body').innerHTML =
-      '<div class="dw-xkcd-pending">' +
-        '<div style="font-size:32px;margin-bottom:10px;">📰</div>' +
-        '<div style="font-size:12.5px;color:rgba(255,255,255,0.5);margin-bottom:14px;">Daily comic caches at midnight UTC via GitHub Actions.</div>' +
-        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-          '<a href="https://xkcd.com" target="_blank" rel="noopener" class="dw-gen-btn" style="text-decoration:none;">xkcd.com ↗</a>' +
-          '<button class="dw-gen-btn" id="xkcd-shuffle-pending">↺ Random comic</button>' +
-        '</div>' +
+      '<div class="dw-xkcd-pending-wrap">' +
+        '<button class="dw-gen-btn" id="xkcd-shuffle-pending">↺ Random comic</button>' +
       '</div>';
     document.getElementById('xkcd-shuffle-pending').addEventListener('click', fetchXkcdRandom);
   }
@@ -1269,28 +1270,39 @@
     step();
   }
 
-  // ── Ticker Panel Cycling ──────────────────────────────────
+  // ── Ticker Stream ─────────────────────────────────────────
 
-  var _tickerPanelIdx   = 0;
-  var _tickerPanelTimer = null;
-  var TICKER_PANELS = ['tick-panel-weather', 'tick-panel-aqi', 'tick-panel-swx', 'tick-panel-quake'];
+  var _tickerState = { weather: '', weatherCity: '', aqi: '', swx: '', quake: '' };
 
-  function showTickerPanel(idx) {
-    _tickerPanelIdx = ((idx % TICKER_PANELS.length) + TICKER_PANELS.length) % TICKER_PANELS.length;
-    TICKER_PANELS.forEach(function (id, i) {
-      var el = document.getElementById(id);
-      if (el) el.classList.toggle('active', i === _tickerPanelIdx);
+  function rebuildTickerStrip() {
+    var sections = [];
+    if (_tickerState.weather) sections.push({
+      cls: 'wx',
+      label: _tickerState.weatherCity ? 'Current weather in ' + _tickerState.weatherCity : 'Weather',
+      data: _tickerState.weather
     });
-    document.querySelectorAll('.dw-tick-pdot').forEach(function (dot) {
-      dot.classList.toggle('active', parseInt(dot.dataset.panel, 10) === _tickerPanelIdx);
-    });
-  }
+    if (_tickerState.aqi)   sections.push({ cls: 'aqi',   label: 'Air Quality',   data: _tickerState.aqi });
+    if (_tickerState.swx)   sections.push({ cls: 'swx',   label: 'Space Weather', data: _tickerState.swx });
+    if (_tickerState.quake) sections.push({ cls: 'quake', label: 'Earthquake',    data: _tickerState.quake });
+    if (!sections.length) return;
 
-  function startTickerCycle() {
-    if (_tickerPanelTimer) clearInterval(_tickerPanelTimer);
-    _tickerPanelTimer = setInterval(function () {
-      showTickerPanel(_tickerPanelIdx + 1);
-    }, 7000);
+    function sep(cls) { return '<span class="dw-tick-sep-' + cls + '">   |   </span>'; }
+
+    var htmlParts = sections.map(function (s) {
+      return '<span class="dw-tick-lbl-' + s.cls + '">' + esc(s.label) + '</span> ' + esc(s.data);
+    });
+    var joined = '';
+    for (var i = 0; i < sections.length; i++) {
+      joined += htmlParts[i];
+      if (i < sections.length - 1) joined += sep(sections[i].cls);
+    }
+    var loopSep = sep(sections[sections.length - 1].cls);
+
+    var el = document.getElementById('dw-tick-stream');
+    if (!el) return;
+    el.innerHTML = joined + loopSep + joined + loopSep;
+    var textLen = sections.reduce(function (n, s) { return n + s.data.length + s.label.length; }, 0) + sections.length * 12;
+    el.style.animationDuration = Math.max(20, Math.round(textLen * 0.12)) + 's';
   }
 
   // ── Init ──────────────────────────────────────────────────
@@ -1298,8 +1310,9 @@
   document.addEventListener('DOMContentLoaded', function () {
     initCache();
 
-    document.getElementById('w-date').textContent =
-      new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    renderDateHeading();
+    renderZuluTime();
+    setInterval(renderZuluTime, 30000);
 
     // Carousel
     var carousel = document.getElementById('discovery-carousel');
@@ -1333,7 +1346,29 @@
     document.getElementById('zip-input').addEventListener('keydown', function (e) {
       if (e.key === 'Enter') document.getElementById('zip-submit').click();
     });
+
+    // Ticker end dropdown
+    var _tickMenu = document.getElementById('dw-tick-menu');
+    var _tickMenuBtn = document.getElementById('dw-tick-menu-btn');
+    if (_tickMenuBtn && _tickMenu) {
+      _tickMenuBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (_tickMenu.classList.contains('open')) {
+          _tickMenu.classList.remove('open');
+          return;
+        }
+        var r = _tickMenuBtn.getBoundingClientRect();
+        _tickMenu.style.top   = (r.bottom + 4) + 'px';
+        _tickMenu.style.right = (window.innerWidth - r.right) + 'px';
+        _tickMenu.classList.add('open');
+      });
+      document.addEventListener('click', function () {
+        if (_tickMenu) _tickMenu.classList.remove('open');
+      });
+    }
+
     document.getElementById('zip-change').addEventListener('click', function () {
+      if (_tickMenu) _tickMenu.classList.remove('open');
       try { localStorage.removeItem('pm_daily_zip'); } catch(e) {}
       showZipPrompt();
       document.getElementById('zip-input').value = '';
@@ -1386,15 +1421,6 @@
           if (canvas) canvas.style.opacity = 0;
           document.querySelectorAll('.dw-art-off-btn').forEach(function (b) { b.textContent = '○ Off'; });
         }
-      });
-    });
-
-    // Ticker panel dots
-    document.querySelectorAll('.dw-tick-pdot').forEach(function (dot) {
-      dot.addEventListener('click', function () {
-        if (_tickerPanelTimer) clearInterval(_tickerPanelTimer);
-        showTickerPanel(parseInt(dot.dataset.panel, 10));
-        startTickerCycle();
       });
     });
 
