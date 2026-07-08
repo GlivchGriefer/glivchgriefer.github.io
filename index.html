@@ -8,6 +8,7 @@
   <link href="pages/home/css/hub.css" rel="stylesheet" />
   <script src="scripts/webapp.js"></script>
   <style>
+    /* ── Ticker bar ──────────────────────────────────────── */
     .home-ticker-bar{position:fixed;bottom:0;left:0;right:0;height:26px;z-index:200;overflow:hidden;display:flex;align-items:center;background:linear-gradient(90deg,#0e2460,#1a3898 35%,#1a3898 65%,#0e2460);border-top:1px solid #2a46a0;user-select:none;pointer-events:none;opacity:0;transition:opacity .7s ease;}
     .home-ticker-bar.ht-ready{opacity:1;}
     .home-ticker-track{display:inline-flex;white-space:nowrap;animation:htick linear infinite;animation-play-state:paused;}
@@ -20,16 +21,16 @@
     html.dark .home-ticker-bar{background:linear-gradient(90deg,#050e22,#091840 35%,#091840 65%,#050e22);border-top-color:#152050;}
     html.dark .home-ticker-track>span{color:rgba(160,185,255,.78);}
 
-    /* ── Hub Map preview card ─────────────────────────────── */
+    /* ── Hub Map preview card ─────────────────────────── */
     .hub-card-full{grid-column:1/-1;}
     .hub-map-preview{cursor:pointer;text-decoration:none;}
     .hub-map-visual{position:relative;height:160px;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,#061428 0%,#020810 100%);}
     .hub-map-visual::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 18px,rgba(0,50,120,.07) 18px,rgba(0,50,120,.07) 19px),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(0,50,120,.07) 18px,rgba(0,50,120,.07) 19px);pointer-events:none;}
-    .hub-map-sweep{position:absolute;width:200%;height:200%;top:-50%;left:-50%;background:conic-gradient(from 0deg,transparent 340deg,rgba(0,200,80,.06) 355deg,rgba(0,200,80,.14) 360deg);animation:hmSweep 6s linear infinite;transform-origin:50% 50%;}
+    .hub-map-sweep{position:absolute;width:200%;height:200%;top:-50%;left:-50%;background:conic-gradient(from 0deg,transparent 340deg,rgba(0,200,80,.06) 355deg,rgba(0,200,80,.14) 360deg);animation:hmSweep 6s linear infinite;transform-origin:50% 50%;z-index:1;}
     @keyframes hmSweep{to{transform:rotate(360deg);}}
     .hub-map-blip{position:absolute;border-radius:50%;transform:translate(-50%,-50%);animation:hmBlip 2s ease-in-out infinite;}
     @keyframes hmBlip{0%,100%{opacity:.4;box-shadow:0 0 0 rgba(255,100,0,0);}50%{opacity:1;box-shadow:0 0 5px rgba(255,100,0,.5);}}
-    .hub-map-bar{position:absolute;bottom:0;left:0;right:0;display:flex;gap:14px;align-items:center;padding:5px 12px;background:linear-gradient(transparent,rgba(2,8,20,.88));font-size:9.5px;color:rgba(70,110,170,.8);}
+    .hub-map-bar{position:absolute;bottom:0;left:0;right:0;display:flex;gap:14px;align-items:center;padding:5px 12px;background:linear-gradient(transparent,rgba(2,8,20,.88));font-size:9.5px;color:rgba(70,110,170,.8);z-index:3;}
     .hub-map-stat-v{color:#90c8f0;font-weight:700;margin-right:2px;}
     .hub-map-stat-live{color:#22bb44;font-weight:700;margin-right:2px;}
     .hub-map-footer{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-top:1px solid rgba(20,50,120,.35);}
@@ -38,6 +39,21 @@
     .hub-map-open{font-size:10px;font-weight:700;color:#4a8aee;text-decoration:none;white-space:nowrap;}
     .hub-map-open:hover{color:#88c0ff;}
     @media(max-width:600px){.hub-map-visual{height:120px;}.hub-map-layers{display:none;}}
+
+    /* ── Daily preview card ───────────────────────────── */
+    .hub-daily-body{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(0,24,64,.35);border-bottom:1px solid rgba(26,58,136,.4);}
+    .hub-daily-item{padding:9px 12px;background:rgba(2,6,20,.72);display:flex;flex-direction:column;gap:4px;}
+    .hub-di-label{font-family:"Courier New",Courier,monospace;font-size:7px;letter-spacing:2px;color:rgba(70,110,200,.55);font-weight:700;text-transform:uppercase;transition:opacity .45s ease;}
+    .hub-di-val{font-family:"Courier New",Courier,monospace;font-size:10px;color:#90b8f0;line-height:1.45;transition:opacity .45s ease;}
+    .hub-daily-foot{padding:4px 10px;font-size:9px;font-weight:700;color:#4a8aee;text-align:right;}
+    @media(max-width:640px){.hub-daily-body{grid-template-columns:1fr;}}
+
+    /* ── Section headings ─────────────────────────────── */
+    .hub-section-head{display:flex;align-items:center;gap:8px;padding:0;margin-top:2px;}
+    .hub-section-label{font-size:8px;font-weight:700;letter-spacing:2.5px;color:var(--ink-muted);text-transform:uppercase;white-space:nowrap;}
+    .hub-section-rule{flex:1;height:1px;background:var(--chrome-mid);}
+    html.dark .hub-section-rule{background:#2A3455;}
+    html.dark .hub-section-label{color:#4A5A88;}
   </style>
 </head>
 <body>
@@ -50,7 +66,7 @@
       </div>
       <nav class="aim-desktop-nav">
         <a href="pages/daily/daily.html">Daily</a>
-        <span class="nav-group" tabindex="0">Projects ▾<span class="nav-dropdown"><a href="pages/skanner/index.html">SKANNER</a><a href="pages/netbreaker/netbreaker.html">NETBREAKER</a><a href="https://interportal.neocities.org" target="_blank" rel="noopener">Interportal ↗</a></span></span>
+        <span class="nav-group" tabindex="0">Projects ▾<span class="nav-dropdown"><a href="pages/media/index.html">Media Browser</a><a href="pages/skanner/index.html">SKANNER</a><a href="pages/netbreaker/netbreaker.html">NETBREAKER</a><a href="https://interportal.neocities.org" target="_blank" rel="noopener">Interportal ↗</a></span></span>
         <a href="pages/gallery/gallery.html">Gallery</a>
         <a href="pages/about/about.html">About</a>
         <a href="pages/contact/contact.html">Contact</a>
@@ -66,6 +82,7 @@
       <a href="pages/daily/daily.html">Daily</a>
       <details class="mnav-group">
         <summary class="mnav-group-summary">Projects ▾</summary>
+        <a href="pages/media/index.html">Media Browser</a>
         <a href="pages/skanner/index.html">SKANNER</a>
         <a href="pages/netbreaker/netbreaker.html">NETBREAKER</a>
         <a href="https://interportal.neocities.org" target="_blank" rel="noopener">Interportal ↗</a>
@@ -77,8 +94,77 @@
       <a href="pages/map/map.html">Map</a>
       <button class="dm-btn mnav-dm" aria-label="Toggle dark mode">◐ Dark Mode</button>
     </nav>
+
     <main class="aim-main">
       <div class="hub-grid">
+
+        <!-- 1 · Daily preview ───────────────────────────── -->
+        <a href="pages/daily/daily.html" class="hub-card hub-card-dark hub-card-full" id="hub-daily">
+          <div class="hub-card-bar">
+            <span>📡</span>
+            <span class="hub-card-title">Daily Digest</span>
+            <span class="hub-card-tag" style="background:#001a0a;color:#22bb44;animation:hmBlip 2s ease-in-out infinite">● LIVE</span>
+          </div>
+          <div class="hub-daily-body">
+            <div class="hub-daily-item">
+              <span class="hub-di-label">TODAY</span>
+              <span class="hub-di-val" id="hub-di-date">—</span>
+            </div>
+            <div class="hub-daily-item">
+              <span class="hub-di-label" id="hub-di-wx-lbl">WEATHER</span>
+              <span class="hub-di-val" id="hub-di-wx">—</span>
+            </div>
+            <div class="hub-daily-item">
+              <span class="hub-di-label" id="hub-di-extra-lbl">DATA</span>
+              <span class="hub-di-val" id="hub-di-extra">—</span>
+            </div>
+          </div>
+          <div class="hub-daily-foot">Open Daily Digest →</div>
+        </a>
+
+        <!-- 2 · Live Map ────────────────────────────────── -->
+        <a href="pages/map/map.html" class="hub-card hub-card-dark hub-map-preview hub-card-full">
+          <div class="hub-card-bar">
+            <span>🗺</span>
+            <span class="hub-card-title">Live Map</span>
+            <span class="hub-card-tag" style="background:#001a0a;color:#22bb44;animation:hmBlip 2s ease-in-out infinite">● LIVE</span>
+          </div>
+          <div class="hub-map-visual" id="hm-visual">
+            <div class="hub-map-sweep"></div>
+            <div class="hub-map-bar" id="hm-stats">
+              <span><span class="hub-map-stat-v" id="hm-qn">—</span> quakes 24h</span>
+              <span><span class="hub-map-stat-v" id="hm-an">—</span> active alerts</span>
+              <span><span class="hub-map-stat-live">🌧</span> Radar: Live</span>
+            </div>
+          </div>
+          <div class="hub-map-footer">
+            <div class="hub-map-layers">
+              <span class="hub-map-layer-pill">🌧 Radar</span>
+              <span class="hub-map-layer-pill">🌍 Earthquakes</span>
+              <span class="hub-map-layer-pill">⚠️ NWS Alerts</span>
+              <span class="hub-map-layer-pill">🚨 Disasters</span>
+              <span class="hub-map-layer-pill">📡 Buoys</span>
+            </div>
+            <span class="hub-map-open">Open Full Map →</span>
+          </div>
+        </a>
+
+        <!-- 3 · Projects ────────────────────────────────── -->
+        <div class="hub-section-head hub-card-full">
+          <span class="hub-section-label">◈ Projects</span>
+          <span class="hub-section-rule"></span>
+        </div>
+
+        <a href="pages/media/index.html" class="hub-card hub-card-dark">
+          <div class="hub-card-bar">
+            <span>◈</span>
+            <span class="hub-card-title">Media Browser</span>
+            <span class="hub-card-tag media">Media</span>
+          </div>
+          <div class="hub-card-body">
+            Browse 14M+ open media — NASA images, museum art, Internet Archive audio, internet radio, and more.
+          </div>
+        </a>
 
         <a href="pages/skanner/index.html" class="hub-card hub-card-dark">
           <div class="hub-card-bar">
@@ -109,35 +195,15 @@
             <span class="hub-card-tag portfolio">Portfolio</span>
           </div>
           <div class="hub-card-body">
-            Creative portfolio site | software engineering, multimedia, and web design in a terminal interface.
+            Creative portfolio site — software engineering, multimedia, and web design in a terminal interface.
           </div>
         </a>
 
-        <a href="pages/map/map.html" class="hub-card hub-card-dark hub-map-preview hub-card-full">
-          <div class="hub-card-bar">
-            <span>🗺</span>
-            <span class="hub-card-title">Live Map</span>
-            <span class="hub-card-tag" style="background:#001a0a;color:#22bb44;animation:hmBlip 2s ease-in-out infinite">● LIVE</span>
-          </div>
-          <div class="hub-map-visual" id="hm-visual">
-            <div class="hub-map-sweep"></div>
-            <div class="hub-map-bar" id="hm-stats">
-              <span><span class="hub-map-stat-v" id="hm-qn">—</span> quakes 24h</span>
-              <span><span class="hub-map-stat-v" id="hm-an">—</span> active alerts</span>
-              <span><span class="hub-map-stat-live">🌧</span> Radar: Live</span>
-            </div>
-          </div>
-          <div class="hub-map-footer">
-            <div class="hub-map-layers">
-              <span class="hub-map-layer-pill">🌧 Radar</span>
-              <span class="hub-map-layer-pill">🌍 Earthquakes</span>
-              <span class="hub-map-layer-pill">⚠️ NWS Alerts</span>
-              <span class="hub-map-layer-pill">🚨 Disasters</span>
-              <span class="hub-map-layer-pill">📡 Buoys</span>
-            </div>
-            <span class="hub-map-open">Open Full Map →</span>
-          </div>
-        </a>
+        <!-- 4 · Pages ───────────────────────────────────── -->
+        <div class="hub-section-head hub-card-full">
+          <span class="hub-section-label">◈ Pages</span>
+          <span class="hub-section-rule"></span>
+        </div>
 
         <a href="pages/gallery/gallery.html" class="hub-card hub-card-away">
           <div class="hub-card-bar">
@@ -185,6 +251,7 @@
 
       </div>
     </main>
+
     <footer class="aim-statusbar">
       <span>© <span class="copyright-year">2026</span> Procedural Media · Denver, CO</span>
       <nav class="aim-statusbar-links">
@@ -194,32 +261,121 @@
       </nav>
     </footer>
   </div>
+
   <script>
-      (function(){var l=window.location.href;document.querySelectorAll('.aim-desktop-nav a,.mobile-nav a').forEach(function(a){if(a.href===l)a.classList.add('nav-active');});})();
+    (function(){var l=window.location.href;document.querySelectorAll('.aim-desktop-nav a,.mobile-nav a').forEach(function(a){if(a.href===l)a.classList.add('nav-active');});})();
   </script>
   <script src="scripts/year.js"></script>
 
+  <!-- Ticker bar -->
   <div class="home-ticker-bar" aria-hidden="true">
     <div class="home-ticker-track" id="htt">
       <span id="hta"></span><span id="htb"></span>
     </div>
   </div>
 
-  <!-- Hub map preview card live data -->
+  <!-- Hub map preview live data -->
   <script>
   (function(){
     var visual=document.getElementById('hm-visual');
     if(!visual)return;
     var qnEl=document.getElementById('hm-qn'),anEl=document.getElementById('hm-an');
-    function placeBlip(lat,lon,mag){
-      var x=(lon+180)/360*100,y=(90-lat)/180*100;
+    var mapView={lat:39.5,lon:-98.35,zoom:4};
+    var pendingBlips=[],radarReady=false;
+
+    function latPx(lat,wp){
+      var r=lat*Math.PI/180;
+      return(1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*wp;
+    }
+    function lonPx(lon,wp){return(lon+180)/360*wp;}
+
+    function renderTiles(host,path,lat,lon,zoom){
+      mapView.lat=lat;mapView.lon=lon;mapView.zoom=zoom;
+      var W=visual.offsetWidth||600,H=visual.offsetHeight||160;
+      var TILE=256,n=1<<zoom,wp=TILE*n;
+      var cpx=lonPx(lon,wp),cpy=latPx(lat,wp);
+      var txMin=Math.floor((cpx-W/2)/TILE),tyMin=Math.floor((cpy-H/2)/TILE);
+      var txMax=Math.ceil((cpx+W/2)/TILE),tyMax=Math.ceil((cpy+H/2)/TILE);
+
+      var old=document.getElementById('hm-radar');
+      if(old)old.remove();
+      var wrap=document.createElement('div');
+      wrap.id='hm-radar';
+      wrap.style.cssText='position:absolute;inset:0;overflow:hidden;z-index:0;';
+      var sd=0,sdl=['a','b','c','d'];
+
+      for(var ty=tyMin;ty<tyMax;ty++){
+        for(var tx=txMin;tx<txMax;tx++){
+          var lf=Math.round(tx*TILE-(cpx-W/2)),tf=Math.round(ty*TILE-(cpy-H/2));
+          var ps='position:absolute;left:'+lf+'px;top:'+tf+'px;width:256px;height:256px;display:block;';
+          var base=new Image();
+          base.style.cssText=ps;
+          base.src='https://'+sdl[sd%4]+'.basemaps.cartocdn.com/dark_all/'+zoom+'/'+tx+'/'+ty+'.png';
+          base.onerror=function(){this.style.opacity='0';};
+          sd++;wrap.appendChild(base);
+          var rad=new Image();
+          rad.style.cssText=ps+'opacity:0.82;';
+          rad.src=host+path+'/256/'+zoom+'/'+tx+'/'+ty+'/6/1_1.png';
+          rad.onerror=function(){this.style.display='none';};
+          wrap.appendChild(rad);
+        }
+      }
+      var sweep=visual.querySelector('.hub-map-sweep');
+      visual.insertBefore(wrap,sweep||visual.querySelector('.hub-map-bar'));
+      radarReady=true;
+      pendingBlips.forEach(function(b){doBlip(b.lat,b.lon,b.mag);});
+      pendingBlips=[];
+    }
+
+    function mercPct(lat,lon){
+      var W=visual.offsetWidth||600,H=visual.offsetHeight||160;
+      var TILE=256,n=1<<mapView.zoom,wp=TILE*n;
+      var cpx=lonPx(mapView.lon,wp),cpy=latPx(mapView.lat,wp);
+      return{
+        x:((lonPx(lon,wp)-cpx)/W+0.5)*100,
+        y:((latPx(lat,wp)-cpy)/H+0.5)*100
+      };
+    }
+    function doBlip(lat,lon,mag){
+      var pos=mercPct(lat,lon);
+      if(pos.x<-2||pos.x>102||pos.y<-2||pos.y>102)return;
       var sz=Math.max(3,Math.min(10,mag*1.5));
       var c=mag>=6?'#FF3030':mag>=5?'#FF7422':mag>=4?'#FFC020':'#FFEE44';
       var b=document.createElement('div');
       b.className='hub-map-blip';
-      b.style.cssText='left:'+x.toFixed(2)+'%;top:'+y.toFixed(2)+'%;width:'+sz+'px;height:'+sz+'px;background:'+c+';animation-delay:'+(Math.random()*2).toFixed(2)+'s';
+      b.style.cssText='left:'+pos.x.toFixed(2)+'%;top:'+pos.y.toFixed(2)+'%;width:'+sz+'px;height:'+sz+'px;background:'+c+';animation-delay:'+(Math.random()*2).toFixed(2)+'s;z-index:2;';
       visual.insertBefore(b,visual.querySelector('.hub-map-bar'));
     }
+    function placeBlip(lat,lon,mag){
+      if(!radarReady){pendingBlips.push({lat:lat,lon:lon,mag:mag});return;}
+      doBlip(lat,lon,mag);
+    }
+
+    var radarHost=null,radarPath=null,radarDone=false,zipCoords=null,zipDone=false;
+    function maybeRender(){
+      if(!radarDone||!zipDone||!radarPath)return;
+      if(zipCoords)renderTiles(radarHost,radarPath,zipCoords.lat,zipCoords.lon,7);
+      else renderTiles(radarHost,radarPath,39.5,-98.35,4);
+    }
+
+    fetch('https://api.rainviewer.com/public/weather-maps.json')
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var f=d.radar&&d.radar.past;
+        if(f&&f.length){radarHost=d.host||'https://tilecache.rainviewer.com';radarPath=f[f.length-1].path;}
+        radarDone=true;maybeRender();
+      }).catch(function(){radarDone=true;maybeRender();});
+
+    var zip='';try{zip=localStorage.getItem('pm_daily_zip')||'';}catch(e){}
+    if(zip){
+      fetch('https://api.zippopotam.us/us/'+zip)
+        .then(function(r){return r.json();})
+        .then(function(z){
+          zipCoords={lat:parseFloat(z.places[0].latitude),lon:parseFloat(z.places[0].longitude)};
+          zipDone=true;maybeRender();
+        }).catch(function(){zipDone=true;maybeRender();});
+    }else{zipDone=true;}
+
     fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson')
       .then(function(r){return r.json();})
       .then(function(d){
@@ -237,6 +393,141 @@
   }());
   </script>
 
+  <!-- Daily preview card live data -->
+  <script>
+  (function(){
+    function pad(n){return n<10?'0'+n:''+n;}
+    function todayStr(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+
+    var now=new Date();
+    var start=new Date(now.getFullYear(),0,0);
+    var jday=Math.floor((now-start)/864e5);
+    var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    var dateEl=document.getElementById('hub-di-date');
+    var wxEl=document.getElementById('hub-di-wx');
+    var wxLbl=document.getElementById('hub-di-wx-lbl');
+    var extraEl=document.getElementById('hub-di-extra');
+    var extraLbl=document.getElementById('hub-di-extra-lbl');
+
+    if(dateEl)dateEl.textContent=DAYS[now.getDay()]+' '+MON[now.getMonth()]+' '+now.getDate()+', '+now.getFullYear()+' · J-'+jday;
+
+    var FADE=450;
+    function cycleTo(valEl,lblEl,newVal,newLbl){
+      if(!valEl)return;
+      valEl.style.opacity='0';
+      if(lblEl)lblEl.style.opacity='0';
+      setTimeout(function(){
+        valEl.textContent=newVal;
+        if(lblEl&&newLbl)lblEl.textContent=newLbl;
+        valEl.style.opacity='';
+        if(lblEl)lblEl.style.opacity='';
+      },FADE);
+    }
+
+    // Cycling item arrays
+    var wxItems=[],dataItems=[];
+    var wxIdx=0,dataIdx=0;
+
+    // Load cache
+    var cache=null;
+    try{var raw=JSON.parse(localStorage.getItem('pm_daily_v4')||'null');if(raw&&raw.date===todayStr())cache=raw.data;}catch(e){}
+
+    // Build data items: word → (ISS inserted live below) → quake → on this day → tech → HN → nature
+    if(cache){
+      if(cache.word&&cache.word.word){
+        var ww=cache.word,wdef=ww.entry&&ww.entry.meanings&&ww.entry.meanings[0]&&ww.entry.meanings[0].definitions&&ww.entry.meanings[0].definitions[0];
+        dataItems.push({lbl:'WORD',val:ww.word+(wdef?' — '+wdef.definition.slice(0,72):'')});
+      }
+      // ISS slot reserved at index 1 — inserted by live fetch below
+      if(cache.quake){
+        var qp=cache.quake.properties;
+        dataItems.push({lbl:'QUAKE',val:'M'+parseFloat(qp.mag).toFixed(1)+' · '+(qp.place||'')});
+      }
+      if(cache.wiki&&cache.wiki[0]){
+        var we=cache.wiki[0];
+        dataItems.push({lbl:'ON THIS DAY',val:we.year+': '+we.text.slice(0,88)+(we.text.length>88?'…':'')});
+      }
+      if(cache.tech&&cache.tech[0]){
+        var te=cache.tech[0];
+        dataItems.push({lbl:'TECH',val:(te.year||'')+': '+(te.text||'').slice(0,88)});
+      }
+      if(cache.hn)dataItems.push({lbl:'HN',val:(cache.hn.title||'').slice(0,80)});
+      if(cache.inat){
+        var it=cache.inat.taxon||{};
+        dataItems.push({lbl:'NATURE',val:(it.preferred_common_name||it.name||'sighting')+(cache.inat.place_guess?' · '+cache.inat.place_guess:'')});
+      }
+    }
+
+    // Show first data item immediately (ISS will slot in at position 1 when it arrives)
+    if(dataItems.length>0){
+      if(extraLbl)extraLbl.textContent=dataItems[0].lbl;
+      if(extraEl)extraEl.textContent=dataItems[0].val;
+    }
+
+    // Fetch ISS live — inserts into data position 1 and wx space slot
+    fetch('https://api.wheretheiss.at/v1/satellites/25544')
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var la=parseFloat(d.latitude),lo=parseFloat(d.longitude);
+        var issStr=Math.abs(la).toFixed(1)+'°'+(la>=0?'N':'S')+' '+Math.abs(lo).toFixed(1)+'°'+(lo>=0?'E':'W')+' · '+Math.round(d.altitude)+'km · '+(d.visibility==='daylight'?'☀ Daylit':'● Eclipsed');
+        // Insert at position 1 (after word, before quake)
+        dataItems.splice(Math.min(1,dataItems.length),0,{lbl:'ISS',val:issStr});
+        // If nothing was shown yet (no cache), show ISS now
+        if(dataItems.length===1){
+          if(extraLbl)extraLbl.textContent='ISS';
+          if(extraEl)extraEl.textContent=issStr;
+        }
+        // ISS as the "space" option in the weather slot
+        wxItems.push({lbl:'ISS',val:issStr});
+      }).catch(function(){});
+
+    // Weather — local from ZIP; also builds wxItems[0]
+    var WMO={0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',51:'Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',71:'Light Snow',73:'Snow',80:'Showers',95:'Thunderstorm'};
+    var zip='';try{zip=localStorage.getItem('pm_daily_zip')||'';}catch(e){}
+    if(zip&&wxEl){
+      wxEl.textContent='…';
+      fetch('https://api.zippopotam.us/us/'+zip)
+        .then(function(r){return r.json();})
+        .then(function(z){
+          var p=z.places[0],city=p['place name']+', '+p['state abbreviation'];
+          return fetch('https://api.open-meteo.com/v1/forecast?latitude='+p.latitude+'&longitude='+p.longitude+'&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto')
+            .then(function(r){return r.json();})
+            .then(function(w){
+              var cur=w.current;
+              var localStr=city+' · '+Math.round(cur.temperature_2m)+'°F · '+(WMO[cur.weather_code]||'');
+              if(wxEl)wxEl.textContent=localStr;
+              wxItems.unshift({lbl:'WEATHER',val:localStr});
+            });
+        }).catch(function(){if(wxEl)wxEl.textContent='—';});
+    }else if(wxEl){
+      wxEl.textContent='Set ZIP on Daily page →';
+    }
+
+    // Start cycling after data has loaded (2.5s grace period)
+    setTimeout(function(){
+      // Data column: cycle every 5.5s
+      setInterval(function(){
+        if(dataItems.length<2)return;
+        dataIdx=(dataIdx+1)%dataItems.length;
+        var item=dataItems[dataIdx];
+        cycleTo(extraEl,extraLbl,item.val,item.lbl);
+      },5500);
+      // Weather column: cycle every 7s, offset by 3.5s so slots don't change simultaneously
+      setTimeout(function(){
+        setInterval(function(){
+          if(wxItems.length<2)return;
+          wxIdx=(wxIdx+1)%wxItems.length;
+          var item=wxItems[wxIdx];
+          cycleTo(wxEl,wxLbl,item.val,item.lbl);
+        },7000);
+      },3500);
+    },2500);
+  }());
+  </script>
+
+  <!-- Ticker live data -->
   <script>
   (function(){
     function pad(n){return n<10?'0'+n:''+n;}
@@ -254,7 +545,6 @@
     var SEP='<span class="ht-sep">◆</span>';
     var GAP='<span class="ht-gap">✦</span>';
 
-    /* slots[0]=date, slots[1]=weather; extra[] gets everything else */
     var slots=[null,null],extra=[],live=false,issOk=false,wxOk=false;
     var a=document.getElementById('hta'),b=document.getElementById('htb'),
         track=document.getElementById('htt'),bar=document.querySelector('.home-ticker-bar');
@@ -274,10 +564,8 @@
     }
     function tryGo(){if(issOk&&wxOk)go();}
 
-    /* Date */
     slots[0]=lbl('TODAY')+' '+esc(new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}));
 
-    /* Cache */
     var cache=null;
     try{var raw=JSON.parse(localStorage.getItem('pm_daily_v4')||'null');if(raw&&raw.date===todayStr())cache=raw.data;}catch(e){}
 
@@ -300,7 +588,6 @@
         .then(function(d){var f=d.features&&d.features[0];if(f)extra.push(lbl('QUAKE')+' '+magHtml(parseFloat(f.properties.mag))+' '+esc(f.properties.place||''));}).catch(function(){});
     }
 
-    /* Weather — always live from saved ZIP */
     var zip='';try{zip=localStorage.getItem('pm_daily_zip')||'';}catch(e){}
     if(zip){
       $g('https://api.zippopotam.us/us/'+zip)
@@ -323,7 +610,6 @@
       wxOk=true;
     }
 
-    /* ISS — always live */
     $g('https://api.wheretheiss.at/v1/satellites/25544')
       .then(function(d){
         var la=parseFloat(d.latitude),lo=parseFloat(d.longitude);
@@ -332,7 +618,6 @@
       .catch(function(){})
       .then(function(){issOk=true;tryGo();});
 
-    /* Hard fallback — go with whatever arrived */
     setTimeout(function(){issOk=true;wxOk=true;go();},4000);
   }());
   </script>
