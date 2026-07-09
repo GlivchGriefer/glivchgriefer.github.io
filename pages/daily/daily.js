@@ -29,10 +29,11 @@
 
   function renderZuluTime() {
     var now = new Date();
-    var hh  = String(now.getUTCHours()).padStart(2, '0');
-    var mm  = String(now.getUTCMinutes()).padStart(2, '0');
+    var hh  = String(now.getHours()).padStart(2, '0');
+    var mm  = String(now.getMinutes()).padStart(2, '0');
+    var ss  = String(now.getSeconds()).padStart(2, '0');
     var el  = document.getElementById('w-zulu');
-    if (el) el.textContent = hh + mm + 'Z';
+    if (el) el.textContent = hh + mm + ':' + ss;
   }
 
   function renderDateHeading() {
@@ -109,6 +110,8 @@
   var _slide = 0;
   var _slideCount = 6;
   var _autoTimer = null;
+  var _ytPlayer = null;
+  var _ytPendingId = null;
 
   function gotoSlide(idx) {
     _slide = ((idx % _slideCount) + _slideCount) % _slideCount;
@@ -119,12 +122,111 @@
   }
 
   function startAuto() {
+    if (_autoTimer) clearInterval(_autoTimer);
     _autoTimer = setInterval(function () { gotoSlide(_slide + 1); }, 7000);
   }
 
   function resetAuto() {
     clearInterval(_autoTimer);
     startAuto();
+  }
+
+  function apodSlide() { return document.getElementById('apod-slide'); }
+
+  function onYTStateChange(e) {
+    var slide = apodSlide();
+    if (e.data === 1) {           // PLAYING — hide overlay, pause carousel
+      clearInterval(_autoTimer);
+      _autoTimer = null;
+      if (slide) slide.classList.add('apod-playing');
+    } else if (e.data === 0) {   // ENDED — show overlay, advance, restart
+      if (slide) slide.classList.remove('apod-playing');
+      gotoSlide(_slide + 1);
+      startAuto();
+    } else if (e.data === 2 || e.data === 5) {  // PAUSED or CUED
+      if (slide) slide.classList.remove('apod-playing');
+      if (!_autoTimer) startAuto();
+    }
+  }
+
+  function makeYTPlayer(targetId, ytId) {
+    return new YT.Player(targetId, {
+      videoId: ytId,
+      width: '100%',
+      height: '100%',
+      playerVars: { rel: 0, modestbranding: 1, playsinline: 1 },
+      events: {
+        onReady: function (e) {
+          var iframe = e.target.getIframe();
+          if (iframe) iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;';
+        },
+        onStateChange: onYTStateChange
+      }
+    });
+  }
+
+  window.onYouTubeIframeAPIReady = function () {
+    if (_ytPendingId) {
+      _ytPlayer = makeYTPlayer('apod-yt-inner', _ytPendingId);
+      _ytPendingId = null;
+    }
+  };
+
+  function embedApodVideo(url) {
+    var wrap = document.getElementById('apod-yt-player');
+    if (!wrap) return;
+    wrap.classList.remove('hidden');
+
+    // Raw video file (mp4, webm, ogg, etc.) — use <video> element
+    if (/\.(mp4|webm|ogv|ogg)(\?|$)/i.test(url)) {
+      wrap.innerHTML = '<video src="' + url.replace(/"/g, '') + '"' +
+        ' controls playsinline preload="metadata"' +
+        ' style="position:absolute;top:0;left:0;width:100%;height:100%;background:#000;"></video>';
+      var vid = wrap.querySelector('video');
+      if (vid) {
+        var slide = apodSlide();
+        vid.addEventListener('play',  function () {
+          clearInterval(_autoTimer); _autoTimer = null;
+          if (slide) slide.classList.add('apod-playing');
+        });
+        vid.addEventListener('pause', function () {
+          if (!_autoTimer) startAuto();
+          if (slide) slide.classList.remove('apod-playing');
+        });
+        vid.addEventListener('ended', function () {
+          if (slide) slide.classList.remove('apod-playing');
+          gotoSlide(_slide + 1);
+          startAuto();
+        });
+      }
+      return;
+    }
+
+    // YouTube embed
+    var m = url.match(/embed\/([^?&\/]+)/) || url.match(/[?&]v=([^&]+)/) || url.match(/youtu\.be\/([^?&\/]+)/);
+    var ytId = m ? m[1] : '';
+    if (!ytId) {
+      // Generic iframe fallback (Vimeo, etc.)
+      wrap.innerHTML = '<iframe src="' + url.replace(/"/g, '') +
+        '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"' +
+        ' allowfullscreen allow="autoplay; encrypted-media"></iframe>';
+      return;
+    }
+    if (_ytPlayer && _ytPlayer.cueVideoById) {
+      _ytPlayer.cueVideoById(ytId);
+      return;
+    }
+    if (window.YT && window.YT.Player) {
+      _ytPlayer = makeYTPlayer('apod-yt-inner', ytId);
+    } else {
+      _ytPendingId = ytId;
+      if (!document.getElementById('yt-iframe-api')) {
+        var s = document.createElement('script');
+        s.id = 'yt-iframe-api';
+        s.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(s);
+      }
+    }
   }
 
   // ── Weather ticker ────────────────────────────────────────
@@ -207,25 +309,23 @@
         document.getElementById('apod-desc').textContent = '';
         document.getElementById('apod-img').style.opacity = '0';
         document.getElementById('apod-noimgwrap').classList.remove('hidden');
-        document.getElementById('apod-video-link').classList.add('hidden');
       });
   }
 
   function renderApod(data) {
     var img = document.getElementById('apod-img');
     var noImgWrap = document.getElementById('apod-noimgwrap');
-    var vl = document.getElementById('apod-video-link');
+    var ytWrap = document.getElementById('apod-yt-player');
     if (data.media_type === 'image') {
       img.src = data.url;
       img.alt = data.title || '';
       img.style.opacity = '1';
       noImgWrap.classList.add('hidden');
-      vl.classList.add('hidden');
+      if (ytWrap) ytWrap.classList.add('hidden');
     } else {
       img.style.opacity = '0';
-      noImgWrap.classList.remove('hidden');
-      vl.href = data.url || '#';
-      vl.classList.remove('hidden');
+      noImgWrap.classList.add('hidden');
+      embedApodVideo(data.url || '');
     }
     document.getElementById('apod-title').textContent = data.title || '';
     var expl = data.explanation || '';
@@ -1159,12 +1259,29 @@
   var _bgEnabled    = true;
   var _bgAnimFrame  = null;
 
+  function saveBgPrefs() {
+    try { localStorage.setItem('pm_daily_art', JSON.stringify({ style: _bgStyle, op: _bgOpacity, on: _bgEnabled })); } catch(e) {}
+  }
+
+  function loadBgPrefs() {
+    try {
+      var raw = localStorage.getItem('pm_daily_art');
+      if (!raw) return;
+      var p = JSON.parse(raw);
+      if (typeof p.style === 'number') _bgStyle   = p.style;
+      if (typeof p.op    === 'number') _bgOpacity = p.op;
+      if (typeof p.on    === 'boolean') _bgEnabled = p.on;
+    } catch(e) {}
+  }
+
   function initBgArt() {
+    loadBgPrefs();
     var canvas = document.getElementById('bg-canvas');
     if (!canvas) return;
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
-    canvas.style.opacity = _bgOpacity;
+    canvas.style.opacity = _bgEnabled ? _bgOpacity : 0;
+    if (!_bgEnabled) return;
     regenBgArt();
     window.addEventListener('resize', function () {
       canvas.width  = window.innerWidth;
@@ -1312,7 +1429,7 @@
 
     renderDateHeading();
     renderZuluTime();
-    setInterval(renderZuluTime, 30000);
+    setInterval(renderZuluTime, 1000);
 
     // Carousel
     var carousel = document.getElementById('discovery-carousel');
@@ -1388,6 +1505,16 @@
 
     // Background art
     initBgArt();
+    // Sync button active states to restored prefs
+    document.querySelectorAll('.dw-art-style-btn').forEach(function (b) {
+      b.classList.toggle('active', parseInt(b.dataset.style, 10) === _bgStyle);
+    });
+    document.querySelectorAll('.dw-art-op-btn').forEach(function (b) {
+      b.classList.toggle('active', parseFloat(b.dataset.op) === _bgOpacity);
+    });
+    document.querySelectorAll('.dw-art-off-btn').forEach(function (b) {
+      b.textContent = _bgEnabled ? '● On' : '○ Off';
+    });
 
     // Art nav controls — wired across desktop nav + mobile nav buttons
     document.querySelectorAll('.dw-art-style-btn').forEach(function (btn) {
@@ -1396,6 +1523,7 @@
         document.querySelectorAll('.dw-art-style-btn').forEach(function (b) {
           b.classList.toggle('active', b.dataset.style === btn.dataset.style);
         });
+        saveBgPrefs();
         regenBgArt();
       });
     });
@@ -1407,6 +1535,7 @@
         });
         var canvas = document.getElementById('bg-canvas');
         if (canvas && _bgEnabled) canvas.style.opacity = _bgOpacity;
+        saveBgPrefs();
       });
     });
     document.querySelectorAll('.dw-art-off-btn').forEach(function (btn) {
@@ -1421,6 +1550,7 @@
           if (canvas) canvas.style.opacity = 0;
           document.querySelectorAll('.dw-art-off-btn').forEach(function (b) { b.textContent = '○ Off'; });
         }
+        saveBgPrefs();
       });
     });
 

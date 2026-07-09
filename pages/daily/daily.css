@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════
    daily.css — Daily Updates page
    ═══════════════════════════════════════════════════════ */
+@import url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.min.css');
 
 /* ── Page shell ─────────────────────────────────────────── */
 
@@ -230,20 +231,20 @@ body.daily-page .aim-statusbar a:hover { color: rgba(255,255,255,0.7) !important
 }
 
 .dw-jday {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.42em;
-  font-weight: 700;
+  font-family: 'DSEG7Classic-Regular', monospace;
+  font-size: 0.62em;
+  font-weight: 400;
   color: rgba(255,255,255,0.28);
   letter-spacing: 1px;
   vertical-align: middle;
 }
 
 .dw-zulu {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: clamp(10px, 1.8vw, 13px);
-  font-weight: 700;
+  font-family: 'DSEG7Classic-Regular', monospace;
+  font-size: clamp(12px, 2.2vw, 16px);
+  font-weight: 400;
   color: rgba(255,255,255,0.22);
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   text-align: center;
 }
 
@@ -292,12 +293,26 @@ body.daily-page .aim-statusbar a:hover { color: rgba(255,255,255,0.7) !important
 }
 .dw-slide-no-img-icon { font-size: 48px; }
 
+.apod-embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #000;
+}
+
 .dw-slide-overlay {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   padding: 60px 28px 28px;
   background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.55) 50%, transparent 100%);
   color: #fff;
+  transition: opacity 0.4s ease;
+}
+.apod-playing #apod-overlay {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .dw-slide-source {

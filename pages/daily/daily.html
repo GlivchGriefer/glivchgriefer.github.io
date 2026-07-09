@@ -107,13 +107,15 @@
           <div class="dw-carousel" id="discovery-carousel">
 
             <!-- 0: NASA APOD -->
-            <div class="dw-slide">
+            <div class="dw-slide" id="apod-slide">
               <img class="dw-slide-img" id="apod-img" alt="" />
               <div class="dw-slide-no-img hidden" id="apod-noimgwrap">
                 <span class="dw-slide-no-img-icon">🎬</span>
-                <a id="apod-video-link" href="#" target="_blank" rel="noopener" class="dw-slide-ext-link hidden">Watch video</a>
               </div>
-              <div class="dw-slide-overlay">
+              <div id="apod-yt-player" class="apod-embed hidden">
+                <div id="apod-yt-inner"></div>
+              </div>
+              <div class="dw-slide-overlay" id="apod-overlay">
                 <span class="dw-slide-source">🔭 NASA APOD</span>
                 <div class="dw-slide-title" id="apod-title">Loading…</div>
                 <div class="dw-slide-desc" id="apod-desc"></div>

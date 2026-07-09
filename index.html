@@ -8,6 +8,7 @@
   <link href="pages/home/css/hub.css" rel="stylesheet" />
   <script src="scripts/webapp.js"></script>
   <style>
+    @import url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.min.css');
     /* ── Ticker bar ──────────────────────────────────────── */
     .home-ticker-bar{position:fixed;bottom:0;left:0;right:0;height:26px;z-index:200;overflow:hidden;display:flex;align-items:center;background:linear-gradient(90deg,#0e2460,#1a3898 35%,#1a3898 65%,#0e2460);border-top:1px solid #2a46a0;user-select:none;pointer-events:none;opacity:0;transition:opacity .7s ease;}
     .home-ticker-bar.ht-ready{opacity:1;}
@@ -101,14 +102,14 @@
         <!-- 1 · Daily preview ───────────────────────────── -->
         <a href="pages/daily/daily.html" class="hub-card hub-card-dark hub-card-full" id="hub-daily">
           <div class="hub-card-bar">
-            <span>📡</span>
+            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none"><rect x="2" y="1.5" width="12" height="13" rx="1" stroke="#00EE55" stroke-width="1.3"/><line x1="3.5" y1="4" x2="12.5" y2="4" stroke="#00EE55" stroke-width="1.8" stroke-linecap="round"/><line x1="3.5" y1="6.5" x2="10" y2="6.5" stroke="#00CC44" stroke-width="1" stroke-linecap="round"/><line x1="8" y1="8.5" x2="8" y2="13.5" stroke="#007A22" stroke-width=".7"/><line x1="3.5" y1="9.5" x2="7" y2="9.5" stroke="#007A22" stroke-width=".7" stroke-linecap="round"/><line x1="3.5" y1="11" x2="7" y2="11" stroke="#007A22" stroke-width=".7" stroke-linecap="round"/><line x1="3.5" y1="12.5" x2="7" y2="12.5" stroke="#007A22" stroke-width=".7" stroke-linecap="round"/><line x1="9" y1="9.5" x2="12.5" y2="9.5" stroke="#007A22" stroke-width=".7" stroke-linecap="round"/><line x1="9" y1="11" x2="12.5" y2="11" stroke="#007A22" stroke-width=".7" stroke-linecap="round"/><line x1="9" y1="12.5" x2="12.5" y2="12.5" stroke="#007A22" stroke-width=".7" stroke-linecap="round"/></svg></span>
             <span class="hub-card-title">Daily Digest</span>
             <span class="hub-card-tag" style="background:#001a0a;color:#22bb44;animation:hmBlip 2s ease-in-out infinite">● LIVE</span>
           </div>
           <div class="hub-daily-body">
-            <div class="hub-daily-item">
-              <span class="hub-di-label">TODAY</span>
-              <span class="hub-di-val" id="hub-di-date">—</span>
+            <div class="hub-daily-item" style="flex-direction:row;align-items:baseline;gap:10px;flex-wrap:wrap;">
+              <span id="hub-di-date" style="font-family:'DSEG7Classic-Regular',monospace;font-size:13px;color:rgba(175,188,205,.4);line-height:1;letter-spacing:1px">---</span>
+              <span id="hub-di-time" style="font-family:'DSEG7Classic-Regular',monospace;font-size:24px;color:rgba(175,188,205,.72);line-height:1;letter-spacing:1px">--:--</span>
             </div>
             <div class="hub-daily-item">
               <span class="hub-di-label" id="hub-di-wx-lbl">WEATHER</span>
@@ -125,7 +126,7 @@
         <!-- 2 · Live Map ────────────────────────────────── -->
         <a href="pages/map/map.html" class="hub-card hub-card-dark hub-map-preview hub-card-full">
           <div class="hub-card-bar">
-            <span>🗺</span>
+            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none"><rect x="1.5" y="2" width="13" height="12" rx="1" stroke="#007A22" stroke-width=".9"/><line x1="1.5" y1="7" x2="14.5" y2="7" stroke="#007A22" stroke-width=".6" stroke-dasharray="1.5 1"/><line x1="1.5" y1="11" x2="14.5" y2="11" stroke="#007A22" stroke-width=".6" stroke-dasharray="1.5 1"/><line x1="5.5" y1="2" x2="5.5" y2="14" stroke="#007A22" stroke-width=".6" stroke-dasharray="1.5 1"/><line x1="10.5" y1="2" x2="10.5" y2="14" stroke="#007A22" stroke-width=".6" stroke-dasharray="1.5 1"/><circle cx="10" cy="6.5" r="2" stroke="#00EE55" stroke-width="1.2"/><circle cx="10" cy="6.5" r=".7" fill="#00CC44"/><line x1="10" y1="8.5" x2="10" y2="10.5" stroke="#00EE55" stroke-width="1.2" stroke-linecap="round"/></svg></span>
             <span class="hub-card-title">Live Map</span>
             <span class="hub-card-tag" style="background:#001a0a;color:#22bb44;animation:hmBlip 2s ease-in-out infinite">● LIVE</span>
           </div>
@@ -134,16 +135,16 @@
             <div class="hub-map-bar" id="hm-stats">
               <span><span class="hub-map-stat-v" id="hm-qn">—</span> quakes 24h</span>
               <span><span class="hub-map-stat-v" id="hm-an">—</span> active alerts</span>
-              <span><span class="hub-map-stat-live">🌧</span> Radar: Live</span>
+              <span><span class="hub-map-stat-live"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="10" height="10" fill="none" style="display:inline-block;vertical-align:middle;margin-right:1px"><circle cx="5" cy="8.5" r=".8" fill="currentColor"/><path d="M2.5 6.5a3.5 3.5 0 0 1 5 0" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/><path d="M.5 4a6.5 6.5 0 0 1 9 0" stroke="currentColor" stroke-width=".8" stroke-linecap="round"/></svg></span> Radar: Live</span>
             </div>
           </div>
           <div class="hub-map-footer">
             <div class="hub-map-layers">
-              <span class="hub-map-layer-pill">🌧 Radar</span>
-              <span class="hub-map-layer-pill">🌍 Earthquakes</span>
-              <span class="hub-map-layer-pill">⚠️ NWS Alerts</span>
-              <span class="hub-map-layer-pill">🚨 Disasters</span>
-              <span class="hub-map-layer-pill">📡 Buoys</span>
+              <span class="hub-map-layer-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="9" height="9" fill="none" style="display:inline-block;vertical-align:middle;margin-right:2px"><circle cx="5" cy="8.5" r=".7" fill="currentColor"/><path d="M2.5 6.5a3.5 3.5 0 0 1 5 0" stroke="currentColor" stroke-width=".85" stroke-linecap="round"/><path d="M.5 4a6.5 6.5 0 0 1 9 0" stroke="currentColor" stroke-width=".75" stroke-linecap="round"/></svg>Radar</span>
+              <span class="hub-map-layer-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="9" height="9" fill="none" style="display:inline-block;vertical-align:middle;margin-right:2px"><polyline points="0,5 2,5 3.5,2.5 5,7.5 6.5,3 8,5 10,5" stroke="currentColor" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round"/></svg>Earthquakes</span>
+              <span class="hub-map-layer-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="9" height="9" fill="none" style="display:inline-block;vertical-align:middle;margin-right:2px"><path d="M5 1L9.5 9H.5z" stroke="currentColor" stroke-width=".9" stroke-linejoin="round"/><line x1="5" y1="4" x2="5" y2="6.5" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/><circle cx="5" cy="7.8" r=".5" fill="currentColor"/></svg>NWS Alerts</span>
+              <span class="hub-map-layer-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="9" height="9" fill="none" style="display:inline-block;vertical-align:middle;margin-right:2px"><circle cx="5" cy="5" r="3.8" stroke="currentColor" stroke-width=".9"/><line x1="5" y1="2.8" x2="5" y2="5.5" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/><circle cx="5" cy="7" r=".5" fill="currentColor"/></svg>Disasters</span>
+              <span class="hub-map-layer-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="9" height="9" fill="none" style="display:inline-block;vertical-align:middle;margin-right:2px"><circle cx="5" cy="2.8" r=".9" stroke="currentColor" stroke-width=".8"/><line x1="5" y1="3.7" x2="5" y2="5.5" stroke="currentColor" stroke-width=".7"/><path d="M1 7.5c1.3-1.5 2.7-1.5 4 0s2.7 1.5 4 0" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/></svg>Buoys</span>
             </div>
             <span class="hub-map-open">Open Full Map →</span>
           </div>
@@ -157,7 +158,7 @@
 
         <a href="pages/media/index.html" class="hub-card hub-card-dark">
           <div class="hub-card-bar">
-            <span>◈</span>
+            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none"><rect x="1" y="1" width="6" height="6" rx=".7" stroke="#007A22" stroke-width=".9"/><rect x="9" y="1" width="6" height="6" rx=".7" stroke="#00CC44" stroke-width="1.1"/><rect x="1" y="9" width="6" height="6" rx=".7" stroke="#00CC44" stroke-width="1.1"/><rect x="9" y="9" width="6" height="6" rx=".7" stroke="#00EE55" stroke-width="1.3"/><path d="M10.5 10.5l4 2.5-4 2.5z" stroke="#00EE55" stroke-width=".9" stroke-linejoin="round"/></svg></span>
             <span class="hub-card-title">Media Browser</span>
             <span class="hub-card-tag media">Media</span>
           </div>
@@ -168,7 +169,7 @@
 
         <a href="pages/skanner/index.html" class="hub-card hub-card-dark">
           <div class="hub-card-bar">
-            <span>🚀</span>
+            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none"><line x1="2" y1="2.5" x2="2" y2="12" stroke="#007A22" stroke-width="1.1"/><line x1="3.8" y1="2.5" x2="3.8" y2="12" stroke="#007A22" stroke-width="2"/><line x1="5.5" y1="2.5" x2="5.5" y2="12" stroke="#007A22" stroke-width=".7"/><line x1="7" y1="2.5" x2="7" y2="12" stroke="#007A22" stroke-width="1.6"/><line x1="8.5" y1="2.5" x2="8.5" y2="12" stroke="#007A22" stroke-width=".7"/><line x1="10" y1="2.5" x2="10" y2="12" stroke="#007A22" stroke-width="2"/><line x1="12" y1="2.5" x2="12" y2="12" stroke="#007A22" stroke-width="1.1"/><line x1="13.5" y1="2.5" x2="13.5" y2="12" stroke="#007A22" stroke-width=".7"/><line x1=".5" y1="7.5" x2="15.5" y2="7.5" stroke="#00EE55" stroke-width="1.3" stroke-linecap="round"/></svg></span>
             <span class="hub-card-title">SKANNER</span>
             <span class="hub-card-tag gaming">Gaming</span>
           </div>
@@ -179,7 +180,7 @@
 
         <a href="pages/netbreaker/netbreaker.html" class="hub-card hub-card-dark">
           <div class="hub-card-bar">
-            <span>💻</span>
+            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none"><rect x="1" y="1.5" width="14" height="10" rx="1.5" stroke="#00EE55" stroke-width="1.3"/><line x1="1" y1="5" x2="15" y2="5" stroke="#007A22" stroke-width=".8"/><path d="M3.5 7.5l2.5 2-2.5 2" stroke="#00CC44" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><line x1="7.5" y1="9.5" x2="12" y2="9.5" stroke="#00CC44" stroke-width="1.1" stroke-linecap="round"/><line x1="5" y1="14" x2="11" y2="14" stroke="#007A22" stroke-width="1" stroke-linecap="round"/><line x1="8" y1="11.5" x2="8" y2="14" stroke="#007A22" stroke-width="1" stroke-linecap="round"/></svg></span>
             <span class="hub-card-title">NETBREAKER</span>
             <span class="hub-card-tag security">Security</span>
           </div>
@@ -190,7 +191,7 @@
 
         <a href="https://interportal.neocities.org" target="_blank" rel="noopener" class="hub-card">
           <div class="hub-card-bar">
-            <span>✦</span>
+            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none"><circle cx="8" cy="8" r="6" stroke="#00EE55" stroke-width="1.4"/><circle cx="8" cy="8" r="2.5" stroke="#00CC44" stroke-width="1.1"/><line x1="8" y1="1.5" x2="8" y2="5" stroke="#007A22" stroke-width=".9"/><line x1="8" y1="11" x2="8" y2="14.5" stroke="#007A22" stroke-width=".9"/><line x1="1.5" y1="8" x2="5" y2="8" stroke="#007A22" stroke-width=".9"/><line x1="11" y1="8" x2="14.5" y2="8" stroke="#007A22" stroke-width=".9"/><line x1="3.1" y1="3.1" x2="5.3" y2="5.3" stroke="#007A22" stroke-width=".8"/><line x1="10.7" y1="10.7" x2="12.9" y2="12.9" stroke="#007A22" stroke-width=".8"/><line x1="12.9" y1="3.1" x2="10.7" y2="5.3" stroke="#007A22" stroke-width=".8"/><line x1="5.3" y1="10.7" x2="3.1" y2="12.9" stroke="#007A22" stroke-width=".8"/></svg></span>
             <span class="hub-card-title">Interportal</span>
             <span class="hub-card-tag portfolio">Portfolio</span>
           </div>
@@ -207,7 +208,7 @@
 
         <a href="pages/gallery/gallery.html" class="hub-card hub-card-away">
           <div class="hub-card-bar">
-            <span>📷</span>
+            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none"><rect x="1.5" y="4.5" width="13" height="9.5" rx="1.3" stroke="#00EE55" stroke-width="1.3"/><path d="M6 4.5V3.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v1" stroke="#007A22" stroke-width=".9"/><circle cx="8" cy="9.5" r="2.8" stroke="#00CC44" stroke-width="1.1"/><circle cx="8" cy="9.5" r="1.2" stroke="#007A22" stroke-width=".9"/></svg></span>
             <span class="hub-card-title">Gallery</span>
             <span class="hub-card-tag soon">Soon</span>
           </div>
@@ -218,7 +219,7 @@
 
         <a href="pages/faq/faq.html" class="hub-card">
           <div class="hub-card-bar">
-            <span>❓</span>
+            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none"><path d="M5.5 5.5Q5.5 2.5 8 2.5Q11 2.5 11 5.5Q11 7.5 8 8.5L8 10.5" stroke="#00EE55" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="13" r="1.2" fill="#00CC44"/></svg></span>
             <span class="hub-card-title">FAQ</span>
             <span class="hub-card-tag info">Info</span>
           </div>
@@ -229,7 +230,7 @@
 
         <a href="pages/about/about.html" class="hub-card">
           <div class="hub-card-bar">
-            <span>👤</span>
+            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none"><circle cx="8" cy="5.5" r="2.8" stroke="#00EE55" stroke-width="1.3"/><path d="M2 15a6 6 0 0 1 12 0" stroke="#00CC44" stroke-width="1.2" stroke-linecap="round"/></svg></span>
             <span class="hub-card-title">About</span>
             <span class="hub-card-tag info">Info</span>
           </div>
@@ -240,7 +241,7 @@
 
         <a href="pages/contact/contact.html" class="hub-card">
           <div class="hub-card-bar">
-            <span>💬</span>
+            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none"><rect x="1.5" y="4" width="13" height="9" rx="1.2" stroke="#00EE55" stroke-width="1.3"/><path d="M1.5 5l6.5 5 6.5-5" stroke="#00CC44" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
             <span class="hub-card-title">Contact</span>
             <span class="hub-card-tag info">Info</span>
           </div>
@@ -411,7 +412,11 @@
     var extraEl=document.getElementById('hub-di-extra');
     var extraLbl=document.getElementById('hub-di-extra-lbl');
 
-    if(dateEl)dateEl.textContent=DAYS[now.getDay()]+' '+MON[now.getMonth()]+' '+now.getDate()+', '+now.getFullYear()+' · J-'+jday;
+    if(dateEl)dateEl.textContent=jday;
+
+    var timeEl=document.getElementById('hub-di-time');
+    function fmtClock(){var n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');return h+m+':'+s;}
+    if(timeEl){timeEl.textContent=fmtClock();setInterval(function(){timeEl.textContent=fmtClock();},1000);}
 
     var FADE=450;
     function cycleTo(valEl,lblEl,newVal,newLbl){
@@ -426,103 +431,104 @@
       },FADE);
     }
 
-    // Cycling item arrays
-    var wxItems=[],dataItems=[];
-    var wxIdx=0,dataIdx=0;
+    var dataItems=[];
+    var dataIdx=0;
 
     // Load cache
     var cache=null;
     try{var raw=JSON.parse(localStorage.getItem('pm_daily_v4')||'null');if(raw&&raw.date===todayStr())cache=raw.data;}catch(e){}
 
-    // Build data items: word → (ISS inserted live below) → quake → on this day → tech → HN → nature
+    var SWX_LVL=['Quiet','Quiet','Quiet','Quiet','Minor Watch','G1 Minor','G2 Moderate','G3 Strong','G4 Severe','G5 Extreme'];
+
+    function fmtSwx(d){
+      var kp=Math.min(Math.round(d.kp)||0,9);
+      var arr={rising:'↑',falling:'↓',steady:'→'}[d.trend]||'→';
+      return 'Kp '+d.kp_exact+' · '+SWX_LVL[kp]+' · '+arr+' '+d.trend;
+    }
+    function fmtLaunch(r){
+      var t0=r.t0||r.win_open,tStr='TBD';
+      if(t0){var dt=new Date(t0),diff=dt-Date.now();
+        if(diff>0&&diff<7*864e5){var d=Math.floor(diff/864e5),h=Math.floor((diff%864e5)/36e5),m=Math.floor((diff%36e5)/6e4);tStr='T‑ '+(d>0?d+'d '+h+'h':h+'h '+m+'m');}
+        else tStr=dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+      var veh=r.vehicle&&r.vehicle.name?r.vehicle.name:'';
+      return (r.name||'Unknown Mission')+' · '+tStr+(veh?' · '+veh:'');
+    }
+
+    // ── Column 2: Space weather only (static) ─────────────────
+    if(wxLbl)wxLbl.textContent='SPACE WX';
+    if(wxEl)wxEl.textContent='—';
+    if(cache&&cache.swx){
+      if(wxEl)wxEl.textContent=fmtSwx(cache.swx);
+    }else{
+      // Fetch Kp live if no cache
+      fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json')
+        .then(function(r){return r.json();})
+        .then(function(data){
+          var recent=data.slice(-60),latest=recent[recent.length-1];
+          var older=recent[0];
+          var kpNow=parseFloat(latest.estimated_kp||latest.kp_index||0);
+          var kpPrev=parseFloat(older.estimated_kp||0);
+          var trend=kpNow>kpPrev+0.5?'rising':kpNow<kpPrev-0.5?'falling':'steady';
+          var d={kp:Math.round(kpNow),kp_exact:kpNow.toFixed(1),trend:trend};
+          if(wxEl)wxEl.textContent=fmtSwx(d);
+        }).catch(function(){if(wxEl)wxEl.textContent='—';});
+    }
+
+    // ── Column 3: word → ISS (live) → launch → on this day → tech → HN → nature ──
     if(cache){
       if(cache.word&&cache.word.word){
         var ww=cache.word,wdef=ww.entry&&ww.entry.meanings&&ww.entry.meanings[0]&&ww.entry.meanings[0].definitions&&ww.entry.meanings[0].definitions[0];
         dataItems.push({lbl:'WORD',val:ww.word+(wdef?' — '+wdef.definition.slice(0,72):'')});
       }
-      // ISS slot reserved at index 1 — inserted by live fetch below
-      if(cache.quake){
-        var qp=cache.quake.properties;
-        dataItems.push({lbl:'QUAKE',val:'M'+parseFloat(qp.mag).toFixed(1)+' · '+(qp.place||'')});
+      // ISS at pos 1 — inserted by live fetch below
+      // Launch at pos 2 — from cache or live fetch below
+      if(cache.launches&&cache.launches[0]){
+        dataItems.push({lbl:'LAUNCH',val:fmtLaunch(cache.launches[0])});
       }
-      if(cache.wiki&&cache.wiki[0]){
-        var we=cache.wiki[0];
-        dataItems.push({lbl:'ON THIS DAY',val:we.year+': '+we.text.slice(0,88)+(we.text.length>88?'…':'')});
-      }
-      if(cache.tech&&cache.tech[0]){
-        var te=cache.tech[0];
-        dataItems.push({lbl:'TECH',val:(te.year||'')+': '+(te.text||'').slice(0,88)});
-      }
+      if(cache.wiki&&cache.wiki[0]){var we=cache.wiki[0];dataItems.push({lbl:'ON THIS DAY',val:we.year+': '+we.text.slice(0,88)+(we.text.length>88?'…':'')});}
+      if(cache.tech&&cache.tech[0]){var te=cache.tech[0];dataItems.push({lbl:'TECH',val:(te.year||'')+': '+(te.text||'').slice(0,88)});}
       if(cache.hn)dataItems.push({lbl:'HN',val:(cache.hn.title||'').slice(0,80)});
-      if(cache.inat){
-        var it=cache.inat.taxon||{};
-        dataItems.push({lbl:'NATURE',val:(it.preferred_common_name||it.name||'sighting')+(cache.inat.place_guess?' · '+cache.inat.place_guess:'')});
-      }
+      if(cache.inat){var it=cache.inat.taxon||{};dataItems.push({lbl:'NATURE',val:(it.preferred_common_name||it.name||'sighting')+(cache.inat.place_guess?' · '+cache.inat.place_guess:'')});}
     }
 
-    // Show first data item immediately (ISS will slot in at position 1 when it arrives)
+    // Show first item immediately
     if(dataItems.length>0){
       if(extraLbl)extraLbl.textContent=dataItems[0].lbl;
       if(extraEl)extraEl.textContent=dataItems[0].val;
     }
 
-    // Fetch ISS live — inserts into data position 1 and wx space slot
+    // ISS live — insert at pos 1 (after word)
     fetch('https://api.wheretheiss.at/v1/satellites/25544')
       .then(function(r){return r.json();})
       .then(function(d){
         var la=parseFloat(d.latitude),lo=parseFloat(d.longitude);
         var issStr=Math.abs(la).toFixed(1)+'°'+(la>=0?'N':'S')+' '+Math.abs(lo).toFixed(1)+'°'+(lo>=0?'E':'W')+' · '+Math.round(d.altitude)+'km · '+(d.visibility==='daylight'?'☀ Daylit':'● Eclipsed');
-        // Insert at position 1 (after word, before quake)
         dataItems.splice(Math.min(1,dataItems.length),0,{lbl:'ISS',val:issStr});
-        // If nothing was shown yet (no cache), show ISS now
-        if(dataItems.length===1){
-          if(extraLbl)extraLbl.textContent='ISS';
-          if(extraEl)extraEl.textContent=issStr;
-        }
-        // ISS as the "space" option in the weather slot
-        wxItems.push({lbl:'ISS',val:issStr});
+        // If nothing shown yet (empty cache), show ISS now
+        if(dataItems.length===1){if(extraLbl)extraLbl.textContent='ISS';if(extraEl)extraEl.textContent=issStr;}
       }).catch(function(){});
 
-    // Weather — local from ZIP; also builds wxItems[0]
-    var WMO={0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',51:'Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',71:'Light Snow',73:'Snow',80:'Showers',95:'Thunderstorm'};
-    var zip='';try{zip=localStorage.getItem('pm_daily_zip')||'';}catch(e){}
-    if(zip&&wxEl){
-      wxEl.textContent='…';
-      fetch('https://api.zippopotam.us/us/'+zip)
+    // Launch live fetch — only if cache missing launch data; inserts at pos 2
+    if(!(cache&&cache.launches&&cache.launches[0])){
+      fetch('https://fdo.rocketlaunch.live/json/launches/next/5')
         .then(function(r){return r.json();})
-        .then(function(z){
-          var p=z.places[0],city=p['place name']+', '+p['state abbreviation'];
-          return fetch('https://api.open-meteo.com/v1/forecast?latitude='+p.latitude+'&longitude='+p.longitude+'&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto')
-            .then(function(r){return r.json();})
-            .then(function(w){
-              var cur=w.current;
-              var localStr=city+' · '+Math.round(cur.temperature_2m)+'°F · '+(WMO[cur.weather_code]||'');
-              if(wxEl)wxEl.textContent=localStr;
-              wxItems.unshift({lbl:'WEATHER',val:localStr});
-            });
-        }).catch(function(){if(wxEl)wxEl.textContent='—';});
-    }else if(wxEl){
-      wxEl.textContent='Set ZIP on Daily page →';
+        .then(function(data){
+          var r=(data.result||[])[0];
+          if(!r)return;
+          var lStr=fmtLaunch(r);
+          // Insert at pos 2 (after ISS), or at end if array is shorter
+          dataItems.splice(Math.min(2,dataItems.length),0,{lbl:'LAUNCH',val:lStr});
+        }).catch(function(){});
     }
 
-    // Start cycling after data has loaded (2.5s grace period)
+    // Start cycling column 3 every 5.5s after 2.5s grace
     setTimeout(function(){
-      // Data column: cycle every 5.5s
       setInterval(function(){
         if(dataItems.length<2)return;
         dataIdx=(dataIdx+1)%dataItems.length;
         var item=dataItems[dataIdx];
         cycleTo(extraEl,extraLbl,item.val,item.lbl);
       },5500);
-      // Weather column: cycle every 7s, offset by 3.5s so slots don't change simultaneously
-      setTimeout(function(){
-        setInterval(function(){
-          if(wxItems.length<2)return;
-          wxIdx=(wxIdx+1)%wxItems.length;
-          var item=wxItems[wxIdx];
-          cycleTo(wxEl,wxLbl,item.val,item.lbl);
-        },7000);
-      },3500);
     },2500);
   }());
   </script>
